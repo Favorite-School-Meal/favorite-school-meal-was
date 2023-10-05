@@ -1,4 +1,5 @@
 package com.example.favoriteschoolmeal.domain.model;
 
-public enum GroupRole {
+public enum RoleType {
+    HOST, MEMBER
 }
