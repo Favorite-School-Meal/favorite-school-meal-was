@@ -20,11 +20,11 @@ public class Friend extends Base {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "sender_id")
     private Member sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "receiver_id")
     private Member receiver;
 
     @Column(name = "is_accepted", nullable = false)
