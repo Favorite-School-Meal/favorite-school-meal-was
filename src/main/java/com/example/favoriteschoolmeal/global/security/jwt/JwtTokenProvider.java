@@ -3,22 +3,27 @@ package com.example.favoriteschoolmeal.global.security.jwt;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshToken;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenRepository;
 import com.example.favoriteschoolmeal.global.security.userdetails.UserDetailsServiceImpl;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
+
 
     private final String secretKey;
     private final long tokenExpirationTime;
@@ -28,6 +33,8 @@ public class JwtTokenProvider {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private final Key key;
+
 
 
     public JwtTokenProvider(
@@ -42,6 +49,9 @@ public class JwtTokenProvider {
         this.issuer = issuer;
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepository = refreshTokenRepository;
+
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     /**
@@ -56,7 +66,7 @@ public class JwtTokenProvider {
                 .setIssuer(issuer)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpirationTime))
-                .signWith(signatureAlgorithm, secretKey.getBytes())
+                .signWith(key, signatureAlgorithm)
                 .compact();
     }
 
@@ -106,7 +116,7 @@ public class JwtTokenProvider {
                 .setIssuer(issuer)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(Date.from(Instant.now().plus(14, ChronoUnit.DAYS)))
-                .signWith(signatureAlgorithm, secretKey.getBytes())
+                .signWith(key, signatureAlgorithm)
                 .compact();
     }
 
@@ -134,4 +144,37 @@ public class JwtTokenProvider {
         }
         return createAccessToken(username);
     }
+
+
+    /**
+     * 주어진 토큰의 유효성을 검사하는 메서드
+     * @param token 검사할 토큰 문자열
+     * @return 토큰의 유효성 여부 (유효한 경우 true, 그렇지 않은 경우 false)
+     */
+    public boolean validateToken(String token){
+        try {
+            if (!token.startsWith("Bearer")) {
+                return false;
+            }
+            token = token.substring("Bearer ".length()).trim();
+
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token);
+
+            return !claims.getBody().getExpiration().before(new Date());
+
+        }catch (MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다: {}", e.getMessage());
+        }
+        return false;
+    }
+
 }
