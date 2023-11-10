@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.global.config.security;
 
+import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,9 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 @Configuration
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    private final JwtTokenProvider jwtTokenProvider;
+
 
 
 }

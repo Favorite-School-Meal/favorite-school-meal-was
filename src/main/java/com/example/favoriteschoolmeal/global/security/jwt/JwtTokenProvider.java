@@ -6,7 +6,7 @@ import com.example.favoriteschoolmeal.global.security.userdetails.UserDetailsSer
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
      * @param request HttpServletRequest 객체
      * @return 추출된 토큰 문자열
      */
-    public String resolveToken(HttpServletResponse request){
+    public String resolveToken(HttpServletRequest request){
         return request.getHeader("Authorization");
     }
 
