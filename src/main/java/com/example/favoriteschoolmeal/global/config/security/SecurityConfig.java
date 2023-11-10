@@ -29,6 +29,7 @@ public class SecurityConfig {
 
            "api/v1/auth",
 
+            "api/",
             //swagger 추가
     };
 
@@ -39,7 +40,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 사용x
 
 
                 .authorizeHttpRequests(auth -> auth
