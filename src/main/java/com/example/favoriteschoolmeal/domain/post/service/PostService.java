@@ -26,29 +26,19 @@ public class PostService {
     }
 
     public Post addPost(final CreatePostCommand createPostCommand) {
-        final Member member = getMember(createPostCommand.getMemberId());
-        final Matching matching = getMatching(createPostCommand.getMatchingId());
+        final Member member = getMember(createPostCommand.memberId());
+        final Matching matching = getMatching(createPostCommand.matchingId());
 
-        return postRepository.save(buildPost(member, matching, createPostCommand));
+        return postRepository.save(createPostCommand.toEntity(member, matching));
     }
 
     private Member getMember(final Long memberId) {
-        return memberService.findMemberById(createPostCommand.getMemberId())
+        return memberService.findMemberById(memberId)
                 .orElseThrow(() -> new PostNotFoundException(PostExceptionType.Member_NOT_FOUND));
     }
 
     private Matching getMatching(final Long matchingId) {
-        return matchingService.findMatchingById(createPostCommand.getMatchingId())
+        return matchingService.findMatchingById(matchingId)
                 .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MATHCING_NOT_FOUND));
-    }
-
-    private Post buildPost(final Member member, final Matching matching,
-            final CreatePostCommand createPostCommand) {
-        return Post.builder()
-                .member(member)
-                .matching(matching)
-                .title(createPostCommand.getTitle())
-                .content(createPostCommand.getContent())
-                .build();
     }
 }
