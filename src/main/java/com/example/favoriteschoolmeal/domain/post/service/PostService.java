@@ -5,6 +5,8 @@ import com.example.favoriteschoolmeal.domain.matching.service.MatchingService;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
+import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
+import com.example.favoriteschoolmeal.domain.post.exception.PostNotFoundException;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.domain.post.service.dto.CreatePostCommand;
 import org.springframework.stereotype.Service;
@@ -34,11 +36,11 @@ public class PostService {
 
     private Member getMember(final Long memberId) {
         return memberService.findMemberById(memberId)
-                .orElseThrow(() -> new PostNotFoundException(PostExceptionType.Member_NOT_FOUND));
+                .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MEMBER_NOT_FOUND));
     }
 
     private Matching getMatching(final Long matchingId) {
         return matchingService.findMatchingById(matchingId)
-                .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MATHCING_NOT_FOUND));
+                .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MATCHING_NOT_FOUND));
     }
 }
