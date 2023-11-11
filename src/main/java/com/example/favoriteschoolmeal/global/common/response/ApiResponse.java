@@ -48,6 +48,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(ERROR_STATUS, null, message);
     }
 
+    public static <T> ApiResponse<T> createError(T data) {
+        return new ApiResponse<>(ERROR_STATUS, data, null);
+    }
+
     private ApiResponse(String status, T data, String message) {
         this.status = status;
         this.data = data;
