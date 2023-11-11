@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
 
+    // TODO: 구현 필요
     public Optional<Member> findMemberById(Long memberId) {
         return null;
     }
