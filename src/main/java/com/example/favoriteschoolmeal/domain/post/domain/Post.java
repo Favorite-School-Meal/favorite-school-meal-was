@@ -35,7 +35,7 @@ public class Post extends Base {
     private String content;
 
     @Builder
-    public Post(Member member, Matching matching, String title, String content) {
+    public Post(final Member member, final Matching matching, final String title, final String content) {
         this.member = member;
         this.matching = matching;
         this.title = title;

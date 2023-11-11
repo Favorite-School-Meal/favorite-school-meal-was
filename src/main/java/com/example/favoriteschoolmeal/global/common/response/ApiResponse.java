@@ -22,7 +22,7 @@ public class ApiResponse<T> {
     private T data;
     private String message;
 
-    public static <T> ApiResponse<T> createSuccess(T data) {
+    public static <T> ApiResponse<T> createSuccess(final T data) {
         return new ApiResponse<>(SUCCESS_STATUS, data, null);
     }
 
@@ -30,7 +30,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(SUCCESS_STATUS, null, null);
     }
 
-    public static ApiResponse<?> createFail(BindingResult bindingResult) {
+    public static ApiResponse<?> createFail(final BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
 
         List<ObjectError> allErrors = bindingResult.getAllErrors();
@@ -44,15 +44,15 @@ public class ApiResponse<T> {
         return new ApiResponse<>(FAIL_STATUS, errors, null);
     }
 
-    public static ApiResponse<?> createError(String message) {
+    public static ApiResponse<?> createError(final String message) {
         return new ApiResponse<>(ERROR_STATUS, null, message);
     }
 
-    public static <T> ApiResponse<T> createError(T data) {
+    public static <T> ApiResponse<T> createError(final T data) {
         return new ApiResponse<>(ERROR_STATUS, data, null);
     }
 
-    private ApiResponse(String status, T data, String message) {
+    private ApiResponse(final String status, final T data, final String message) {
         this.status = status;
         this.data = data;
         this.message = message;

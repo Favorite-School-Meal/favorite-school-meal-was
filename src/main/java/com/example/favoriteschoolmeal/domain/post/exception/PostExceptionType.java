@@ -21,7 +21,7 @@ public enum PostExceptionType implements BaseExceptionType {
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    PostExceptionType(int errorCode, HttpStatus httpStatus, String errorMessage) {
+    PostExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

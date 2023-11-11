@@ -7,7 +7,7 @@ public class PostNotFoundException extends BaseException {
 
     private final PostExceptionType postExceptionType;
 
-    public PostNotFoundException(PostExceptionType postExceptionType) {
+    public PostNotFoundException(final PostExceptionType postExceptionType) {
         this.postExceptionType = postExceptionType;
     }
 
