@@ -23,6 +23,7 @@ public class PostController {
         this.postService = postService;
     }
 
+    // TODO: JWT 인증 기능 완성 후, 사용자 인증 정보를 이용하여 게시물 작성 권한을 확인하도록 수정
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PostResponse> postAdd(@RequestBody final CreatePostRequest createPostRequest) {
