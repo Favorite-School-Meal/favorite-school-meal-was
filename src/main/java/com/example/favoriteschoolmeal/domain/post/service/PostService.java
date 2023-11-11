@@ -28,18 +28,18 @@ public class PostService {
     }
 
     public Post addPost(final CreatePostCommand createPostCommand) {
-        final Member member = getMember(createPostCommand.memberId());
-        final Matching matching = getMatching(createPostCommand.matchingId());
+        final Member member = findMemberByMemberId(createPostCommand.memberId());
+        final Matching matching = findMatchingByMatchingId(createPostCommand.matchingId());
 
         return postRepository.save(createPostCommand.toEntity(member, matching));
     }
 
-    private Member getMember(final Long memberId) {
+    private Member findMemberByMemberId(final Long memberId) {
         return memberService.findMemberById(memberId)
                 .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MEMBER_NOT_FOUND));
     }
 
-    private Matching getMatching(final Long matchingId) {
+    private Matching findMatchingByMatchingId(final Long matchingId) {
         return matchingService.findMatchingById(matchingId)
                 .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MATCHING_NOT_FOUND));
     }
