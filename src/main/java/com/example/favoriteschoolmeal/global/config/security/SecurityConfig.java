@@ -29,6 +29,7 @@ public class SecurityConfig {
 
            "api/v1/auth",
 
+            "/api/v1/restaurants/**",//테스트용
             //swagger 추가
     };
 
