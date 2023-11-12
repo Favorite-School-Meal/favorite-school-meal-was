@@ -38,9 +38,9 @@ public class JwtTokenProvider {
 
 
     public JwtTokenProvider(
-            @Value("{jwt.secret-key}") String secretKey,
-            @Value("{jwt.token-expiration-time}") long tokenExpirationTime,
-            @Value("{jwt.issuer}") String issuer,
+            @Value("${jwt.secret-key}") String secretKey,
+            @Value("${jwt.token-expiration-time}") long tokenExpirationTime,
+            @Value("${jwt.issuer}") String issuer,
             UserDetailsServiceImpl userDetailsService,
             RefreshTokenRepository refreshTokenRepository){
 
