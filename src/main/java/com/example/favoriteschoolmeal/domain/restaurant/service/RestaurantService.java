@@ -1,6 +1,5 @@
 package com.example.favoriteschoolmeal.domain.restaurant.service;
 
-import com.example.favoriteschoolmeal.domain.post.exception.PostNotFoundException;
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.CreateRestaurantRequest;
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.RestaurantResponse;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
@@ -11,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +41,10 @@ public class RestaurantService {
 
         return RestaurantResponse.of(restaurant);
 
+    }
+
+    public List<RestaurantResponse> findAllRestaurant() {
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+        return restaurants.stream().map(RestaurantResponse::of).toList();
     }
 }
