@@ -1,8 +1,12 @@
 package com.example.favoriteschoolmeal.domain.auth.service;
 
 
-import org.springframework.stereotype.Service;
+import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 
-@Service
-public class AuthService {
+public interface AuthService {
+
+    JwtTokenDto signUp();
+    JwtTokenDto signIn();
+    void signOut();
+
 }

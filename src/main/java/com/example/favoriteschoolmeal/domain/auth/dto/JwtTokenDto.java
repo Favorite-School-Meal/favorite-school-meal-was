@@ -1,4 +1,4 @@
-package com.example.favoriteschoolmeal.domain.member.dto;
+package com.example.favoriteschoolmeal.domain.auth.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

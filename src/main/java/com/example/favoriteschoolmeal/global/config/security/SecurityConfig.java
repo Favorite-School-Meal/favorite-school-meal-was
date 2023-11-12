@@ -30,7 +30,7 @@ public class SecurityConfig {
            "api/v1/auth",
 
             "api/",
-            //swagger 추가
+            //TODO: swagger 추가
     };
 
     @Bean

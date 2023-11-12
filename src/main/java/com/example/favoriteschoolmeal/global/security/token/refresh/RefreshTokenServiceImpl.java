@@ -1,6 +1,6 @@
 package com.example.favoriteschoolmeal.global.security.token.refresh;
 
-import com.example.favoriteschoolmeal.domain.member.dto.JwtTokenDto;
+import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
