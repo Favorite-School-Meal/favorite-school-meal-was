@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "restaurant")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Restaurant extends Base {
 
     @Id
