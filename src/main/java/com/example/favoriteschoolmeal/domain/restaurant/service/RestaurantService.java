@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.restaurant.service;
 
+import com.example.favoriteschoolmeal.domain.model.Location;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.RestaurantDTO;
@@ -12,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
-    public RestaurantDTO.Response restaurantAdd(RestaurantDTO.Request request, MultipartFile thumbnail, MultipartFile menuImage){
+    public RestaurantDTO.Response restaurantAdd(RestaurantDTO.Request request, MultipartFile thumbnail, MultipartFile menuImage) {
         //TODO: file처리 추가
 
         Restaurant restaurant = Restaurant.builder()
