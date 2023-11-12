@@ -1,6 +1,5 @@
 package com.example.favoriteschoolmeal.domain.restaurant.domain;
 
-import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Location;
 import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.*;
