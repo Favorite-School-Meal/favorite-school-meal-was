@@ -15,4 +15,6 @@ import lombok.NoArgsConstructor;
 public class JwtTokenDto {
     private String accessToken;
     private String refreshToken;
+
+    //TODO: record 형태로 변경
 }

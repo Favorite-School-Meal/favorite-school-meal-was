@@ -1,6 +1,5 @@
 package com.example.favoriteschoolmeal.domain.chat.domain;
 
-import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
