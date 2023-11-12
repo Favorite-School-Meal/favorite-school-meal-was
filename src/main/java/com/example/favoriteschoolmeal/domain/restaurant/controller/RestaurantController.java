@@ -5,10 +5,7 @@ import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.Restauran
 import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -23,6 +20,12 @@ public class RestaurantController {
                                                          @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
                                                          @RequestPart(value = "menuImage", required = false) MultipartFile menuImage){
         RestaurantResponse response = restaurantService.addRestaurant(request, thumbnail, menuImage);
+        return ApiResponse.createSuccess(response);
+    }
+
+    @GetMapping("/{restaurantId}")
+    public ApiResponse<RestaurantResponse> restaurantDetails(@PathVariable("restaurantId") Long restaurantId){
+        RestaurantResponse response = restaurantService.findRestaurant(restaurantId);
         return ApiResponse.createSuccess(response);
     }
 
