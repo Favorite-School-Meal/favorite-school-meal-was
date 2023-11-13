@@ -28,8 +28,10 @@ public class SecurityConfig {
     private static final String[] publicEndpoints = {
 
            "api/v1/auth",
-            "api/**"
+
+            "api/**" //테스트용
             //swagger 추가
+
     };
 
     @Bean
@@ -39,7 +41,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 사용x
 
 
                 .authorizeHttpRequests(auth -> auth
