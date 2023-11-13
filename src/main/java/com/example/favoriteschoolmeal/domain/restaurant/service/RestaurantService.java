@@ -47,4 +47,15 @@ public class RestaurantService {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         return restaurants.stream().map(RestaurantResponse::of).toList();
     }
+
+    public RestaurantResponse modifyRestaurant(Long restaurantId, CreateRestaurantRequest request, MultipartFile thumbnail, MultipartFile menuImage) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(()->new RestaurantNotFoundException(RestaurantExceptionType.RESTAURANT_NOT_FOUND));
+
+        //TODO: file처리 추가
+        Long thumbnailId=1L; //임시로 1로 설정
+        Long menuImageId=1L; //임시로 1로 설정
+        restaurant.update(request.isOnCampus(), request.location(), request.category(), request.name(), request.businessHours(), thumbnailId,menuImageId);
+        return RestaurantResponse.of(restaurant);
+    }
 }
