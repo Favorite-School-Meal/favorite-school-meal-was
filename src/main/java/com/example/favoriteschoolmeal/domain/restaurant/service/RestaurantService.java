@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantNotFoundException;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
