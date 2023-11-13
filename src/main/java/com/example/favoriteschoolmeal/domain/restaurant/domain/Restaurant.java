@@ -51,4 +51,13 @@ public class Restaurant extends Base {
         this.menuImageId = menuImageId;
     }
 
+    public void update(Boolean isOnCampus, Location location, String category, String name, String businessHours, Long thumbnailId, Long menuImageId) {
+        this.isOnCampus = isOnCampus;
+        this.location = location;
+        this.category = category;
+        this.name = name;
+        this.businessHours = businessHours;
+        this.thumbnailId = thumbnailId;
+        this.menuImageId = menuImageId;
+    }
 }
