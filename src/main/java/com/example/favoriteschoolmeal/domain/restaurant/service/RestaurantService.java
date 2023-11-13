@@ -58,4 +58,12 @@ public class RestaurantService {
         restaurant.update(request.isOnCampus(), request.location(), request.category(), request.name(), request.businessHours(), thumbnailId,menuImageId);
         return RestaurantResponse.of(restaurant);
     }
+
+    public Long deleteRestaurant(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(()->new RestaurantNotFoundException(RestaurantExceptionType.RESTAURANT_NOT_FOUND));
+
+        restaurantRepository.delete(restaurant);
+        return restaurantId;
+    }
 }

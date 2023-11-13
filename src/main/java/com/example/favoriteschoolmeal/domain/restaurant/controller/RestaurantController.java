@@ -46,5 +46,10 @@ public class RestaurantController {
         return ApiResponse.createSuccess(response);
     }
 
+    @DeleteMapping("/{restaurantId}")
+    public ApiResponse<Long> restaurantDelete(@PathVariable("restaurantId") Long restaurantId){
+        Long deletedRestaurantId = restaurantService.deleteRestaurant(restaurantId);
+        return ApiResponse.createSuccess(deletedRestaurantId);
+    }
 
 }

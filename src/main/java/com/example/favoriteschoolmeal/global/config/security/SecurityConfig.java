@@ -28,7 +28,7 @@ public class SecurityConfig {
     private static final String[] publicEndpoints = {
 
            "api/v1/auth",
-
+            "api/**"
             //swagger 추가
     };
 
