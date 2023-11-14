@@ -6,4 +6,8 @@ import jakarta.persistence.Embeddable;
 public class Location {
     private String longitude;
     private String latitude;
+
+    public Location() {
+
+    }
 }
