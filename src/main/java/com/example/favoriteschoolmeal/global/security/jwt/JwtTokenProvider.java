@@ -98,7 +98,7 @@ public class JwtTokenProvider {
      */
     public String getUsername(String token){
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -127,7 +127,7 @@ public class JwtTokenProvider {
      * @return 재발급된 AccessToken 문자열
      * @throws IllegalArgumentException 잘못된 토큰인 경우 발생하는 예외
      */
-    public String reCreateAccessToken(String refreshToken) throws IllegalAccessException {
+    public String reCreateAccessToken(String refreshToken) {
 
         String username = getUsername(refreshToken);
         Optional<RefreshToken> existingToken = refreshTokenRepository.findByUsername(username);
@@ -137,10 +137,10 @@ public class JwtTokenProvider {
 
 
             if(!refreshToken.equals(existRefreshToken)){
-                throw new IllegalAccessException("유효하지 않은 토큰"); //예외 변경
+                throw new RuntimeException(); //예외 변경
             }
         } else {
-            throw new IllegalAccessException("토큰이 없습니다.");
+            throw new RuntimeException();
         }
         return createAccessToken(username);
     }
@@ -153,13 +153,14 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token){
         try {
-            if (!token.startsWith("Bearer")) {
+            if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
                 return false;
+            } else {
+                token = token.split(" ")[1].trim();
             }
-            token = token.substring("Bearer ".length()).trim();
 
             Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
 
