@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantNotFoundException;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
@@ -57,5 +59,13 @@ public class RestaurantService {
         Long menuImageId=1L; //임시로 1로 설정
         restaurant.update(request.isOnCampus(), request.location(), request.category(), request.name(), request.businessHours(), thumbnailId,menuImageId);
         return RestaurantResponse.of(restaurant);
+    }
+
+    public Long deleteRestaurant(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(()->new RestaurantNotFoundException(RestaurantExceptionType.RESTAURANT_NOT_FOUND));
+
+        restaurantRepository.delete(restaurant);
+        return restaurantId;
     }
 }
