@@ -36,7 +36,7 @@ public class SecurityConfig {
            "api/v1/auth/**",
 
 
-            "api/**",
+//            "api/**",
             //TODO: swagger 추가
 
     };

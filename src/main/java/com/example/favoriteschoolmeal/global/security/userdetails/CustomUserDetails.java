@@ -16,6 +16,10 @@ public class CustomUserDetails implements UserDetails {
         this.member = member;
     }
 
+    public Member getMember(){
+        return member;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //TODO: member.getAuthority()
