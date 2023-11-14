@@ -66,7 +66,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
      * @return 재발급된 AccessToken 문자열
      */
     @Override
-    public String reCreateAccessTokenByRefreshToken(String refreshToken) throws IllegalAccessException {
+    public String reCreateAccessTokenByRefreshToken(String refreshToken){
         if(jwtTokenProvider.validateToken(refreshToken)){
             refreshToken = refreshToken.substring(7);
             return jwtTokenProvider.reCreateAccessToken(refreshToken);
