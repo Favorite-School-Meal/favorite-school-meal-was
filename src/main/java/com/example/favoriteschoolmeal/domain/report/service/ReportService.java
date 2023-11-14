@@ -3,6 +3,7 @@ package com.example.favoriteschoolmeal.domain.report.service;
 import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
 import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
@@ -26,6 +27,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final PostService postService;
     private final CommentService commentService;
+    private final MemberService memberService;
     public ReportResponse addReport(CreateReportRequest request, CustomUserDetails userDetails) {
         Member reporter = userDetails.getMember();
 
@@ -35,8 +37,9 @@ public class ReportService {
     }
 
     private Report createReport(CreateReportRequest request, Member reporter) {
-        Report report;
+
         if(request.reportType().equals(ReportType.POST)){
+            //TODO: postService.findPostById 구현 필요
             Post post = postService.findPostById(request.postId())
                     .orElseThrow(() -> new ReportCreationException(ReportExceptionType.POST_NOT_FOUND));
 
@@ -47,7 +50,19 @@ public class ReportService {
                     .reportType(request.reportType())
                     .content(request.content())
                     .build();
-        }else if(request.reportType().equals(ReportType.COMMENT)){
+
+        }else if(request.reportType().equals(ReportType.PROFILE)){
+            Member reportedMember = memberService.findMemberById(request.reportedMemberId())
+                    .orElseThrow(() -> new ReportCreationException(ReportExceptionType.MEMBER_NOT_FOUND));
+
+            return Report.builder()
+                    .reporter(reporter)
+                    .reportedMember(reportedMember)
+                    .reportType(request.reportType())
+                    .content(request.content())
+                    .build();
+        }
+        else if(request.reportType().equals(ReportType.COMMENT)){
             Comment comment = commentService.findCommentById(request.commentId())
                     .orElseThrow(() -> new ReportCreationException(ReportExceptionType.COMMENT_NOT_FOUND));
 
@@ -65,7 +80,8 @@ public class ReportService {
 
             return Report.builder()
                     .reporter(reporter)
-                    .reportedMember(chat.getMember())
+//                    .reportedMember(chat.getMember())
+
                     .reportedChat(chat)
                     .reportType(request.reportType())
                     .content(request.content())
