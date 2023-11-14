@@ -29,22 +29,28 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PostResponse> postAdd(
             @RequestBody final CreatePostRequest createPostRequest) {
-        final CreatePostCommand createPostCommand = CreatePostCommand.from(createPostRequest);
-        final Post post = postService.addPost(createPostCommand);
-        final PostResponse postResponse = PostResponse.from(post);
+        final Long currentMemberId = getCurrentMemberId();
+        final CreatePostCommand command = CreatePostCommand.of(createPostRequest, currentMemberId, null);
+        final Post post = postService.addPost(command);
 
-        return ApiResponse.createSuccess(postResponse);
+        return ApiResponse.createSuccess(PostResponse.from(post));
     }
 
     // TODO: JWT 인증 기능 완성 후, 사용자 인증 정보를 이용하여 게시물 작성 권한을 확인하도록 수정
     @PostMapping("/restaurants/{restaurantId}/posts")
-    public ApiResponse<PostResponse> postAddByRestaurantId(
-            @RequestBody final CreatePostRequest createPostRequest,
-            @PathVariable final Long restaurantId) {
-        final CreatePostCommand createPostCommand = CreatePostCommand.from(createPostRequest);
-        final Post post = postService.addPost(createPostCommand);
-        final PostResponse postResponse = PostResponse.from(post);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<PostResponse> postAddWithRestaurantId(
+            @PathVariable Long restaurantId,
+            @RequestBody CreatePostRequest createPostRequest) {
+        final Long currentMemberId = getCurrentMemberId();
+        final CreatePostCommand command = CreatePostCommand.of(createPostRequest, currentMemberId, restaurantId);
+        final Post post = postService.addPost(command);
 
-        return ApiResponse.createSuccess(postResponse);
+        return ApiResponse.createSuccess(PostResponse.from(post));
+    }
+
+    private Long getCurrentMemberId() {
+        // TODO: JWT 인증 기능 완성 후, 현재 사용자의 ID를 반환하도록 구현
+        return 1L;
     }
 }
