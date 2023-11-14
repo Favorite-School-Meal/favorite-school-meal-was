@@ -9,6 +9,8 @@ import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
+import com.example.favoriteschoolmeal.domain.report.exception.ReportCreationException;
+import com.example.favoriteschoolmeal.domain.report.exception.ReportExceptionType;
 import com.example.favoriteschoolmeal.domain.report.repository.ReportRepository;
 import com.example.favoriteschoolmeal.global.security.userdetails.CustomUserDetails;
 import jakarta.transaction.Transactional;
