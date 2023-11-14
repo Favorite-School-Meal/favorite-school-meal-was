@@ -7,13 +7,14 @@ import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.post.service.dto.CreatePostCommand;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v1")
 @RestController
 public class PostController {
 
@@ -24,9 +25,22 @@ public class PostController {
     }
 
     // TODO: JWT 인증 기능 완성 후, 사용자 인증 정보를 이용하여 게시물 작성 권한을 확인하도록 수정
-    @PostMapping
+    @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<PostResponse> postAdd(@RequestBody final CreatePostRequest createPostRequest) {
+    public ApiResponse<PostResponse> postAdd(
+            @RequestBody final CreatePostRequest createPostRequest) {
+        final CreatePostCommand createPostCommand = CreatePostCommand.from(createPostRequest);
+        final Post post = postService.addPost(createPostCommand);
+        final PostResponse postResponse = PostResponse.from(post);
+
+        return ApiResponse.createSuccess(postResponse);
+    }
+
+    // TODO: JWT 인증 기능 완성 후, 사용자 인증 정보를 이용하여 게시물 작성 권한을 확인하도록 수정
+    @PostMapping("/restaurants/{restaurantId}/posts")
+    public ApiResponse<PostResponse> postAddByRestaurantId(
+            @RequestBody final CreatePostRequest createPostRequest,
+            @PathVariable final Long restaurantId) {
         final CreatePostCommand createPostCommand = CreatePostCommand.from(createPostRequest);
         final Post post = postService.addPost(createPostCommand);
         final PostResponse postResponse = PostResponse.from(post);
