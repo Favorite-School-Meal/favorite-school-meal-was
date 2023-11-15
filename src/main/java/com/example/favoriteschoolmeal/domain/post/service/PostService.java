@@ -12,6 +12,8 @@ import com.example.favoriteschoolmeal.domain.post.service.dto.CreatePostCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 @Service
 public class PostService {
@@ -27,11 +29,11 @@ public class PostService {
         this.matchingService = matchingService;
     }
 
-    public Post addPost(final CreatePostCommand createPostCommand) {
-        final Member member = findMemberByMemberId(createPostCommand.memberId());
-        final Matching matching = findMatchingByMatchingId(createPostCommand.matchingId());
-        final Post post = createPost(createPostCommand, member, matching);
+    public Post addPost(final CreatePostCommand command) {
+        final Member member = findMemberByMemberId(command.memberId());
+        final Matching matching = createMatching();
 
+        final Post post = createPost(command, member, matching);
         return postRepository.save(post);
     }
 
@@ -45,6 +47,10 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(PostExceptionType.MATCHING_NOT_FOUND));
     }
 
+    private Matching createMatching() {
+        return matchingService.addMatching();
+    }
+
     private Post createPost(final CreatePostCommand createPostCommand, final Member member, final Matching matching) {
         return Post.builder()
                 .member(member)
@@ -53,4 +59,7 @@ public class PostService {
                 .content(createPostCommand.content())
                 .build();
     }
+
+    //TODO: 구현 필요
+    public Optional<Post> findPostById(Long postId) {return null;}
 }

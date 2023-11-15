@@ -33,16 +33,16 @@ public class SecurityConfig {
 
     private static final String[] publicEndpoints = {
 
-           "api/v1/auth/**",
+            "api/v1/auth/**",
 
 
 //            "api/**",
-            //TODO: swagger 추가
+
 
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         //csrf, cors 보안 처리 하기
         httpSecurity
@@ -54,7 +54,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicEndpoints).permitAll()
                         .anyRequest().authenticated())
-
 
 
                 .exceptionHandling(auth -> auth

@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.report.service;
 
 import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
 import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
+import com.example.favoriteschoolmeal.domain.comment.service.CommentService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
@@ -63,9 +64,9 @@ public class ReportService {
                     .build();
         }
         else if(request.reportType().equals(ReportType.COMMENT)){
+            //TODO: comment 구현 필요
             Comment comment = commentService.findCommentById(request.commentId())
                     .orElseThrow(() -> new ReportCreationException(ReportExceptionType.COMMENT_NOT_FOUND));
-
             return Report.builder()
                     .reporter(reporter)
                     .reportedMember(comment.getMember())
@@ -75,9 +76,10 @@ public class ReportService {
                     .build();
 
         }else if(request.reportType().equals(ReportType.CHAT)){
-            Chat chat = chatService.findChatById(request.chatId())
-                    .orElseThrow(() -> new ReportCreationException(ReportExceptionType.CHAT_NOT_FOUND));
-
+            //TODO: chat 구현 필요
+//            Chat chat = chatService.findChatById(request.chatId())
+//                    .orElseThrow(() -> new ReportCreationException(ReportExceptionType.CHAT_NOT_FOUND));
+            Chat chat = null; //임시
             return Report.builder()
                     .reporter(reporter)
 //                    .reportedMember(chat.getMember())
