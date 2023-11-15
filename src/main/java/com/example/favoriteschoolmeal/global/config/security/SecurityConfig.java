@@ -38,7 +38,6 @@ public class SecurityConfig {
 
             "api/**",
             //TODO: swagger 추가
-
     };
 
     @Bean
