@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+
 import java.util.Optional;
 
 @Service

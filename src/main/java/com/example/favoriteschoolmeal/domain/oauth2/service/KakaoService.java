@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoService implements Oauth2Service{
+public class KakaoService implements Oauth2Service {
     @Override
     public OauthUserInfoRequest getUserInfo(OauthSignInRequest oauthSignInRequest) {
         return null;

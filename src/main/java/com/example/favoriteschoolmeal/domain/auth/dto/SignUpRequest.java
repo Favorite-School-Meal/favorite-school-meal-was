@@ -35,5 +35,4 @@ public record SignUpRequest(
 ) {
 
 
-
 }
