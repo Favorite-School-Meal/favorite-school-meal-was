@@ -60,6 +60,7 @@ public class PostService {
                 .build();
     }
 
-    //TODO: 구현 필요
-    public Optional<Post> findPostById(Long postId) {return null;}
+    public Optional<Post> findPostById(Long postId) {
+        return postRepository.findById(postId);
+    }
 }

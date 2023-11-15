@@ -63,6 +63,7 @@ public class ReportService {
                 .reportedChat(chat)
                 .reportType(request.reportType())
                 .content(request.content())
+                .isResolved(false)
                 .build();
     }
 
@@ -75,6 +76,7 @@ public class ReportService {
                 .reportedComment(comment)
                 .reportType(request.reportType())
                 .content(request.content())
+                .isResolved(false)
                 .build();
     }
 
@@ -87,6 +89,7 @@ public class ReportService {
                 .reportedMember(reportedMember)
                 .reportType(request.reportType())
                 .content(request.content())
+                .isResolved(false)
                 .build();
     }
 
@@ -100,6 +103,7 @@ public class ReportService {
                 .reportedPost(post)
                 .reportType(request.reportType())
                 .content(request.content())
+                .isResolved(false)
                 .build();
     }
 }
