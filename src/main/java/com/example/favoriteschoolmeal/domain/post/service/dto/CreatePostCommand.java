@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreatePostCommand(
         @NotNull Long memberId,
-        @NotNull Long matchingId,
+        Long restaurantId,
         @NotBlank String title,
         @NotBlank String content) {
 
-    public static CreatePostCommand from(final CreatePostRequest createPostRequest) {
+    public static CreatePostCommand of(final CreatePostRequest request, final Long memberId, final Long restaurantId) {
         return new CreatePostCommand(
-                createPostRequest.memberId(),
-                createPostRequest.matchingId(),
-                createPostRequest.title(),
-                createPostRequest.content()
+                memberId,
+                restaurantId,
+                request.title(),
+                request.content()
         );
     }
 }

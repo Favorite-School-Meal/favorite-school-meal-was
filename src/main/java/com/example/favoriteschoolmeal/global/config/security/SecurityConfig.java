@@ -33,12 +33,11 @@ public class SecurityConfig {
 
     private static final String[] publicEndpoints = {
 
-           "api/v1/auth",
+            "api/v1/auth",
 
 
             "api/**",
             //TODO: swagger 추가
-
     };
 
     @Bean
