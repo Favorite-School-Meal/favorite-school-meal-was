@@ -11,6 +11,7 @@ import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -109,6 +110,7 @@ public class AuthServiceImpl implements AuthService {
         final var personalNumber = signUpRequest.personalNumber();
 
         final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
+        final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
 
         return Member.builder()
                 .username(signUpRequest.username())
@@ -117,8 +119,8 @@ public class AuthServiceImpl implements AuthService {
                 .email(signUpRequest.email())
                 .fullName(signUpRequest.fullname())
                 .authority(role)
-                .age(convertBirthdayToAge(birthday))
-                .gender(convertPersonalNumberToGender(personalNumber))
+                .age(convertBirthdayToAge(birthday, firstNumber))
+                .gender(convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
                 .isBanned(false)
                 .build();
@@ -130,10 +132,14 @@ public class AuthServiceImpl implements AuthService {
      * @param birthdayString String
      * @return Gender
      */
-    public Integer convertBirthdayToAge(String birthdayString) {
+    public Integer convertBirthdayToAge(String birthdayString, String firstNumber) {
 
-        LocalDate birthday = LocalDate.parse(birthdayString,
-                LocalDate.now().getYear() > 2000 ? DateTimeFormatter.ofPattern("uuMMdd") : DateTimeFormatter.ofPattern("yyMMdd"));
+        LocalDate birthday = LocalDate.parse(birthdayString, DateTimeFormatter.ofPattern("yyMMdd"));
+
+
+        if (firstNumber.equals("1") || firstNumber.equals("2"))
+            birthday = birthday.minusYears(100);
+
         LocalDate currentDate = LocalDate.now();
 
         return Period.between(birthday, currentDate).getYears();
@@ -142,12 +148,12 @@ public class AuthServiceImpl implements AuthService {
     /**
      * Member 주민번호로 성별을 유도하는 메서드
      *
-     * @param personalNumber String
+     * @param firstNumber String
      * @return Gender
      */
-    private Gender convertPersonalNumberToGender(String personalNumber) {
+    private Gender convertPersonalNumberToGender(String firstNumber) {
 
-        if (personalNumber.substring(personalNumber.length() - 1).equals("3")) {
+        if (firstNumber.equals("1") || firstNumber.equals("3")) {
             return Gender.MALE;
         } else {
             return Gender.FEMALE;
