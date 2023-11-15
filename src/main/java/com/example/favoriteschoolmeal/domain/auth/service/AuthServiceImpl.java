@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
+import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -101,6 +105,10 @@ public class AuthServiceImpl implements AuthService {
      */
     public Member convertSignUpDtoToMember(SignUpRequest signUpRequest) {
         final var role = Authority.ROLE_USER;
+        final var personalNumber = signUpRequest.personalNumber();
+
+        final var birthday = personalNumber.substring(0, personalNumber.length()-1);
+
         return  Member.builder()
                 .username(signUpRequest.username())
                 .password(passwordEncoder.encode(signUpRequest.password()))
@@ -108,12 +116,39 @@ public class AuthServiceImpl implements AuthService {
                 .email(signUpRequest.email())
                 .fullName(signUpRequest.fullname())
                 .authority(role)
-                .age(signUpRequest.age())
-                .gender(null)
+                .age(convertBirthdayToAge(birthday))
+                .gender(convertPersonalNumberToGender(personalNumber))
                 .introduction(null)
                 .isBanned(false)
-                .introduction(null)
                 .build();
+    }
+
+    /**
+     * Member 주민번호로 나이를 유도하는 메서드
+     * @param birthdayString String
+     * @return Gender
+     */
+    public Integer convertBirthdayToAge(String birthdayString){
+
+        LocalDate birthday = LocalDate.parse(birthdayString,
+                LocalDate.now().getYear() > 2000 ? DateTimeFormatter.ofPattern("uuMMdd") : DateTimeFormatter.ofPattern("yyMMdd"));
+        LocalDate currentDate = LocalDate.now();
+
+        return Period.between(birthday, currentDate).getYears();
+    }
+
+    /**
+     * Member 주민번호로 성별을 유도하는 메서드
+     * @param personalNumber String
+     * @return Gender
+     */
+    private Gender convertPersonalNumberToGender(String personalNumber){
+
+        if(personalNumber.substring(personalNumber.length()-1).equals("3")){
+            return Gender.MALE;
+        }else {
+            return Gender.FEMALE;
+        }
     }
 
     /**

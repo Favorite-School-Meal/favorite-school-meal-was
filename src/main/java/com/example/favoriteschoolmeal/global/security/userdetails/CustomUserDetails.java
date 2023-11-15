@@ -32,11 +32,17 @@ public class CustomUserDetails implements UserDetails {
         return null;
     }
 
+    /*
+    계정의 만료 여부 리턴
+    */
     @Override
     public boolean isAccountNonExpired() {
         return false;
     }
 
+    /*
+    계정의 잠김 여부 리턴
+    */
     @Override
     public boolean isAccountNonLocked() {
         return false;

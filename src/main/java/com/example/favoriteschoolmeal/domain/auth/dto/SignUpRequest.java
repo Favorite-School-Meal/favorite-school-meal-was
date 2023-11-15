@@ -30,7 +30,8 @@ public record SignUpRequest(
         String password,
 
         @NotBlank
-        Integer age
+        @Size(min = 7, max = 7, message = "문자열은 주민번호 앞자리 6자와 끝자리의 첫자를 합하여 7자리여야 합니다.")
+        String personalNumber
 ) {
 
 
