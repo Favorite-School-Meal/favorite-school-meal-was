@@ -81,7 +81,7 @@ public class PostService {
      */
     private Restaurant findRestaurantByIdOrElseNull(final Long restaurantId) {
         return Optional.ofNullable(restaurantId)
-                .flatMap(restaurantService::findRestaurantById)
+                .flatMap(restaurantService::findRestaurantOptionally)
                 .orElse(null);
     }
 
