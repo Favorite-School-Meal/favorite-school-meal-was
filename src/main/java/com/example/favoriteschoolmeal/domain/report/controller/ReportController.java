@@ -21,7 +21,7 @@ public class ReportController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ApiResponse<ReportResponse> reportAdd(@RequestBody final CreateReportRequest request,
                                                  @AuthenticationPrincipal final CustomUserDetails userDetails){
         ReportResponse response = reportService.addReport(request,userDetails);
