@@ -6,7 +6,9 @@ import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantNotFoundException;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
+
 import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +63,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant);
     }
 
+
     public Long deleteRestaurant(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(()->new RestaurantNotFoundException(RestaurantExceptionType.RESTAURANT_NOT_FOUND));
@@ -68,4 +71,5 @@ public class RestaurantService {
         restaurantRepository.delete(restaurant);
         return restaurantId;
     }
+
 }

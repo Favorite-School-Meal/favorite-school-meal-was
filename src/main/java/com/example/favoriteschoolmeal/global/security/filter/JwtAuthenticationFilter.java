@@ -35,13 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { //각 요청
         //FilterChain을 통해 다음 filter로 요청 전달
         String token = jwtTokenProvider.resolveToken(request);
 
-        if(token != null && jwtTokenProvider.validateToken(token)){
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             token = token.substring(7); //Bearer 제외
 
             try {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (UsernameNotFoundException e){
+            } catch (UsernameNotFoundException e) {
                 e.printStackTrace();
                 //response 추가
                 return;
