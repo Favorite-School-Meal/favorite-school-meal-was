@@ -49,14 +49,14 @@ public class PostService {
         // verifyRoleUser();
         final Long currentMemberId = getCurrentMemberId();
 
-        final Post post = findPostOptionally(postId);
+        final Post post = getPostOrThrow(postId);
         verifyPostOwner(post.getMember().getId(), currentMemberId);
 
         updatePostContent(post, command);
         return postRepository.save(post);
     }
 
-    private Post findPostOptionally(final Long postId) {
+    private Post getPostOrThrow(final Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
     }
