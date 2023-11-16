@@ -5,6 +5,12 @@ import org.springframework.http.HttpStatus;
 
 public enum PostExceptionType implements BaseExceptionType {
 
+    POST_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Post not found"
+    ),
+
     MEMBER_NOT_FOUND(
             404,
             HttpStatus.NOT_FOUND,
@@ -15,6 +21,18 @@ public enum PostExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Matching not found"
+    ),
+
+    RESTAURANT_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Restaurant not found"
+    ),
+
+    UNAUTHORIZED_ACCESS(
+            401,
+            HttpStatus.UNAUTHORIZED,
+            "Unauthorized access"
     );
 
     private final int errorCode;

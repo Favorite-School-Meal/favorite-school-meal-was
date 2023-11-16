@@ -7,6 +7,7 @@ import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExcep
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantNotFoundException;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant);
     }
 
-
+    // TODO: PR에서 리팩토링 제안 예정 (주석 작성자: 조예림)
     public RestaurantResponse findRestaurant(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(()->new RestaurantNotFoundException(RestaurantExceptionType.RESTAURANT_NOT_FOUND));
@@ -67,5 +68,9 @@ public class RestaurantService {
 
         restaurantRepository.delete(restaurant);
         return restaurantId;
+    }
+
+    public Optional<Restaurant> findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId);
     }
 }
