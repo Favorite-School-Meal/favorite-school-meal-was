@@ -1,10 +1,13 @@
 package com.example.favoriteschoolmeal.domain.member.service;
 
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+
 import java.util.Optional;
 
 @Service
@@ -14,5 +17,6 @@ public class MemberService {
     public Optional<Member> findMemberById(Long memberId) {
         return Optional.empty();
     }
+
 
 }
