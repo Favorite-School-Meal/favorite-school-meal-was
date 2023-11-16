@@ -42,7 +42,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         //csrf, cors 보안 처리 하기
         httpSecurity
@@ -54,7 +54,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicEndpoints).permitAll()
                         .anyRequest().authenticated())
-
 
 
                 .exceptionHandling(auth -> auth

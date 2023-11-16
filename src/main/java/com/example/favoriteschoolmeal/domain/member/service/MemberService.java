@@ -1,10 +1,9 @@
 package com.example.favoriteschoolmeal.domain.member.service;
 
-
-import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
-import org.springframework.stereotype.Service;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
@@ -18,5 +17,4 @@ public class MemberService {
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
     }
-
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-   //사용자 정보를 db 또는 외부 시스템에서 가져와 UserDetails 객체로 변환하는 로직
+    //사용자 정보를 db 또는 외부 시스템에서 가져와 UserDetails 객체로 변환하는 로직
     private final MemberRepository memberRepository;
 
     @Override
@@ -22,9 +22,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Optional<Member> member = memberRepository.findByUsername(username);
 
-        if(member.isPresent()){
+        if (member.isPresent()) {
             return new CustomUserDetails(member.get());
-        } else{
+        } else {
             throw new UsernameNotFoundException("유저를 찾을 수 없습니다. " + username);
         }
     }
