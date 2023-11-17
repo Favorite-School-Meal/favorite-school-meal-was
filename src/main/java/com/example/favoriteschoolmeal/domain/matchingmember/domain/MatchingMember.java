@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.matchingmember.domain;
 
 import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.MatchingRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.RoleType;
 import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.*;
@@ -34,14 +35,15 @@ public class MatchingMember extends Base {
     @JoinColumn(name = "matching_id")
     private Matching matching;
 
-    @Column(name = "is_accepted", nullable = false)
-    private Boolean isAccepted;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "matching_request_status", nullable = false)
+    private MatchingRequestStatus matchingRequestStatus;
 
     @Builder
-    public MatchingMember(Member member, RoleType roleType, Matching matching, Boolean isAccepted) {
+    public MatchingMember(Member member, RoleType roleType, Matching matching, MatchingRequestStatus matchingRequestStatus) {
         this.member = member;
         this.roleType = roleType;
         this.matching = matching;
-        this.isAccepted = isAccepted;
+        this.matchingRequestStatus = matchingRequestStatus;
     }
 }
