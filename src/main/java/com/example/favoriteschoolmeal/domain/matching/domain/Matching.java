@@ -1,9 +1,10 @@
 package com.example.favoriteschoolmeal.domain.matching.domain;
 
 
-import com.example.favoriteschoolmeal.domain.model.GroupState;
+import com.example.favoriteschoolmeal.domain.model.MatchingState;
 import com.example.favoriteschoolmeal.domain.model.Location;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,19 +23,19 @@ public class Matching {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "group_state", nullable = false)
-    private GroupState groupState;
+    @Column(name = "matching_state", nullable = false)
+    private MatchingState matchingState;
 
     @Column(name = "max_participant", nullable = false)
     private Long maxParticipant;
 
-    @Embedded
-    private Location location;
+    @Column(name = "meeting_date_time", nullable = false)
+    private LocalDateTime meetingDateTime;
 
     @Builder
-    public Matching(GroupState groupState, Long maxParticipant, Location location) {
-        this.groupState = groupState;
+    public Matching(MatchingState matchingState, Long maxParticipant, LocalDateTime meetingDateTime) {
+        this.matchingState = matchingState;
         this.maxParticipant = maxParticipant;
-        this.location = location;
+        this.meetingDateTime = meetingDateTime;
     }
 }
