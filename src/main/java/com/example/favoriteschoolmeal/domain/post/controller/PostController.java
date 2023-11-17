@@ -10,6 +10,7 @@ import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +76,12 @@ public class PostController {
     public ApiResponse<PostResponse> postDetails(@PathVariable Long postId) {
         final Post post = postService.findPost(postId);
         return ApiResponse.createSuccess(PostResponse.from(post));
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void postRemove(@PathVariable Long postId) {
+        postService.removePost(postId);
     }
 
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,

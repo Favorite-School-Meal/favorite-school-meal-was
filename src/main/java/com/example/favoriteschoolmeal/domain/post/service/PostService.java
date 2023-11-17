@@ -77,6 +77,12 @@ public class PostService {
         return getPostOrThrow(postId);
     }
 
+    public void removePost(final Long postId) {
+        final Post post = getPostOrThrow(postId);
+        verifyPostOwnerOrAdmin(post.getMember().getId(), getCurrentMemberId());
+        postRepository.delete(post);
+    }
+
     private Post getPostOrThrow(final Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
@@ -147,6 +153,12 @@ public class PostService {
 
     private void verifyPostOwner(final Long postOwnerId, final Long currentMemberId) {
         if (!postOwnerId.equals(currentMemberId)) {
+            throw new PostException(PostExceptionType.UNAUTHORIZED_ACCESS);
+        }
+    }
+
+    private void verifyPostOwnerOrAdmin(final Long postOwnerId, final Long currentMemberId) {
+        if (!postOwnerId.equals(currentMemberId) && !SecurityUtils.isAdmin()) {
             throw new PostException(PostExceptionType.UNAUTHORIZED_ACCESS);
         }
     }
