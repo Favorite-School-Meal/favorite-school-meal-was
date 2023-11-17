@@ -61,7 +61,14 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<Post> findAllPost(final Pageable pageable) {
         final Page<Post> posts = postRepository.findAllOrderByStatusAndTime(pageable);
-        posts.forEach(this::summarizeContent);
+        summarizePostsIfNotNull(posts);
+        return posts;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Post> findAllPostByRestaurantId(final Long restaurantId, final Pageable pageable) {
+        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(restaurantId, pageable);
+        summarizePostsIfNotNull(posts);
         return posts;
     }
 
@@ -109,6 +116,12 @@ public class PostService {
                 .map(content -> content.substring(0, 100) + "...")
                 .orElse(post.getContent());
         post.summarizeContent(summarizedContent);
+    }
+
+    private void summarizePostsIfNotNull(Page<Post> posts) {
+        if (posts != null) {
+            posts.forEach(this::summarizeContent);
+        }
     }
 
     private Post createPost(final CreatePostCommand createPostCommand, final Member member,

@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.post.controller;
 
 import com.example.favoriteschoolmeal.domain.post.controller.dto.CreatePostRequest;
+import com.example.favoriteschoolmeal.domain.post.controller.dto.PostListResponse;
 import com.example.favoriteschoolmeal.domain.post.controller.dto.PostResponse;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
@@ -55,10 +56,18 @@ public class PostController {
 
     @GetMapping("/posts")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Page<PostResponse>> postList(Pageable pageable) {
+    public ApiResponse<PostListResponse> postList(Pageable pageable) {
         final Page<Post> posts = postService.findAllPost(pageable);
-        final Page<PostResponse> postResponses = posts.map(PostResponse::from);
-        return ApiResponse.createSuccess(postResponses);
+        return postListAndRespond(posts);
+    }
+
+    @GetMapping("/restaurants/{restaurantId}/posts")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PostListResponse> postListByRestaurantId(
+            @PathVariable Long restaurantId,
+            Pageable pageable) {
+        final Page<Post> posts = postService.findAllPostByRestaurantId(restaurantId, pageable);
+        return postListAndRespond(posts);
     }
 
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,
@@ -66,5 +75,11 @@ public class PostController {
         final Post post = postService.addPost(
                 CreatePostCommand.of(request, restaurantId));
         return ApiResponse.createSuccess(PostResponse.from(post));
+    }
+
+    private ApiResponse<PostListResponse> postListAndRespond(final Page<Post> posts) {
+        final Page<PostResponse> postResponses = posts.map(PostResponse::from);
+        final PostListResponse postListResponse = PostListResponse.from(postResponses);
+        return ApiResponse.createSuccess(postListResponse);
     }
 }
