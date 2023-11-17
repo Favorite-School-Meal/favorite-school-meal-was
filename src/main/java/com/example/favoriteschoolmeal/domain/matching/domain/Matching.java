@@ -1,8 +1,7 @@
 package com.example.favoriteschoolmeal.domain.matching.domain;
 
 
-import com.example.favoriteschoolmeal.domain.model.MatchingState;
-import com.example.favoriteschoolmeal.domain.model.Location;
+import com.example.favoriteschoolmeal.domain.model.MatchingStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -23,8 +22,8 @@ public class Matching {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "matching_state", nullable = false)
-    private MatchingState matchingState;
+    @Column(name = "matching_status", nullable = false)
+    private MatchingStatus matchingStatus;
 
     @Column(name = "max_participant", nullable = false)
     private Integer maxParticipant;
@@ -33,8 +32,8 @@ public class Matching {
     private LocalDateTime meetingDateTime;
 
     @Builder
-    public Matching(MatchingState matchingState, Integer maxParticipant, LocalDateTime meetingDateTime) {
-        this.matchingState = matchingState;
+    public Matching(MatchingStatus matchingStatus, Integer maxParticipant, LocalDateTime meetingDateTime) {
+        this.matchingStatus = matchingStatus;
         this.maxParticipant = maxParticipant;
         this.meetingDateTime = meetingDateTime;
     }

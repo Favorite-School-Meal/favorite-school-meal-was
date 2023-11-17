@@ -27,7 +27,7 @@ public class MatchingMember extends Base {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "group_role", nullable = false)
+    @Column(name = "matching_role", nullable = false)
     private RoleType roleType;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,5 @@
 package com.example.favoriteschoolmeal.domain.model;
 
-public enum MatchingState {
+public enum MatchingStatus {
     IN_PROGRESS, CLOSED
 }
