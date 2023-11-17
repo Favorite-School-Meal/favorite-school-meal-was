@@ -6,7 +6,10 @@ import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.post.service.dto.CreatePostCommand;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,6 +51,13 @@ public class PostController {
         final Post post = postService.modifyPost(
                 postId, CreatePostCommand.of(request, null));
         return ApiResponse.createSuccess(PostResponse.from(post));
+    }
+
+    @GetMapping("/posts")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Page<PostResponse>> postList(Pageable pageable) {
+        final Page<Post> posts = postService.findAllPost(pageable);
+        return ApiResponse.createSuccess(posts.map(PostResponse::from));
     }
 
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,
