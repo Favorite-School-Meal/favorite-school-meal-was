@@ -27,13 +27,13 @@ public class Matching {
     private MatchingState matchingState;
 
     @Column(name = "max_participant", nullable = false)
-    private Long maxParticipant;
+    private Integer maxParticipant;
 
     @Column(name = "meeting_date_time", nullable = false)
     private LocalDateTime meetingDateTime;
 
     @Builder
-    public Matching(MatchingState matchingState, Long maxParticipant, LocalDateTime meetingDateTime) {
+    public Matching(MatchingState matchingState, Integer maxParticipant, LocalDateTime meetingDateTime) {
         this.matchingState = matchingState;
         this.maxParticipant = maxParticipant;
         this.meetingDateTime = meetingDateTime;
