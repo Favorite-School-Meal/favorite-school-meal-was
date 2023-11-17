@@ -57,7 +57,8 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Page<PostResponse>> postList(Pageable pageable) {
         final Page<Post> posts = postService.findAllPost(pageable);
-        return ApiResponse.createSuccess(posts.map(PostResponse::from));
+        final Page<PostResponse> postResponses = posts.map(PostResponse::from);
+        return ApiResponse.createSuccess(postResponses);
     }
 
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,
