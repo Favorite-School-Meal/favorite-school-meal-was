@@ -38,4 +38,9 @@ public class Matching {
         this.maxParticipant = maxParticipant;
         this.meetingDateTime = meetingDateTime;
     }
+
+    public void modifyDetails(final LocalDateTime meetingDateTime, final Integer maxParticipant) {
+        this.meetingDateTime = meetingDateTime;
+        this.maxParticipant = maxParticipant;
+    }
 }
