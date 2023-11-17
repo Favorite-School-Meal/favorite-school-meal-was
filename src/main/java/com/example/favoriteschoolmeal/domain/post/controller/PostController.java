@@ -70,6 +70,13 @@ public class PostController {
         return postListAndRespond(posts);
     }
 
+    @GetMapping("/posts/{postId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PostResponse> postDetails(@PathVariable Long postId) {
+        final Post post = postService.findPost(postId);
+        return ApiResponse.createSuccess(PostResponse.from(post));
+    }
+
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,
             final Long restaurantId) {
         final Post post = postService.addPost(

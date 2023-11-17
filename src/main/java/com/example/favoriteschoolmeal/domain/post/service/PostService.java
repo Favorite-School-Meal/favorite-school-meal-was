@@ -72,6 +72,11 @@ public class PostService {
         return posts;
     }
 
+    @Transactional(readOnly = true)
+    public Post findPost(final Long postId) {
+        return getPostOrThrow(postId);
+    }
+
     private Post getPostOrThrow(final Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
@@ -119,7 +124,7 @@ public class PostService {
     }
 
     private void summarizePostsIfNotNull(Page<Post> posts) {
-        if (posts != null) {
+        if (!posts.isEmpty()) {
             posts.forEach(this::summarizeContent);
         }
     }
