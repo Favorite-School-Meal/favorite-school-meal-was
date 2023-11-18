@@ -6,29 +6,34 @@ import org.springframework.http.HttpStatus;
 public enum ReportExceptionType implements BaseExceptionType {
 
     MEMBER_NOT_FOUND(
-                404,
-                HttpStatus.NOT_FOUND,
-                "Member not found"
-        ),
+            404,
+            HttpStatus.NOT_FOUND,
+            "Member not found"
+    ),
     POST_NOT_FOUND(
-                404,
-                HttpStatus.NOT_FOUND,
-                "Post not found"
-        ),
+            404,
+            HttpStatus.NOT_FOUND,
+            "Post not found"
+    ),
     COMMENT_NOT_FOUND(
-                404,
-                HttpStatus.NOT_FOUND,
-                "Comment not found"
-        ),
+            404,
+            HttpStatus.NOT_FOUND,
+            "Comment not found"
+    ),
     CHAT_NOT_FOUND(
-                404,
-                HttpStatus.NOT_FOUND,
-                "Chat not found"
-        ),
+            404,
+            HttpStatus.NOT_FOUND,
+            "Chat not found"
+    ),
     REPORT_TYPE_NOT_FOUND(
             404,
             HttpStatus.NOT_FOUND,
             "Report type not found"
+    ),
+    UNAUTHORIZED_ACCESS(
+            401,
+            HttpStatus.UNAUTHORIZED,
+            "Unauthorized access"
     );
     private final int errorCode;
     private final String errorMessage;

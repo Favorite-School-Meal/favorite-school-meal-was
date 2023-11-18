@@ -11,10 +11,10 @@ import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
-import com.example.favoriteschoolmeal.domain.report.exception.ReportCreationException;
+import com.example.favoriteschoolmeal.domain.report.exception.ReportException;
 import com.example.favoriteschoolmeal.domain.report.exception.ReportExceptionType;
 import com.example.favoriteschoolmeal.domain.report.repository.ReportRepository;
-import com.example.favoriteschoolmeal.global.security.userdetails.CustomUserDetails;
+import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +31,9 @@ public class ReportService {
     private final MemberService memberService;
     private final ChatService chatService;
 
-    public ReportResponse addReport(CreateReportRequest request, CustomUserDetails userDetails) {
-        Member reporter = userDetails.getMember();
+    public ReportResponse addReport(CreateReportRequest request) {
+        verifyRoleUser();
+        Member reporter = getMemberOrThrow(getCurrentMemberId());
 
         Report report = createReport(request, reporter);
         reportRepository.save(report);
@@ -46,7 +47,7 @@ public class ReportService {
             case PROFILE -> buildProfileReport(request, reporter);
             case COMMENT -> buildCommentReport(request, reporter);
             case CHAT -> buildChatReport(request, reporter);
-            default -> throw new ReportCreationException(ReportExceptionType.REPORT_TYPE_NOT_FOUND);
+            default -> throw new ReportException(ReportExceptionType.REPORT_TYPE_NOT_FOUND);
         };
 
     }
@@ -67,12 +68,12 @@ public class ReportService {
 
     private Chat getChatOrThrow(Long chatId) {
         return chatService.findChatOptionally(chatId)
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.CHAT_NOT_FOUND));
+                .orElseThrow(() -> new ReportException(ReportExceptionType.CHAT_NOT_FOUND));
     }
 
     private Member getMemberOrThrow(Long memberId) {
         return memberService.findMemberOptionally(memberId)
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
 
     }
 
@@ -90,7 +91,7 @@ public class ReportService {
 
     private Comment getCommentOrThrow(Long commentId) {
         return commentService.findCommentOptionally(commentId)
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new ReportException(ReportExceptionType.COMMENT_NOT_FOUND));
     }
 
     private Report buildProfileReport(CreateReportRequest request, Member reporter) {
@@ -118,6 +119,14 @@ public class ReportService {
 
     private Post getPostOrThrow(Long postId) {
         return postService.findPostOptionally(postId)
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ReportException(ReportExceptionType.POST_NOT_FOUND));
+    }
+
+    private Long getCurrentMemberId() {
+        return SecurityUtils.getCurrentMemberId(() -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
+    }
+
+    private void verifyRoleUser() {
+        SecurityUtils.checkUserAuthority("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 }
