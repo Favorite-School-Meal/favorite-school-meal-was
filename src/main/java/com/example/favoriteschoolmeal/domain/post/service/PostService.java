@@ -13,6 +13,8 @@ import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post modifyPost(Long postId, CreatePostCommand command) {
+    public Post modifyPost(final Long postId, final CreatePostCommand command) {
         // TODO: 추후 아래 주석 해제
         // verifyRoleUser();
         final Long currentMemberId = getCurrentMemberId();
@@ -52,8 +54,33 @@ public class PostService {
         final Post post = getPostOrThrow(postId);
         verifyPostOwner(post.getMember().getId(), currentMemberId);
 
-        updatePostContent(post, command);
+        modifyTitleAndContent(post, command);
         return postRepository.save(post);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Post> findAllPost(final Pageable pageable) {
+        final Page<Post> posts = postRepository.findAllOrderByStatusAndTime(pageable);
+        summarizePostsIfNotNull(posts);
+        return posts;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Post> findAllPostByRestaurantId(final Long restaurantId, final Pageable pageable) {
+        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(restaurantId, pageable);
+        summarizePostsIfNotNull(posts);
+        return posts;
+    }
+
+    @Transactional(readOnly = true)
+    public Post findPost(final Long postId) {
+        return getPostOrThrow(postId);
+    }
+
+    public void removePost(final Long postId) {
+        final Post post = getPostOrThrow(postId);
+        verifyPostOwnerOrAdmin(post.getMember().getId(), getCurrentMemberId());
+        postRepository.delete(post);
     }
 
     private Post getPostOrThrow(final Long postId) {
@@ -85,13 +112,27 @@ public class PostService {
                 .orElse(null);
     }
 
-    private void updatePostContent(Post post, CreatePostCommand command) {
-        post.updateTitleAndContent(command.title(), command.content());
-    }
-
     private Matching createMatching() {
         return matchingService.addMatching()
                 .orElseThrow(() -> new PostException(PostExceptionType.MATCHING_NOT_FOUND));
+    }
+
+    private void modifyTitleAndContent(final Post post, final CreatePostCommand command) {
+        post.modifyTitleAndContent(command.title(), command.content());
+    }
+
+    private void summarizeContent(final Post post) {
+        String summarizedContent = Optional.of(post.getContent())
+                .filter(content -> content.length() > 100)
+                .map(content -> content.substring(0, 100) + "...")
+                .orElse(post.getContent());
+        post.summarizeContent(summarizedContent);
+    }
+
+    private void summarizePostsIfNotNull(Page<Post> posts) {
+        if (!posts.isEmpty()) {
+            posts.forEach(this::summarizeContent);
+        }
     }
 
     private Post createPost(final CreatePostCommand createPostCommand, final Member member,
@@ -110,8 +151,14 @@ public class PostService {
                 () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private void verifyPostOwner(Long postOwnerId, Long currentMemberId) {
+    private void verifyPostOwner(final Long postOwnerId, final Long currentMemberId) {
         if (!postOwnerId.equals(currentMemberId)) {
+            throw new PostException(PostExceptionType.UNAUTHORIZED_ACCESS);
+        }
+    }
+
+    private void verifyPostOwnerOrAdmin(final Long postOwnerId, final Long currentMemberId) {
+        if (!postOwnerId.equals(currentMemberId) && !SecurityUtils.isAdmin()) {
             throw new PostException(PostExceptionType.UNAUTHORIZED_ACCESS);
         }
     }

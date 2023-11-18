@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.global.security.util;
 
+import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.global.exception.BaseException;
 import com.example.favoriteschoolmeal.global.security.userdetails.CustomUserDetails;
 import java.util.function.Supplier;
@@ -40,5 +41,11 @@ public class SecurityUtils {
         boolean isUnauthorized = authentication == null || !authentication.getAuthorities()
                 .contains(new SimpleGrantedAuthority(role));
         throwIf(isUnauthorized, exceptionSupplier);
+    }
+
+    public static boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getAuthorities()
+                .contains(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.name()));
     }
 }

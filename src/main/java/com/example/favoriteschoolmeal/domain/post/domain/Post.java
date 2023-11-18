@@ -58,8 +58,12 @@ public class Post extends Base {
         this.content = content;
     }
 
-    public void updateTitleAndContent(final String title, final String content) {
+    public void modifyTitleAndContent(final String title, final String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void summarizeContent(String summarizedContent) {
+        this.content = summarizedContent;
     }
 }
