@@ -1,6 +1,11 @@
 package com.example.favoriteschoolmeal.domain.report.controller.dto;
 
+import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
+import com.example.favoriteschoolmeal.domain.model.ReportType;
+import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
+
+import java.util.Optional;
 
 public record ReportResponse(
         Long id,
@@ -27,12 +32,26 @@ public record ReportResponse(
                 report.getReporter().getId(),
                 report.getReporter().getNickname(),
                 report.getReportType().toString(),
-                //title
-                report.getReportedPost() != null ? report.getReportedPost().getTitle() : report.getReportedComment() != null ? report.getReportedComment().getContent() : null,
+                getTitle(report),
                 report.getContent(),
-                report.getReportedPost() != null ? report.getReportedPost().getId() : null,
-                report.getReportedComment() != null ? report.getReportedComment().getId() : null,
-                report.getReportedChat() != null ? report.getReportedChat().getId() : null
+                Optional.ofNullable(report.getReportedPost()).map(Post::getId).orElse(null),
+                Optional.ofNullable(report.getReportedComment()).map(Comment::getId).orElse(null),
+                Optional.ofNullable(report.getReportedChat()).map(com.example.favoriteschoolmeal.domain.chat.domain.Chat::getId).orElse(null)
         );
+
+    }
+
+    private static String getTitle(Report report) {
+        if (report.getReportType().equals(ReportType.PROFILE)) {
+            return report.getReportedMember().getNickname() + "님의 프로필";
+        } else if (report.getReportType().equals(ReportType.POST)) {
+            return report.getReportedPost().getTitle() + " 게시물";
+        } else if (report.getReportType().equals(ReportType.COMMENT)) {
+            return report.getReportedComment().getContent() + " 댓글";
+        } else if (report.getReportType().equals(ReportType.CHAT)) {
+            return report.getReportedChat().getId() + "번 채팅방";
+        } else {
+            return null;
+        }
     }
 }

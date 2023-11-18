@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.comment.service.CommentService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
+import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
@@ -42,29 +43,20 @@ public class ReportService {
 
     private Report createReport(CreateReportRequest request, Member reporter) {
 
-        return switch (request.reportType()) {
-            case POST -> buildPostReport(request, reporter);
-            case PROFILE -> buildProfileReport(request, reporter);
-            case COMMENT -> buildCommentReport(request, reporter);
-            case CHAT -> buildChatReport(request, reporter);
-            default -> throw new ReportException(ReportExceptionType.REPORT_TYPE_NOT_FOUND);
-        };
+        if (request.reportType().equals(ReportType.PROFILE)) {
+            return buildProfileReport(request, reporter);
+        } else if (request.reportType().equals(ReportType.POST)) {
+            return buildPostReport(request, reporter);
+        } else if (request.reportType().equals(ReportType.COMMENT)) {
+            return buildCommentReport(request, reporter);
+        } else if (request.reportType().equals(ReportType.CHAT)) {
+            return buildChatReport(request, reporter);
+        } else {
+            throw new ReportException(ReportExceptionType.REPORT_TYPE_NOT_FOUND);
+        }
 
     }
 
-    private Report buildChatReport(CreateReportRequest request, Member reporter) {
-        Chat chat = getChatOrThrow(request.chatId());
-
-        Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-        return Report.builder()
-                .reporter(reporter)
-                .reportedMember(reportedMember)
-                .reportedChat(chat)
-                .reportType(request.reportType())
-                .content(request.content())
-                .isResolved(false)
-                .build();
-    }
 
     private Chat getChatOrThrow(Long chatId) {
         return chatService.findChatOptionally(chatId)
@@ -74,19 +66,6 @@ public class ReportService {
     private Member getMemberOrThrow(Long memberId) {
         return memberService.findMemberOptionally(memberId)
                 .orElseThrow(() -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
-
-    }
-
-    private Report buildCommentReport(CreateReportRequest request, Member reporter) {
-        Comment comment = getCommentOrThrow(request.commentId());
-        return Report.builder()
-                .reporter(reporter)
-                .reportedMember(comment.getMember())
-                .reportedComment(comment)
-                .reportType(request.reportType())
-                .content(request.content())
-                .isResolved(false)
-                .build();
     }
 
     private Comment getCommentOrThrow(Long commentId) {
@@ -94,27 +73,29 @@ public class ReportService {
                 .orElseThrow(() -> new ReportException(ReportExceptionType.COMMENT_NOT_FOUND));
     }
 
+    private Report buildChatReport(CreateReportRequest request, Member reporter) {
+        Chat chat = getChatOrThrow(request.chatId());
+
+        Member reportedMember = getMemberOrThrow(request.reportedMemberId());
+
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, chat, request.content());
+    }
+
+    private Report buildCommentReport(CreateReportRequest request, Member reporter) {
+        Comment comment = getCommentOrThrow(request.commentId());
+
+        return ReportBuilder(reporter, comment.getMember(), request.reportType(), null, comment, null, request.content());
+    }
+
     private Report buildProfileReport(CreateReportRequest request, Member reporter) {
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-        return Report.builder()
-                .reporter(reporter)
-                .reportedMember(reportedMember)
-                .reportType(request.reportType())
-                .content(request.content())
-                .isResolved(false)
-                .build();
+
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null, request.content());
     }
 
     private Report buildPostReport(CreateReportRequest request, Member reporter) {
         Post post = getPostOrThrow(request.postId());
-        return Report.builder()
-                .reporter(reporter)
-                .reportedMember(post.getMember())
-                .reportedPost(post)
-                .reportType(request.reportType())
-                .content(request.content())
-                .isResolved(false)
-                .build();
+        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, request.content());
     }
 
     private Post getPostOrThrow(Long postId) {
@@ -128,5 +109,18 @@ public class ReportService {
 
     private void verifyRoleUser() {
         SecurityUtils.checkUserAuthority("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String content) {
+        return Report.builder()
+                .reporter(reporter)
+                .reportedMember(reportedMember)
+                .reportType(reportType)
+                .reportedPost(reportedPost)
+                .reportedComment(reportedComment)
+                .reportedChat(reportedChat)
+                .content(content)
+                .isResolved(false)
+                .build();
     }
 }
