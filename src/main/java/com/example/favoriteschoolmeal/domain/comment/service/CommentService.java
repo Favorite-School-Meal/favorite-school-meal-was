@@ -8,7 +8,7 @@ import java.util.Optional;
 @Service
 public class CommentService {
 
-    public Optional<Comment> findCommentById(Long aLong) {
+    public Optional<Comment> findCommentOptionally(Long aLong) {
         //구현 필요
         return Optional.empty();
     }

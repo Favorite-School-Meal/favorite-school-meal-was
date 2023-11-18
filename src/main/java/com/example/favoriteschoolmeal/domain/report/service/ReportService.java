@@ -52,11 +52,9 @@ public class ReportService {
     }
 
     private Report buildChatReport(CreateReportRequest request, Member reporter) {
-        Chat chat = chatService.findChatById(request.chatId())
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.CHAT_NOT_FOUND));
+        Chat chat = getChatOrThrow(request.chatId());
 
-        Member reportedMember = memberService.findMemberById(request.reportedMemberId())
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.MEMBER_NOT_FOUND));
+        Member reportedMember = getMemberOrThrow(request.reportedMemberId());
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)
@@ -67,9 +65,19 @@ public class ReportService {
                 .build();
     }
 
+    private Chat getChatOrThrow(Long chatId) {
+        return chatService.findChatOptionally(chatId)
+                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.CHAT_NOT_FOUND));
+    }
+
+    private Member getMemberOrThrow(Long memberId) {
+        return memberService.findMemberOptionally(memberId)
+                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.MEMBER_NOT_FOUND));
+
+    }
+
     private Report buildCommentReport(CreateReportRequest request, Member reporter) {
-        Comment comment = commentService.findCommentById(request.commentId())
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.COMMENT_NOT_FOUND));
+        Comment comment = getCommentOrThrow(request.commentId());
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(comment.getMember())
@@ -80,10 +88,13 @@ public class ReportService {
                 .build();
     }
 
-    private Report buildProfileReport(CreateReportRequest request, Member reporter) {
-        Member reportedMember = memberService.findMemberById(request.reportedMemberId())
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.MEMBER_NOT_FOUND));
+    private Comment getCommentOrThrow(Long commentId) {
+        return commentService.findCommentOptionally(commentId)
+                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.COMMENT_NOT_FOUND));
+    }
 
+    private Report buildProfileReport(CreateReportRequest request, Member reporter) {
+        Member reportedMember = getMemberOrThrow(request.reportedMemberId());
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)
@@ -94,9 +105,7 @@ public class ReportService {
     }
 
     private Report buildPostReport(CreateReportRequest request, Member reporter) {
-        Post post = postService.findPostById(request.postId())
-                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.POST_NOT_FOUND));
-
+        Post post = getPostOrThrow(request.postId());
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(post.getMember())
@@ -105,5 +114,10 @@ public class ReportService {
                 .content(request.content())
                 .isResolved(false)
                 .build();
+    }
+
+    private Post getPostOrThrow(Long postId) {
+        return postService.findPostOptionally(postId)
+                .orElseThrow(() -> new ReportCreationException(ReportExceptionType.POST_NOT_FOUND));
     }
 }

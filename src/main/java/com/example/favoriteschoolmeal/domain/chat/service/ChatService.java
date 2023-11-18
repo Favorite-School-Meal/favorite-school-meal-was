@@ -8,7 +8,7 @@ import java.util.Optional;
 @Service
 public class ChatService {
 
-    public Optional<Chat> findChatById(Long chatId) {
+    public Optional<Chat> findChatOptionally(Long chatId) {
         //TODO: 구현 필요
         return Optional.empty();
     }

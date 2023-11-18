@@ -20,8 +20,9 @@ public class CustomUserDetails implements UserDetails {
         this.member = member;
     }
 
-    public Member getMember(){
-        return member;
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     @Override
