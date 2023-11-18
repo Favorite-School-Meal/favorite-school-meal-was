@@ -12,11 +12,15 @@ import com.example.favoriteschoolmeal.domain.post.service.dto.CreatePostCommand;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -28,7 +32,7 @@ public class PostService {
     private final RestaurantService restaurantService;
 
     public PostService(final PostRepository postRepository, final MemberService memberService,
-            final MatchingService matchingService, final RestaurantService restaurantService) {
+                       final MatchingService matchingService, final RestaurantService restaurantService) {
         this.postRepository = postRepository;
         this.memberService = memberService;
         this.matchingService = matchingService;
@@ -136,7 +140,7 @@ public class PostService {
     }
 
     private Post createPost(final CreatePostCommand createPostCommand, final Member member,
-            final Matching matching, final Restaurant restaurant) {
+                            final Matching matching, final Restaurant restaurant) {
         return Post.builder()
                 .member(member)
                 .matching(matching)
@@ -171,4 +175,9 @@ public class PostService {
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
       */
     }
+
+    public Optional<Post> findPostOptionally(final Long postId) {
+        return postRepository.findById(postId);
+    }
 }
+
