@@ -4,6 +4,7 @@ import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
+import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
 
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public record ReportResponse(
                 report.getContent(),
                 Optional.ofNullable(report.getReportedPost()).map(Post::getId).orElse(null),
                 Optional.ofNullable(report.getReportedComment()).map(Comment::getId).orElse(null),
-                Optional.ofNullable(report.getReportedChat()).map(com.example.favoriteschoolmeal.domain.chat.domain.Chat::getId).orElse(null)
+                Optional.ofNullable(report.getReportedChat()).map(Chat::getId).orElse(null)
         );
 
     }
