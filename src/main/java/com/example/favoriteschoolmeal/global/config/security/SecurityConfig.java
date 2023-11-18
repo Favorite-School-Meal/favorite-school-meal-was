@@ -35,8 +35,9 @@ public class SecurityConfig {
 
             "api/v1/auth",
 
-
+            // TODO: 추후 아래 코드 삭제
             "api/**",
+
             //TODO: swagger 추가
     };
 

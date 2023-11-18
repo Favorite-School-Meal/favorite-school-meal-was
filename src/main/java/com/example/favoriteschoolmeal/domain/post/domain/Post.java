@@ -4,7 +4,16 @@ import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.global.common.Base;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,10 +49,16 @@ public class Post extends Base {
     private String content;
 
     @Builder
-    public Post(final Member member, final Matching matching, final Restaurant restaurant, final String title, final String content) {
+    public Post(final Member member, final Matching matching, final Restaurant restaurant,
+            final String title, final String content) {
         this.member = member;
         this.matching = matching;
         this.restaurant = restaurant;
+        this.title = title;
+        this.content = content;
+    }
+
+    public void updateTitleAndContent(final String title, final String content) {
         this.title = title;
         this.content = content;
     }
