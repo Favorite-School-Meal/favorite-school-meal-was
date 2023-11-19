@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
+
 @RestController
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
@@ -23,6 +25,13 @@ public class ReportController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReportResponse> reportAdd(@RequestBody final CreateReportRequest request){
         ReportResponse response = reportService.addReport(request);
+        return ApiResponse.createSuccess(response);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ReportResponse> reportList(Pageable pageable){
+        ReportResponse response = reportService.findAllByResolvedFalse(pageable);
         return ApiResponse.createSuccess(response);
     }
 
