@@ -10,6 +10,7 @@ import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
+import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
 import com.example.favoriteschoolmeal.domain.report.exception.ReportException;
@@ -19,7 +20,11 @@ import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -122,5 +127,16 @@ public class ReportService {
                 .content(content)
                 .isResolved(false)
                 .build();
+    }
+
+    public ReportListResponse findAllByResolvedFalse(Pageable pageable) {
+        verifyRoleAdmin();
+        Page<ReportResponse> reportResponses = reportRepository.findAllByIsResolvedFalse(pageable)
+                .map(ReportResponse::from);
+        return ReportListResponse.from(reportResponses);
+    }
+
+    private void verifyRoleAdmin() {
+        SecurityUtils.checkUserAuthority("ROLE_ADMIN", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 }
