@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoRequest;
@@ -10,13 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class NaverService implements Oauth2Service {
+
     @Override
     public OauthUserInfoRequest getUserInfo(OauthSignInRequest oauthSignInRequest) {
         return null;
     }
 
     @Override
-    public Oauth create(OauthUserInfoRequest oauthUserInfoRequest) {
+    public Oauth create(OauthUserInfoRequest oauthUserInfoRequest, Member member) {
         return null;
     }
 
