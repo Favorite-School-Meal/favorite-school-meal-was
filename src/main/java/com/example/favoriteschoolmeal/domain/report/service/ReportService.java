@@ -129,7 +129,7 @@ public class ReportService {
                 .build();
     }
 
-    public ReportListResponse findAllByResolvedFalse(Pageable pageable) {
+    public ReportListResponse findAllReportByIsResolvedFalse(Pageable pageable) {
         verifyRoleAdmin();
         Page<ReportResponse> reportResponses = reportRepository.findAllByIsResolvedFalse(pageable)
                 .map(ReportResponse::from);

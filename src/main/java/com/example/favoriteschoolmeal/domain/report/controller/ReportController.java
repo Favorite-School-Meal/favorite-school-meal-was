@@ -26,8 +26,8 @@ public class ReportController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ReportListResponse> reportList(Pageable pageable){
-        ReportListResponse response = reportService.findAllByResolvedFalse(pageable);
+    public ApiResponse<ReportListResponse> reportListByIsResolvedFalse(Pageable pageable){
+        ReportListResponse response = reportService.findAllReportByIsResolvedFalse(pageable);
         return ApiResponse.createSuccess(response);
     }
 
