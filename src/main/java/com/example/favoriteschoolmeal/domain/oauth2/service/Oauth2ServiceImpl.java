@@ -5,7 +5,8 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthTokenDto;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,12 @@ public class Oauth2ServiceImpl{
     private final KakaoService kakaoService;
     private final NaverService naverService;
 
-    public OauthUserInfoRequest getUserInfo(String accessToken, OauthPlatform platform) {
+    public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
 
         return null;
     }
 
-    public Oauth create(OauthUserInfoRequest oauthUserInfoRequest, OauthPlatform platform, Member member) {
+    public Oauth create(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform, Member member) {
 
         return null;
     }

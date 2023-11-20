@@ -2,8 +2,8 @@ package com.example.favoriteschoolmeal.domain.oauth2.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthTokenDto;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 public class NaverService implements Oauth2Service {
 
     @Override
-    public OauthUserInfoRequest getUserInfo(String accessToken) {
+    public OauthUserInfoDto getUserInfo(String accessToken) {
         return null;
     }
 
     @Override
-    public Oauth create(OauthUserInfoRequest oauthUserInfoRequest, Member member) {
+    public Oauth create(OauthUserInfoDto oauthUserInfoDto, Member member) {
         return null;
     }
 

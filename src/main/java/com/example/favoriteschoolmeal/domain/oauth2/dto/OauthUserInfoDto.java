@@ -1,4 +1,5 @@
-package com.example.favoriteschoolmeal.domain.auth.dto;
+package com.example.favoriteschoolmeal.domain.oauth2.dto;
+
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -12,8 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class JwtTokenDto {
-    private String accessToken;
-    private String refreshToken;
+public class OauthUserInfoDto {
 
+    private String fullname;
+    private String nickname;
+    private String email;
+    private String birthday;
+    private String gender;
 }

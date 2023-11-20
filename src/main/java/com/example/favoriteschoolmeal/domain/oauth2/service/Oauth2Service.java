@@ -2,14 +2,14 @@ package com.example.favoriteschoolmeal.domain.oauth2.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthTokenDto;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+
 
 public interface Oauth2Service {
 
-    OauthUserInfoRequest getUserInfo(String accessToken);
+    OauthUserInfoDto getUserInfo(String accessToken);
 
-    Oauth create(OauthUserInfoRequest oauthUserInfoRequest, Member member);
+    Oauth create(OauthUserInfoDto oauthUserInfoDto, Member member);
     Oauth delete(Member member);
     Oauth isExists(Member member);
 
