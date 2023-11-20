@@ -5,6 +5,8 @@ import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
 import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
+import com.example.favoriteschoolmeal.domain.report.exception.ReportException;
+import com.example.favoriteschoolmeal.domain.report.exception.ReportExceptionType;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,7 +55,7 @@ public record ReportResponse(
             return "오늘";
         } else if (days == 1) {
             return "어제";
-        } else{
+        } else {
             return days + "일 전";
         }
 
@@ -63,9 +65,13 @@ public record ReportResponse(
         if (report.getReportType().equals(ReportType.PROFILE)) {
             return report.getReportedMember().getNickname() + "님의 프로필";
         } else if (report.getReportType().equals(ReportType.POST)) {
-            return report.getReportedPost().getTitle() + " 게시물";
+            return report.getReportedPost().getTitle()
+                    .substring(0, Math.min(report.getReportedPost().getTitle().length(), 30)) + "..."
+                    + " 게시물";
         } else if (report.getReportType().equals(ReportType.COMMENT)) {
-            return report.getReportedComment().getContent() + " 댓글";
+            return report.getReportedComment().getContent()
+                    .substring(0, Math.min(report.getReportedComment().getContent().length(), 30)) + "..."
+                    + " 댓글";
         } else if (report.getReportType().equals(ReportType.CHAT)) {
             return report.getReportedChat().getId() + "번 채팅방";
         } else {
