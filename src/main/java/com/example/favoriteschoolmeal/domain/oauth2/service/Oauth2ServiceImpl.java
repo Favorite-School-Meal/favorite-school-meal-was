@@ -1,9 +1,10 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
+import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthTokenDto;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class Oauth2ServiceImpl{
     private final KakaoService kakaoService;
     private final NaverService naverService;
 
-    public OauthUserInfoRequest getUserInfo(OauthSignInRequest oauthSignInRequest, OauthPlatform platform) {
+    public OauthUserInfoRequest getUserInfo(String accessToken, OauthPlatform platform) {
 
         return null;
     }
@@ -34,6 +35,14 @@ public class Oauth2ServiceImpl{
 
     public Oauth isExists(Member member, OauthPlatform platform) {
 
+        return null;
+    }
+
+    public String getAccessToken(){
+        return null;
+    }
+
+    public JwtTokenDto signIn(OauthTokenDto oauthTokenDto, OauthPlatform platform){
         return null;
     }
 
