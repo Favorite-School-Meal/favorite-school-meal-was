@@ -6,10 +6,14 @@ import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
 import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public record ReportResponse(
         Long id,
+
+        String elapsedDays,
         Long reportedMemberId,
         String reportedMemberNickname,
 
@@ -28,6 +32,7 @@ public record ReportResponse(
     public static ReportResponse from(Report report) {
         return new ReportResponse(
                 report.getId(),
+                getElapsedDays(report),
                 report.getReportedMember().getId(),
                 report.getReportedMember().getNickname(),
                 report.getReporter().getId(),
@@ -39,6 +44,18 @@ public record ReportResponse(
                 Optional.ofNullable(report.getReportedComment()).map(Comment::getId).orElse(null),
                 Optional.ofNullable(report.getReportedChat()).map(Chat::getId).orElse(null)
         );
+
+    }
+
+    private static String getElapsedDays(Report report) {
+        long days = Duration.between(report.getCreatedAt(), LocalDateTime.now()).toDays();
+        if (days == 0) {
+            return "오늘";
+        } else if (days == 1) {
+            return "어제";
+        } else{
+            return days + "일 전";
+        }
 
     }
 

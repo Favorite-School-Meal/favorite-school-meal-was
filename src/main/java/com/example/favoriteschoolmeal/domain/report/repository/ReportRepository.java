@@ -7,12 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
-
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
-    @Query("SELECT r FROM Report r WHERE r.isResolved = false ORDER BY r.createdAt")
+    @Query("SELECT r FROM Report r WHERE r.isResolved = false ORDER BY r.createdAt DESC")
     Page<Report> findAllByIsResolvedFalse(Pageable pageable);
 
 }
