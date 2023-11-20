@@ -77,30 +77,56 @@ public class ReportService {
         return commentService.findCommentOptionally(commentId)
                 .orElseThrow(() -> new ReportException(ReportExceptionType.COMMENT_NOT_FOUND));
     }
+    private String getTitle(Object entity) {
+        if (entity == null) {
+            return null;
+        }
 
+        String content;
+        String titleSuffix;
+        if (entity instanceof Member) {
+            content = ((Member) entity).getNickname();
+            titleSuffix = "님의 프로필";
+        } else if (entity instanceof Chat) {
+            content = ((Chat) entity).getId().toString();
+            titleSuffix = "번 채팅방";
+        } else if (entity instanceof Comment) {
+            content = ((Comment) entity).getContent();
+            titleSuffix = " 댓글";
+        } else if (entity instanceof Post) {
+            content = ((Post) entity).getTitle();
+            titleSuffix = " 게시물";
+        } else {
+            return null;
+        }
+
+        int maxLength = 20;
+        String truncatedContent = content.substring(0, Math.min(content.length(), maxLength));
+        if (content.length() > maxLength) {
+            truncatedContent += "...";
+        }
+
+        return truncatedContent + titleSuffix;
+    }
     private Report buildChatReport(CreateReportRequest request, Member reporter) {
         Chat chat = getChatOrThrow(request.chatId());
-
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-
-        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, chat, request.content());
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, chat, getTitle(chat), request.content());
     }
 
     private Report buildCommentReport(CreateReportRequest request, Member reporter) {
         Comment comment = getCommentOrThrow(request.commentId());
-
-        return ReportBuilder(reporter, comment.getMember(), request.reportType(), null, comment, null, request.content());
+        return ReportBuilder(reporter, comment.getMember(), request.reportType(), null, comment, null, getTitle(comment), request.content());
     }
 
     private Report buildProfileReport(CreateReportRequest request, Member reporter) {
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-
-        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null, request.content());
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null,getTitle(reportedMember), request.content());
     }
 
     private Report buildPostReport(CreateReportRequest request, Member reporter) {
         Post post = getPostOrThrow(request.postId());
-        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, request.content());
+        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, getTitle(post),request.content());
     }
 
     private Post getPostOrThrow(Long postId) {
@@ -116,7 +142,7 @@ public class ReportService {
         SecurityUtils.checkUserAuthority("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String content) {
+    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat,String title, String content) {
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)
@@ -124,6 +150,7 @@ public class ReportService {
                 .reportedPost(reportedPost)
                 .reportedComment(reportedComment)
                 .reportedChat(reportedChat)
+                .title(title)
                 .content(content)
                 .isResolved(false)
                 .build();

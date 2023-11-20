@@ -40,7 +40,7 @@ public record ReportResponse(
                 report.getReporter().getId(),
                 report.getReporter().getNickname(),
                 report.getReportType().toString(),
-                getTitle(report),
+                report.getTitle(),
                 report.getContent(),
                 Optional.ofNullable(report.getReportedPost()).map(Post::getId).orElse(null),
                 Optional.ofNullable(report.getReportedComment()).map(Comment::getId).orElse(null),
@@ -59,23 +59,5 @@ public record ReportResponse(
             return days + "일 전";
         }
 
-    }
-
-    private static String getTitle(Report report) {
-        if (report.getReportType().equals(ReportType.PROFILE)) {
-            return report.getReportedMember().getNickname() + "님의 프로필";
-        } else if (report.getReportType().equals(ReportType.POST)) {
-            return report.getReportedPost().getTitle()
-                    .substring(0, Math.min(report.getReportedPost().getTitle().length(), 30)) + "..."
-                    + " 게시물";
-        } else if (report.getReportType().equals(ReportType.COMMENT)) {
-            return report.getReportedComment().getContent()
-                    .substring(0, Math.min(report.getReportedComment().getContent().length(), 30)) + "..."
-                    + " 댓글";
-        } else if (report.getReportType().equals(ReportType.CHAT)) {
-            return report.getReportedChat().getId() + "번 채팅방";
-        } else {
-            return null;
-        }
     }
 }

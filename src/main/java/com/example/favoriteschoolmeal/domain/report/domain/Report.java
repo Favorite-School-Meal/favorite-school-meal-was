@@ -46,6 +46,9 @@ public class Report extends Base {
     @JoinColumn(name = "reported_chat_id")
     private Chat reportedChat;
 
+    @Column(name = "title", nullable = false, length = 100)
+    private String title;
+
     @Column(name = "content", nullable = false, length = 300)
     private String content;
 
@@ -53,13 +56,14 @@ public class Report extends Base {
     private Boolean isResolved;
 
     @Builder
-    public Report(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String content, Boolean isResolved) {
+    public Report(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String title, String content, Boolean isResolved) {
         this.reporter = reporter;
         this.reportedMember = reportedMember;
         this.reportType = reportType;
         this.reportedPost = reportedPost;
         this.reportedComment = reportedComment;
         this.reportedChat = reportedChat;
+        this.title = title;
         this.content = content;
         this.isResolved = isResolved;
     }
