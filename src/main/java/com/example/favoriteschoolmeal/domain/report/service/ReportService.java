@@ -167,4 +167,16 @@ public class ReportService {
     private void verifyRoleAdmin() {
         SecurityUtils.checkUserAuthority("ROLE_ADMIN", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
+
+    @Transactional(readOnly = true)
+    public ReportResponse findReport(Long reportId) {
+        verifyRoleAdmin();
+        Report report = getReportOrThrow(reportId);
+        return ReportResponse.from(report);
+    }
+
+    private Report getReportOrThrow(Long reportId) {
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException(ReportExceptionType.REPORT_NOT_FOUND));
+    }
 }

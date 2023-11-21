@@ -31,4 +31,11 @@ public class ReportController {
         return ApiResponse.createSuccess(response);
     }
 
+    @GetMapping("/{reportId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ReportResponse> reportDetails(@PathVariable Long reportId) {
+        ReportResponse response = reportService.findReport(reportId);
+        return ApiResponse.createSuccess(response);
+    }
+
 }
