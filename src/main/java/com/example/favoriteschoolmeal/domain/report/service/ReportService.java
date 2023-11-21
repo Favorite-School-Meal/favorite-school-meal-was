@@ -53,6 +53,13 @@ public class ReportService {
         return ReportListResponse.from(reportResponses);
     }
 
+    @Transactional(readOnly = true)
+    public ReportResponse findReport(Long reportId) {
+        verifyRoleAdmin();
+        Report report = getReportOrThrow(reportId);
+        return ReportResponse.from(report);
+    }
+
     private Report createReport(CreateReportRequest request, Member reporter) {
 
         if (request.reportType().equals(ReportType.PROFILE)) {
@@ -166,5 +173,10 @@ public class ReportService {
 
     private void verifyRoleAdmin() {
         SecurityUtils.checkUserAuthority("ROLE_ADMIN", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private Report getReportOrThrow(Long reportId) {
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException(ReportExceptionType.REPORT_NOT_FOUND));
     }
 }

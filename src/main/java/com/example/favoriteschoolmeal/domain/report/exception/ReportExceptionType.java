@@ -34,6 +34,11 @@ public enum ReportExceptionType implements BaseExceptionType {
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
+    ),
+    REPORT_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Report not found"
     );
     private final int errorCode;
     private final String errorMessage;
