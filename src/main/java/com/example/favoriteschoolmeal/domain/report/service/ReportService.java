@@ -17,12 +17,12 @@ import com.example.favoriteschoolmeal.domain.report.exception.ReportException;
 import com.example.favoriteschoolmeal.domain.report.exception.ReportExceptionType;
 import com.example.favoriteschoolmeal.domain.report.repository.ReportRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -45,6 +45,14 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
+    @Transactional(readOnly = true)
+    public ReportListResponse findAllReportByIsResolvedFalse(Pageable pageable) {
+        verifyRoleAdmin();
+        Page<ReportResponse> reportResponses = reportRepository.findAllByIsResolvedFalse(pageable)
+                .map(ReportResponse::from);
+        return ReportListResponse.from(reportResponses);
+    }
+
     private Report createReport(CreateReportRequest request, Member reporter) {
 
         if (request.reportType().equals(ReportType.PROFILE)) {
@@ -60,7 +68,6 @@ public class ReportService {
         }
 
     }
-
 
     private Chat getChatOrThrow(Long chatId) {
         return chatService.findChatOptionally(chatId)
@@ -155,13 +162,6 @@ public class ReportService {
                 .content(content)
                 .isResolved(false)
                 .build();
-    }
-
-    public ReportListResponse findAllReportByIsResolvedFalse(Pageable pageable) {
-        verifyRoleAdmin();
-        Page<ReportResponse> reportResponses = reportRepository.findAllByIsResolvedFalse(pageable)
-                .map(ReportResponse::from);
-        return ReportListResponse.from(reportResponses);
     }
 
     private void verifyRoleAdmin() {
