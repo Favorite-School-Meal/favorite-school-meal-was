@@ -39,7 +39,7 @@ public class PostService {
         // TODO: 추후 아래 주석 해제
         // verifyRoleUser();
         final Member member = getMemberOrThrow(getCurrentMemberId());
-        final Matching matching = createMatching(command);
+        final Matching matching = createMatching(member, command);
         final Restaurant restaurant = findRestaurantByIdOrElseNull(command.restaurantId());
 
         final Post post = createPost(command, member, matching, restaurant);
@@ -84,6 +84,10 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    public Optional<Post> findPostOptionally(final Long postId) {
+        return postRepository.findById(postId);
+    }
+
     private Post getPostOrThrow(final Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
@@ -113,8 +117,8 @@ public class PostService {
                 .orElse(null);
     }
 
-    private Matching createMatching(final CreatePostCommand command) {
-        return matchingService.addMatching(command.meetingDateTime(), command.maxParticipant());
+    private Matching createMatching(final Member member, final CreatePostCommand command) {
+        return matchingService.addMatching(member, command.meetingDateTime(), command.maxParticipant());
     }
 
     private void modifyTitleAndContent(final Post post, final CreatePostCommand command) {

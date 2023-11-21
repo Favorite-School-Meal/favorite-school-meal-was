@@ -1,4 +1,4 @@
-package com.example.favoriteschoolmeal.domain.matchingmember.domain;
+package com.example.favoriteschoolmeal.domain.matching.domain;
 
 import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
