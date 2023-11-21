@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.report.controller;
 
+import com.example.favoriteschoolmeal.domain.report.controller.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
@@ -37,5 +38,14 @@ public class ReportController {
         ReportResponse response = reportService.findReport(reportId);
         return ApiResponse.createSuccess(response);
     }
+
+    @PatchMapping("/{reportId}/block")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ApiResponse<?> blockMemberWithReport(@PathVariable Long reportId,
+                                                @RequestBody BlockRequest blockRequest) {
+        reportService.blockMemberAndResolveReport(reportId, blockRequest);
+        return ApiResponse.createSuccessWithNoContent();
+    }
+
 
 }
