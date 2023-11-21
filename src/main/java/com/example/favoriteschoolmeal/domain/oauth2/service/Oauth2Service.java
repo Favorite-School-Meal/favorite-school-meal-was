@@ -12,11 +12,11 @@ public interface Oauth2Service {
 
     OauthUserInfoDto getUserInfo(String accessToken);
 
-    Oauth create(OauthUserInfoDto oauthUserInfoDto, Member member);
+    void create(OauthUserInfoDto oauthUserInfoDto, Member member);
 
-    Oauth delete(Member member);
+    void delete(Member member);
 
-    Oauth isExists(Member member);
+    Oauth isExists(OauthUserInfoDto oauthUserInfoDto);
 
     String getAccessToken(OauthSignInRequest oauthSignInRequest);
 }

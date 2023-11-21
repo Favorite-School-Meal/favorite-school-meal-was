@@ -35,7 +35,7 @@ public class SecurityConfig {
 
             "api/v1/auth/**",
 
-
+            "api/v1/oauth/**",
 
             // TODO: 추후 아래 코드 삭제
             "api/**",
@@ -43,6 +43,9 @@ public class SecurityConfig {
             /* swagger v3*/
             "/swagger-ui/**",
             "/v3/api-docs/**",
+
+
+
     };
 
     @Bean

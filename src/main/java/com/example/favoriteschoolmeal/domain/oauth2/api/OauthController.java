@@ -42,4 +42,9 @@ public class OauthController {
         JwtTokenDto jwtTokenDto = oauth2Service.signIn(oauthSignInRequest, OauthPlatform.NAVER);
         return ApiResponse.createSuccess(jwtTokenDto);
     }
+
+    @GetMapping("/kakao/callback")
+    public @ResponseBody String kakaoCallback(String code){
+        return code;
+    }
 }

@@ -20,17 +20,15 @@ public class NaverService implements Oauth2Service {
     }
 
     @Override
-    public Oauth create(OauthUserInfoDto oauthUserInfoDto, Member member) {
-        return null;
+    public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
     }
 
     @Override
-    public Oauth delete(Member member) {
-        return null;
+    public void delete(Member member) {
     }
 
     @Override
-    public Oauth isExists(Member member) {
+    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto) {
         return null;
     }
 

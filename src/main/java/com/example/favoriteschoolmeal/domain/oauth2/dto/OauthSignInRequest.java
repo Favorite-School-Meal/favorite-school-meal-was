@@ -1,20 +1,22 @@
 package com.example.favoriteschoolmeal.domain.oauth2.dto;
 
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OauthSignInRequest {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    private String authorizeCode;
-    //TODO: 추가로 받아야할 정보
+public record OauthSignInRequest(
+
+        @NotBlank
+        String authorizeCode,
+
+        @NotBlank
+        @Size(min = 2, max = 4, message = "이름은 2자리 이상, 4자리 이하여야 합니다.")
+        String fullname,
+
+        @NotBlank
+        @Size(min = 7, max = 7, message = "문자열은 주민번호 앞자리 6자와 끝자리의 첫자를 합하여 7자리여야 합니다.")
+        String personalNumber
+) {
+
 }
