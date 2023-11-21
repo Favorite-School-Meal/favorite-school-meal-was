@@ -13,7 +13,7 @@ public interface MatchingMemberRepository extends JpaRepository<MatchingMember, 
     /**
      * 매칭과 멤버를 기반으로 매칭 멤버를 찾습니다.
      *
-     * @param matching 매칭 엔티티
+     * @param matching  매칭 엔티티
      * @param applicant 멤버 엔티티
      * @return 매칭 멤버
      */

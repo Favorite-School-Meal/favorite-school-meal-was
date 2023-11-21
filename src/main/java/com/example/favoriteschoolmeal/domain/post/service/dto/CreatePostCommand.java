@@ -1,7 +1,6 @@
 package com.example.favoriteschoolmeal.domain.post.service.dto;
 
 import com.example.favoriteschoolmeal.domain.post.controller.dto.CreatePostRequest;
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public record CreatePostCommand(

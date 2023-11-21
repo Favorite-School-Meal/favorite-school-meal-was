@@ -12,7 +12,7 @@ import com.example.favoriteschoolmeal.domain.model.MatchingRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.MatchingStatus;
 import com.example.favoriteschoolmeal.domain.model.RoleType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
-import com.example.favoriteschoolmeal.domain.post.service.PostService;
+import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,19 +23,21 @@ public class MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final MatchingMemberRepository matchingMemberRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
     private final MemberService memberService;
 
     public MatchingService(final MatchingRepository matchingRepository,
-            final MatchingMemberRepository matchingMemberRepository, final PostService postService,
+            final MatchingMemberRepository matchingMemberRepository,
+            final PostRepository postRepository,
             final MemberService memberService) {
         this.matchingRepository = matchingRepository;
         this.matchingMemberRepository = matchingMemberRepository;
-        this.postService = postService;
+        this.postRepository = postRepository;
         this.memberService = memberService;
     }
 
-    public Matching addMatching(final Member host, final LocalDateTime meetingDateTime, final Integer maxParticipant) {
+    public Matching addMatching(final Member host, final LocalDateTime meetingDateTime,
+            final Integer maxParticipant) {
         final Matching matching = Matching.builder()
                 .matchingStatus(MatchingStatus.IN_PROGRESS)
                 .maxParticipant(maxParticipant)
@@ -74,8 +76,10 @@ public class MatchingService {
     }
 
     private boolean isApplicationAvailable(Matching matching, Member applicant) {
-        boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching, applicant).isPresent();
-        boolean isMatchingFull = matchingMemberRepository.countByMatching(matching) >= matching.getMaxParticipant();
+        boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching,
+                applicant).isPresent();
+        boolean isMatchingFull =
+                matchingMemberRepository.countByMatching(matching) >= matching.getMaxParticipant();
         boolean isMatchingOpen = matching.getMatchingStatus().equals(MatchingStatus.IN_PROGRESS);
 
         return !alreadyApplied && !isMatchingFull && isMatchingOpen;
@@ -117,7 +121,7 @@ public class MatchingService {
     }
 
     private Post getPostOrThrow(final Long postId) {
-        return postService.findPostOptionally(postId)
+        return postRepository.findById(postId)
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.POST_NOT_FOUND));
     }
 

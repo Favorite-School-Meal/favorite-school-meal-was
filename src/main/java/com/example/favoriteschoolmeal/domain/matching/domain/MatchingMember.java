@@ -1,11 +1,20 @@
 package com.example.favoriteschoolmeal.domain.matching.domain;
 
-import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.MatchingRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.RoleType;
 import com.example.favoriteschoolmeal.global.common.Base;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +49,8 @@ public class MatchingMember extends Base {
     private MatchingRequestStatus matchingRequestStatus;
 
     @Builder
-    public MatchingMember(Member member, RoleType roleType, Matching matching, MatchingRequestStatus matchingRequestStatus) {
+    public MatchingMember(Member member, RoleType roleType, Matching matching,
+            MatchingRequestStatus matchingRequestStatus) {
         this.member = member;
         this.roleType = roleType;
         this.matching = matching;

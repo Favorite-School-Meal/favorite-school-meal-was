@@ -36,8 +36,7 @@ public class PostService {
     }
 
     public Post addPost(final CreatePostCommand command) {
-        // TODO: 추후 아래 주석 해제
-        // verifyRoleUser();
+        verifyRoleUser();
         final Member member = getMemberOrThrow(getCurrentMemberId());
         final Matching matching = createMatching(member, command);
         final Restaurant restaurant = findRestaurantByIdOrElseNull(command.restaurantId());
@@ -47,8 +46,7 @@ public class PostService {
     }
 
     public Post modifyPost(final Long postId, final CreatePostCommand command) {
-        // TODO: 추후 아래 주석 해제
-        // verifyRoleUser();
+        verifyRoleUser();
         final Long currentMemberId = getCurrentMemberId();
 
         final Post post = getPostOrThrow(postId);
@@ -68,7 +66,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<Post> findAllPostByRestaurantId(final Long restaurantId, final Pageable pageable) {
-        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(restaurantId, pageable);
+        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(
+                restaurantId, pageable);
         summarizePostsIfNotNull(posts);
         return posts;
     }
@@ -118,7 +117,8 @@ public class PostService {
     }
 
     private Matching createMatching(final Member member, final CreatePostCommand command) {
-        return matchingService.addMatching(member, command.meetingDateTime(), command.maxParticipant());
+        return matchingService.addMatching(member, command.meetingDateTime(),
+                command.maxParticipant());
     }
 
     private void modifyTitleAndContent(final Post post, final CreatePostCommand command) {
@@ -126,7 +126,8 @@ public class PostService {
     }
 
     private void modifyMatchingDetails(final Matching matching, final CreatePostCommand command) {
-        matchingService.modifyDetails(matching, command.meetingDateTime(), command.maxParticipant());
+        matchingService.modifyDetails(matching, command.meetingDateTime(),
+                command.maxParticipant());
     }
 
     private void summarizeContent(final Post post) {
@@ -172,11 +173,7 @@ public class PostService {
     }
 
     private Long getCurrentMemberId() {
-        return 1L;
-        // TODO: 추후 위 코드 삭제 및 아래 코드 주석 해제
-        /*
         return SecurityUtils.getCurrentMemberId(
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
-      */
     }
 }
