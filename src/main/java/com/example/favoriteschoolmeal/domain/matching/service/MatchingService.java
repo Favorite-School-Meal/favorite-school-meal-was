@@ -17,8 +17,10 @@ import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class MatchingService {
 
     private final MatchingRepository matchingRepository;
@@ -54,15 +56,24 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
-    public Matching applyMatching(final Long postId) {
+    public void applyMatching(final Long postId) {
+        verifyRoleUser();
         Member applicant = getCurrentMemberOrThrow();
         Post post = getPostOrThrow(postId);
         Matching matching = getMatchingFromPost(post);
 
         checkIfMatchingIsAvailable(matching, applicant);
         addMatchingMember(matching, applicant);
+    }
 
-        return matching;
+    public void cancelMatchingApplication(Long postId) {
+        verifyRoleUser();
+        Member currentMember = getCurrentMemberOrThrow();
+        Post post = getPostOrThrow(postId);
+        Matching matching = getMatchingFromPost(post);
+        MatchingMember matchingMember = getMatchingMemberOrThrow(matching, currentMember);
+        validateCancellation(matchingMember);
+        cancelMatchingMember(matchingMember);
     }
 
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
@@ -105,6 +116,12 @@ public class MatchingService {
         matchingMemberRepository.save(matchingMember);
     }
 
+    private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {
+        return matchingMemberRepository
+                .findByMatchingAndMember(matching, member)
+                .orElseThrow(() -> new MatchingException(MatchingExceptionType.MATCHING_MEMBER_NOT_FOUND));
+    }
+
     private Member getCurrentMemberOrThrow() {
         return memberService.findMemberOptionally(getCurrentMemberId())
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.MEMBER_NOT_FOUND));
@@ -125,8 +142,18 @@ public class MatchingService {
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.POST_NOT_FOUND));
     }
 
+    private void validateCancellation(final MatchingMember matchingMember) {
+        if (!matchingMember.getMatchingRequestStatus().equals(MatchingRequestStatus.PENDING)) {
+            throw new MatchingException(MatchingExceptionType.INVALID_OPERATION);
+        }
+    }
+
     private void verifyRoleUser() {
         SecurityUtils.checkUserAuthority("ROLE_USER",
                 () -> new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private void cancelMatchingMember(final MatchingMember matchingMember) {
+        matchingMemberRepository.delete(matchingMember);
     }
 }

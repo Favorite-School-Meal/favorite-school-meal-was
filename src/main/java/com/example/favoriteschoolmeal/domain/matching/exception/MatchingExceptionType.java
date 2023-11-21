@@ -29,10 +29,22 @@ public enum MatchingExceptionType implements BaseExceptionType {
             "Member not found"
     ),
 
+    MATCHING_MEMBER_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Matching member not found"
+    ),
+
     UNAUTHORIZED_ACCESS(
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
+    ),
+
+    INVALID_OPERATION(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Invalid operation"
     );
 
     private final int errorCode;

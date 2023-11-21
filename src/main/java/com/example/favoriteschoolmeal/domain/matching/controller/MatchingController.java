@@ -1,9 +1,9 @@
 package com.example.favoriteschoolmeal.domain.matching.controller;
 
-import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.service.MatchingService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +24,17 @@ public class MatchingController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> matchingApply(
             @PathVariable final Long postId) {
-        final Matching matching = matchingService.applyMatching(postId);
+        matchingService.applyMatching(postId);
         return ApiResponse.createSuccess(null);
     }
 
-    // TODO: Guest가 매칭 신청 취소
+    @DeleteMapping("/posts/{postId}/cancel-application")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ApiResponse<Void> matchingApplicationCancel(
+            @PathVariable final Long postId) {
+        matchingService.cancelMatchingApplication(postId);
+        return ApiResponse.createSuccess(null);
+    }
 
     // TODO: Host가 매칭 승인
 
