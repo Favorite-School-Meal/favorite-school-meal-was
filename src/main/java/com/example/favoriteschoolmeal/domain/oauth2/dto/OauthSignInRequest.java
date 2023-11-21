@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OauthUserInfoDto {
+public class OauthSignInRequest {
 
-    private String platformId;
-    private String nickname;
-    private String email;
+    private String authorizeCode;
+    //TODO: 추가로 받아야할 정보
 }

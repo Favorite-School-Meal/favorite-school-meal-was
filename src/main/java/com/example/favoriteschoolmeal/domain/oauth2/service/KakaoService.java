@@ -1,14 +1,22 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
+import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthTokenDto;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -20,21 +28,22 @@ import java.net.URL;
 @RequiredArgsConstructor
 public class KakaoService implements Oauth2Service {
 
-    public JwtTokenDto signIn(String authorizeCode){
+    private final AuthServiceImpl authService;
+    private final RefreshTokenServiceImpl refreshTokenService;
 
-        String accessToken = getAccessToken(authorizeCode);
-        OauthUserInfoDto oauthUserInfoDto = getUserInfo(accessToken);
+    @Value("${oauth.kakao.api-url}")
+    private String apiURL;
 
-        //사용자가 존재할 경우에는 로그인
-        //없으면 회원가입하고 로그인
+    @Value("${oauth.kakao.auth-url}")
+    private String authURL;
 
-        return null;
-    }
+    @Value("${oauth.kakao.client-id}")
+    private String clientId;
 
     @Override
     public OauthUserInfoDto getUserInfo(String accessToken) {
 
-        String postURL = "https://kapi.kakao.com/v2/user/me";
+        String postURL = apiURL + "v2/user/me";
 
         try {
             URL url = new URL(postURL);
@@ -43,6 +52,7 @@ public class KakaoService implements Oauth2Service {
 
             connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
+            //http 응답요청 코드 성공:200
             int responseCode = connection.getResponseCode();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -58,20 +68,16 @@ public class KakaoService implements Oauth2Service {
 
             JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject(); //카카오계정 정보
 
-
-            String fullname = kakaoAccount.getAsJsonObject().get("name").getAsString();
+            String platformId = element.getAsJsonObject().get("id").getAsString();
             String nickname = kakaoAccount.getAsJsonObject().get("profile").getAsJsonObject().get("nickname").getAsString();
             String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
-            String birthday = kakaoAccount.getAsJsonObject().get("birthyear").getAsString() + kakaoAccount.getAsJsonObject().get("birthday").getAsString(); //YYYYMMDD
-            String gender = kakaoAccount.getAsJsonObject().get("gender").getAsString(); //female, male
+
 
 
             return OauthUserInfoDto.builder()
-                    .fullname(fullname)
+                    .platformId(platformId)
                     .nickname(nickname)
                     .email(email)
-                    .birthday(birthday)
-                    .gender(gender)
                     .build();
 
         } catch (IOException exception) {
@@ -81,26 +87,39 @@ public class KakaoService implements Oauth2Service {
 
     @Override
     public Oauth create(OauthUserInfoDto oauthUserInfoDto, Member member) {
+
+        //TODO: isExists메서드로 oauth계정이 이미 존재하는지 확인
+           Oauth oauth = Oauth.builder()
+                   .member(member)
+                   .oauthPlatform(OauthPlatform.KAKAO)
+                   .platformId(oauthUserInfoDto.getPlatformId())
+                   .nickname(oauthUserInfoDto.getNickname())
+                   .email(oauthUserInfoDto.getEmail())
+                   .build();
         return null;
     }
 
     @Override
     public Oauth delete(Member member) {
+        //TODO: Oauth 계정 삭제
         return null;
     }
 
     @Override
     public Oauth isExists(Member member) {
+        //TODO: OauthRepository에서 이미 존재하는지 확인
         return null;
     }
 
     @Override
-    public String getAccessToken(String authorizeCode) {
+    public String getAccessToken(OauthSignInRequest oauthSignInRequest) {
 
+
+        String authorizeCode = oauthSignInRequest.getAuthorizeCode();
         String accessToken = "";
-        String refreshToken = "";
+        //String refreshToken = "";
 
-        String requestURL = "https://kauth.kakao.com/oauth/token";
+        String requestURL = authURL + "/oauth/token";
 
         try{
             URL url = new URL(requestURL);
@@ -114,8 +133,8 @@ public class KakaoService implements Oauth2Service {
             // POST 요청에서 필요한 파라미터를 OutputStream을 통해 전송
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
             String sb = "grant_type=authorization_code" +
-                    "&client_id=REST_API_KEY 입력" + // TODO: 앱 REST API 키
-                    "&redirect_uri=http://localhost:8080/app/login/kakao" + // TODO: 인가 코드가 리다이렉트된 URI
+                    "&client_id="  + clientId +
+                    "&redirect_uri=http://localhost:8080/kakao/callback" +
                     "&code=" + authorizeCode;
             //TODO: client_secret 추가
             bw.write(sb); //구성된 문자열을 출력 스트림을 통해 서버로 전송
@@ -136,7 +155,7 @@ public class KakaoService implements Oauth2Service {
             //응답을 문자열로 변환하고, JSON으로 파싱하여 액세스 토큰과 리프레시 토큰을 추출
             JsonElement jsonElement = JsonParser.parseString(result.toString());
             accessToken = jsonElement.getAsJsonObject().get("access_token").getAsString();
-            refreshToken = jsonElement.getAsJsonObject().get("refresh_token").getAsString();
+            //refreshToken = jsonElement.getAsJsonObject().get("refresh_token").getAsString();
 
             bw.close();
             br.close();
