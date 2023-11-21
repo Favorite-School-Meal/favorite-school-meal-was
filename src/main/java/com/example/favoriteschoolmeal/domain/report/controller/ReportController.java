@@ -19,14 +19,14 @@ public class ReportController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<ReportResponse> reportAdd(@RequestBody final CreateReportRequest request){
+    public ApiResponse<ReportResponse> reportAdd(@RequestBody final CreateReportRequest request) {
         ReportResponse response = reportService.addReport(request);
         return ApiResponse.createSuccess(response);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ReportListResponse> reportListByIsResolvedFalse(Pageable pageable){
+    public ApiResponse<ReportListResponse> reportListByIsResolvedFalse(Pageable pageable) {
         ReportListResponse response = reportService.findAllReportByIsResolvedFalse(pageable);
         return ApiResponse.createSuccess(response);
     }

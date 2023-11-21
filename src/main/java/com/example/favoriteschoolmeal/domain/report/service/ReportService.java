@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -77,6 +76,7 @@ public class ReportService {
         return commentService.findCommentOptionally(commentId)
                 .orElseThrow(() -> new ReportException(ReportExceptionType.COMMENT_NOT_FOUND));
     }
+
     private String getTitle(Object entity) {
         if (entity == null) {
             return null;
@@ -108,6 +108,7 @@ public class ReportService {
 
         return truncatedContent + titleSuffix;
     }
+
     private Report buildChatReport(CreateReportRequest request, Member reporter) {
         Chat chat = getChatOrThrow(request.chatId());
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
@@ -121,12 +122,12 @@ public class ReportService {
 
     private Report buildProfileReport(CreateReportRequest request, Member reporter) {
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null,getTitle(reportedMember), request.content());
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null, getTitle(reportedMember), request.content());
     }
 
     private Report buildPostReport(CreateReportRequest request, Member reporter) {
         Post post = getPostOrThrow(request.postId());
-        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, getTitle(post),request.content());
+        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, getTitle(post), request.content());
     }
 
     private Post getPostOrThrow(Long postId) {
@@ -142,7 +143,7 @@ public class ReportService {
         SecurityUtils.checkUserAuthority("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat,String title, String content) {
+    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String title, String content) {
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)

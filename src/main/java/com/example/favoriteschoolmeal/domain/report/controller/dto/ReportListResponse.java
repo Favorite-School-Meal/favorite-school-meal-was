@@ -11,11 +11,11 @@ public record ReportListResponse(
         long totalElements
 ) {
 
-        public static ReportListResponse from(Page<ReportResponse> page) {
-            return new ReportListResponse(
-                    page.getContent(),
-                    page.getNumber(),
-                    page.getTotalPages(),
-                    page.getTotalElements());
-        }
+    public static ReportListResponse from(Page<ReportResponse> page) {
+        return new ReportListResponse(
+                page.getContent(),
+                page.getNumber(),
+                page.getTotalPages(),
+                page.getTotalElements());
+    }
 }
