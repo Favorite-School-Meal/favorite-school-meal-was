@@ -40,8 +40,9 @@ public class SecurityConfig {
             // TODO: 추후 아래 코드 삭제
             "api/**",
 
-            //TODO: swagger 추가
-
+            /* swagger v3*/
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
     };
 
     @Bean
