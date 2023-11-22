@@ -39,6 +39,11 @@ public enum ReportExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Report not found"
+    ),
+    ALREADY_RESOLVED(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Already resolved"
     );
     private final int errorCode;
     private final String errorMessage;

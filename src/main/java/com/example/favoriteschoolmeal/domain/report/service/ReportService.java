@@ -64,9 +64,16 @@ public class ReportService {
     public void blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
         verifyRoleAdmin();
         Report report = getReportOrThrow(reportId);
+        checkNotResolved(report);
         Member reportedMember = getReportedMemberOrThrow(report);
         memberService.blockMember(reportedMember, blockRequest.blockHours());
         report.resolveReport();
+    }
+
+    private static void checkNotResolved(Report report) {
+        if (report.getIsResolved()) {
+            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
+        }
     }
 
     private Member getReportedMemberOrThrow(Report report){
