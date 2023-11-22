@@ -189,12 +189,12 @@ public class MatchingService {
     }
 
     private void verifyRoleUser() {
-        SecurityUtils.checkUserAuthority("ROLE_USER",
+        SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS));
     }
 
     private void verifyPostOwner(final Post post, final Member host) {
-        if (!post.getMember().equals(host)) {
+        if (!post.getMember().equals(host) && !SecurityUtils.isAdmin()) {
             throw new MatchingException(MatchingExceptionType.UNAUTHORIZED_HOST_ACCESS);
         }
     }

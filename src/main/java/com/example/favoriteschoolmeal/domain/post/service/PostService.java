@@ -36,7 +36,7 @@ public class PostService {
     }
 
     public Post addPost(final CreatePostCommand command) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Member member = getMemberOrThrow(getCurrentMemberId());
         final Matching matching = createMatching(member, command);
         final Restaurant restaurant = findRestaurantByIdOrElseNull(command.restaurantId());
@@ -46,7 +46,7 @@ public class PostService {
     }
 
     public Post modifyPost(final Long postId, final CreatePostCommand command) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Long currentMemberId = getCurrentMemberId();
 
         final Post post = getPostOrThrow(postId);
@@ -155,8 +155,8 @@ public class PostService {
                 .build();
     }
 
-    private void verifyRoleUser() {
-        SecurityUtils.checkUserAuthority("ROLE_USER",
+    private void verifyUserOrAdmin() {
+        SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
     }
 
