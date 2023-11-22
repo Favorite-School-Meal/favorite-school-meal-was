@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+
 
 @Slf4j
 @Service
@@ -92,9 +94,12 @@ public class Oauth2ServiceImpl {
         final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
         final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
 
+        String randomStringUsername = generateRandomString(10);
+        String randomStringPassword = generateRandomString(10);
+
         return Member.builder()
-                .username("random")//TODO: 난수로 생성?
-                .password(passwordEncoder.encode("random"))
+                .username(randomStringUsername)//TODO: 난수로 생성?
+                .password(passwordEncoder.encode(randomStringPassword))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())
                 .fullName(oauthSignInRequest.fullname())
@@ -115,5 +120,19 @@ public class Oauth2ServiceImpl {
         }
         //TODO: 예외 코드 변경
         else throw new RuntimeException("지원하지 않은 소셜로그인 플랫폼입니다.");
+    }
+
+
+    public static String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        return sb.toString();
     }
 }
