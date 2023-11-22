@@ -40,11 +40,11 @@ public class ReportController {
     }
 
     @PatchMapping("/{reportId}/block")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ApiResponse<?> blockMemberWithReport(@PathVariable Long reportId,
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ReportResponse> blockMemberWithReport(@PathVariable Long reportId,
                                                 @RequestBody BlockRequest blockRequest) {
-        reportService.blockMemberAndResolveReport(reportId, blockRequest);
-        return ApiResponse.createSuccessWithNoContent();
+        ReportResponse response = reportService.blockMemberAndResolveReport(reportId, blockRequest);
+        return ApiResponse.createSuccess(response);
     }
 
 

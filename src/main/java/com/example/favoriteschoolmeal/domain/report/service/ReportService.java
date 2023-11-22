@@ -61,13 +61,14 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
-    public void blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
+    public ReportResponse blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
         verifyRoleAdmin();
         Report report = getReportOrThrow(reportId);
         checkNotResolved(report);
         Member reportedMember = getReportedMemberOrThrow(report);
         memberService.blockMember(reportedMember, blockRequest.blockHours());
         report.resolveReport();
+        return ReportResponse.from(report);
     }
 
     private static void checkNotResolved(Report report) {
