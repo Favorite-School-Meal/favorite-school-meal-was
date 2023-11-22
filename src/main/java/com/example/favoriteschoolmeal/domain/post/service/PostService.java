@@ -181,8 +181,6 @@ public class PostService {
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
     }
 
-    public Optional<Post> findPostOptionally(final Long postId) {
-        return postRepository.findById(postId);
-    }
+
 }
 

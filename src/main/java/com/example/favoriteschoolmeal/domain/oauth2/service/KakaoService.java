@@ -6,6 +6,8 @@ import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
@@ -13,6 +15,7 @@ import com.nimbusds.jose.shaded.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -76,15 +79,18 @@ public class KakaoService implements OauthService {
                     .email(email)
                     .build();
 
-        } catch (IOException exception) {
-            return null; //TODO: 예외처리
+        } catch (IOException e) {
+            throw new OauthException(OauthExceptionType.GET_USERINFO_IO_EXCEPTION);
+        } catch (NullPointerException e){
+            throw new OauthException(OauthExceptionType.GET_USERINFO_NULL);
+        } catch (JsonParseException e){
+            throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
     }
 
     @Override
     public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
 
-        //TODO: isExists메서드로 oauth계정이 이미 존재하는지 확인
         Oauth oauth = Oauth.builder()
                 .member(member)
                 .oauthPlatform(OauthPlatform.KAKAO)
@@ -102,11 +108,9 @@ public class KakaoService implements OauthService {
     }
 
     @Override
-    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto) {
-        //TODO: OauthRepository에서 이미 존재하는지 확인
-        Optional<Oauth> optionalOauth = oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.KAKAO);
-        log.info("kakaoService에서 유저 정보 존재 확인. {}",optionalOauth);
-        return optionalOauth.orElse(null);
+    public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
+
+        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.KAKAO);
     }
 
     @Override
@@ -158,9 +162,11 @@ public class KakaoService implements OauthService {
 
 
         } catch (MalformedURLException e) {
-            //TODO: 예외처리
+            throw new OauthException(OauthExceptionType.MALFORMED_URL_EXCEPTION);
         } catch (IOException e) {
-
+            throw new OauthException(OauthExceptionType.GET_ACCESSTOKEN_IO_EXCEPTION);
+        } catch (JsonParseException e){
+            throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
 
         return accessToken;
