@@ -24,7 +24,9 @@ public record ReportResponse(
         String content,
         Long postId,
         Long commentId,
-        Long chatId
+        Long chatId,
+
+        Boolean isResolved
 
         //TODO: 신고 횟수 제공
         //TODO: 신고자 프로필 이미지 url 제공
@@ -43,7 +45,8 @@ public record ReportResponse(
                 report.getContent(),
                 Optional.ofNullable(report.getReportedPost()).map(Post::getId).orElse(null),
                 Optional.ofNullable(report.getReportedComment()).map(Comment::getId).orElse(null),
-                Optional.ofNullable(report.getReportedChat()).map(Chat::getId).orElse(null)
+                Optional.ofNullable(report.getReportedChat()).map(Chat::getId).orElse(null),
+                report.getIsResolved()
         );
 
     }
