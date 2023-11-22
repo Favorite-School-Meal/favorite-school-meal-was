@@ -181,6 +181,5 @@ public class PostService {
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
     }
 
-
 }
 
