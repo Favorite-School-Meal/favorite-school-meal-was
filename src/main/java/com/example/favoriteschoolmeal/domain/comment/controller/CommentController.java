@@ -8,6 +8,7 @@ import com.example.favoriteschoolmeal.domain.comment.service.dto.CreateCommentCo
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,5 +56,14 @@ public class CommentController {
         final List<Comment> comments = commentService.findAllPost(postId);
         final List<CommentResponse> commentResponses = CommentResponse.listFrom(comments);
         return ApiResponse.createSuccess(commentResponses);
+    }
+
+    @DeleteMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ApiResponse<Void> commentRemove(
+            @PathVariable final Long postId,
+            @PathVariable final Long commentId) {
+        commentService.removeComment(postId, commentId);
+        return ApiResponse.createSuccess(null);
     }
 }

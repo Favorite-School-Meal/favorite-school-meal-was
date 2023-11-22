@@ -52,9 +52,17 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Comment> findAllPost(Long postId) {
+    public List<Comment> findAllPost(final Long postId) {
         final Post post = getPostOrThrow(postId);
         return commentRepository.findAllByPost(post, Sort.by("createdAt").ascending());
+    }
+
+    public void removeComment(final Long postId, final Long commentId) {
+        verifyUserOrAdmin();
+        getPostOrThrow(postId);
+        final Comment comment = getCommentOrThrow(commentId);
+        verifyCommentOwner(comment.getMember().getId(), getCurrentMemberId());
+        commentRepository.delete(comment);
     }
 
     private Comment createComment(CreateCommentCommand command, Post post, Member member) {
