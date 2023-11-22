@@ -41,6 +41,12 @@ public enum MatchingExceptionType implements BaseExceptionType {
             "Unauthorized access"
     ),
 
+    UNAUTHORIZED_HOST_ACCESS(
+            401,
+            HttpStatus.UNAUTHORIZED,
+            "Unauthorized host access"
+    ),
+
     INVALID_OPERATION(
             400,
             HttpStatus.BAD_REQUEST,

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/posts/{postId}")
 @RestController
 public class MatchingController {
 
@@ -20,7 +20,7 @@ public class MatchingController {
         this.matchingService = matchingService;
     }
 
-    @PostMapping("/posts/{postId}/apply-matching")
+    @PostMapping("/apply-matching")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> matchingApply(
             @PathVariable final Long postId) {
@@ -28,7 +28,7 @@ public class MatchingController {
         return ApiResponse.createSuccess(null);
     }
 
-    @DeleteMapping("/posts/{postId}/cancel-application")
+    @DeleteMapping("/cancel-application")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> matchingApplicationCancel(
             @PathVariable final Long postId) {
@@ -36,9 +36,23 @@ public class MatchingController {
         return ApiResponse.createSuccess(null);
     }
 
-    // TODO: Host가 매칭 승인
+    @PostMapping("/accept-application/{memberId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> matchingApplicationAccept(
+            @PathVariable final Long postId,
+            @PathVariable final Long memberId) {
+        matchingService.acceptMatchingApplication(postId, memberId);
+        return ApiResponse.createSuccess(null);
+    }
 
-    // TODO: Host가 매칭 거절
+    @PostMapping("/reject-application/{memberId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> matchingApplicationReject(
+            @PathVariable final Long postId,
+            @PathVariable final Long memberId) {
+        matchingService.rejectMatchingApplication(postId, memberId);
+        return ApiResponse.createSuccess(null);
+    }
 
     // TODO: Host가 매칭 상태(모집 중, 모집 완료) 관리
 }

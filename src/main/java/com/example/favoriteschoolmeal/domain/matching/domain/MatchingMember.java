@@ -56,4 +56,8 @@ public class MatchingMember extends Base {
         this.matching = matching;
         this.matchingRequestStatus = matchingRequestStatus;
     }
+
+    public void updateMatchingRequestStatus(MatchingRequestStatus status) {
+        this.matchingRequestStatus = status;
+    }
 }

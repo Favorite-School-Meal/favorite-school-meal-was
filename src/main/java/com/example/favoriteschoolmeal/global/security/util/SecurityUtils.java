@@ -48,4 +48,6 @@ public class SecurityUtils {
         return authentication != null && authentication.getAuthorities()
                 .contains(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.name()));
     }
+
+    // TODO: ROLE_USER 혹은 ROLE_ADMIN 권한을 가진 사용자인지 확인하는 메서드 추가
 }

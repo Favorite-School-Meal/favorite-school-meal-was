@@ -58,46 +58,54 @@ public class MatchingService {
 
     public void applyMatching(final Long postId) {
         verifyRoleUser();
-        Member applicant = getCurrentMemberOrThrow();
-        Post post = getPostOrThrow(postId);
-        Matching matching = getMatchingFromPost(post);
+        final Member applicant = getMemberOrThrow(getCurrentMemberId());
+        final Post post = getPostOrThrow(postId);
+        final Matching matching = getMatchingFromPost(post);
 
         checkIfMatchingIsAvailable(matching, applicant);
         addMatchingMember(matching, applicant);
     }
 
-    public void cancelMatchingApplication(Long postId) {
+    public void cancelMatchingApplication(final Long postId) {
         verifyRoleUser();
-        Member currentMember = getCurrentMemberOrThrow();
-        Post post = getPostOrThrow(postId);
-        Matching matching = getMatchingFromPost(post);
-        MatchingMember matchingMember = getMatchingMemberOrThrow(matching, currentMember);
-        validateCancellation(matchingMember);
+        final Member currentMember = getMemberOrThrow(getCurrentMemberId());
+        final Post post = getPostOrThrow(postId);
+        final Matching matching = getMatchingFromPost(post);
+        final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, currentMember);
+        verifyCancellation(matchingMember);
         cancelMatchingMember(matchingMember);
+    }
+
+    public void acceptMatchingApplication(final Long postId, final Long applicantMemberId) {
+        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.ACCEPTED);
+    }
+
+    public void rejectMatchingApplication(final Long postId, final Long applicantMemberId) {
+        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.REJECTED);
     }
 
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
     }
 
-    private void checkIfMatchingIsAvailable(Matching matching, Member member) {
+    private void checkIfMatchingIsAvailable(final Matching matching, final Member member) {
         if (!isApplicationAvailable(matching, member)) {
             throw new MatchingException(MatchingExceptionType.MATCHING_APPLICATION_DENIED);
         }
     }
 
-    private boolean isApplicationAvailable(Matching matching, Member applicant) {
-        boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching,
+    private boolean isApplicationAvailable(final Matching matching, final Member applicant) {
+        final boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching,
                 applicant).isPresent();
-        boolean isMatchingFull =
+        final boolean isMatchingFull =
                 matchingMemberRepository.countByMatching(matching) >= matching.getMaxParticipant();
-        boolean isMatchingOpen = matching.getMatchingStatus().equals(MatchingStatus.IN_PROGRESS);
+        final boolean isMatchingOpen = matching.getMatchingStatus().equals(MatchingStatus.IN_PROGRESS);
 
         return !alreadyApplied && !isMatchingFull && isMatchingOpen;
     }
 
-    private void addHostMemberToMatching(Matching matching, Member host) {
-        MatchingMember matchingMember = MatchingMember.builder()
+    private void addHostMemberToMatching(final Matching matching, final Member host) {
+        final MatchingMember matchingMember = MatchingMember.builder()
                 .member(host)
                 .matching(matching)
                 .roleType(RoleType.HOST)
@@ -106,8 +114,8 @@ public class MatchingService {
         matchingMemberRepository.save(matchingMember);
     }
 
-    private void addMatchingMember(Matching matching, Member applicant) {
-        MatchingMember matchingMember = MatchingMember.builder()
+    private void addMatchingMember(final Matching matching, final Member applicant) {
+        final MatchingMember matchingMember = MatchingMember.builder()
                 .member(applicant)
                 .matching(matching)
                 .roleType(RoleType.GUEST)
@@ -116,14 +124,35 @@ public class MatchingService {
         matchingMemberRepository.save(matchingMember);
     }
 
+    private void cancelMatchingMember(final MatchingMember matchingMember) {
+        matchingMemberRepository.delete(matchingMember);
+    }
+
+    private void updateMatchingMemberStatus(final MatchingMember matchingMember, final MatchingRequestStatus status) {
+        matchingMember.updateMatchingRequestStatus(status);
+        matchingMemberRepository.save(matchingMember);
+    }
+
+    private void processMatchingApplication(final Long postId, final Long applicantMemberId, final MatchingRequestStatus status) {
+        verifyRoleUser();
+        final Member host = getMemberOrThrow(getCurrentMemberId());
+        final Member applicantMember = getMemberOrThrow(applicantMemberId);
+        final Post post = getPostOrThrow(postId);
+        verifyPostOwner(post, host);
+        final Matching matching = getMatchingFromPost(post);
+        verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
+        final MatchingMember applicant = getMatchingMemberOrThrow(matching, applicantMember);
+        updateMatchingMemberStatus(applicant, status);
+    }
+
     private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {
         return matchingMemberRepository
                 .findByMatchingAndMember(matching, member)
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.MATCHING_MEMBER_NOT_FOUND));
     }
 
-    private Member getCurrentMemberOrThrow() {
-        return memberService.findMemberOptionally(getCurrentMemberId())
+    private Member getMemberOrThrow(final Long memberId) {
+        return memberService.findMemberOptionally(memberId)
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.MEMBER_NOT_FOUND));
     }
 
@@ -142,7 +171,7 @@ public class MatchingService {
                 .orElseThrow(() -> new MatchingException(MatchingExceptionType.POST_NOT_FOUND));
     }
 
-    private void validateCancellation(final MatchingMember matchingMember) {
+    private void verifyCancellation(final MatchingMember matchingMember) {
         if (!matchingMember.getMatchingRequestStatus().equals(MatchingRequestStatus.PENDING)) {
             throw new MatchingException(MatchingExceptionType.INVALID_OPERATION);
         }
@@ -153,7 +182,15 @@ public class MatchingService {
                 () -> new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private void cancelMatchingMember(final MatchingMember matchingMember) {
-        matchingMemberRepository.delete(matchingMember);
+    private void verifyPostOwner(final Post post, final Member host) {
+        if (!post.getMember().equals(host)) {
+            throw new MatchingException(MatchingExceptionType.UNAUTHORIZED_HOST_ACCESS);
+        }
+    }
+
+    private void verifyMatchingStatus(final Matching matching, final MatchingStatus status) {
+        if (!matching.getMatchingStatus().equals(status)) {
+            throw new MatchingException(MatchingExceptionType.INVALID_OPERATION);
+        }
     }
 }
