@@ -57,7 +57,7 @@ public class MatchingService {
     }
 
     public void applyMatching(final Long postId) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Member applicant = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
         final Matching matching = getMatchingFromPost(post);
@@ -67,7 +67,7 @@ public class MatchingService {
     }
 
     public void cancelMatchingApplication(final Long postId) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Member currentMember = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
         final Matching matching = getMatchingFromPost(post);
@@ -85,7 +85,7 @@ public class MatchingService {
     }
 
     public void completeMatching(final Long postId) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Member host = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
         verifyPostOwner(post, host);
@@ -145,7 +145,7 @@ public class MatchingService {
     }
 
     private void processMatchingApplication(final Long postId, final Long applicantMemberId, final MatchingRequestStatus status) {
-        verifyRoleUser();
+        verifyUserOrAdmin();
         final Member host = getMemberOrThrow(getCurrentMemberId());
         final Member applicantMember = getMemberOrThrow(applicantMemberId);
         final Post post = getPostOrThrow(postId);
@@ -188,7 +188,7 @@ public class MatchingService {
         }
     }
 
-    private void verifyRoleUser() {
+    private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS));
     }
