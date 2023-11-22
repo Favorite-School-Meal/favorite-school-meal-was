@@ -1,4 +1,9 @@
 package com.example.favoriteschoolmeal.domain.oauth2.dto;
 
-public record OauthSignInRequest() {
+import jakarta.validation.constraints.NotBlank;
+
+public record OauthSignInRequest(
+        @NotBlank
+        String authorizeCode
+) {
 }

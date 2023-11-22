@@ -151,7 +151,7 @@ public class AuthServiceImpl implements AuthService {
      * @param firstNumber String
      * @return Gender
      */
-    private Gender convertPersonalNumberToGender(String firstNumber) {
+    public Gender convertPersonalNumberToGender(String firstNumber) {
 
         if (firstNumber.equals("1") || firstNumber.equals("3")) {
             return Gender.MALE;
@@ -166,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
      * @param member
      * @return JwtTokenDto
      */
-    private JwtTokenDto creatJwtTokenDto(Member member) {
+    public JwtTokenDto creatJwtTokenDto(Member member) {
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getUsername());

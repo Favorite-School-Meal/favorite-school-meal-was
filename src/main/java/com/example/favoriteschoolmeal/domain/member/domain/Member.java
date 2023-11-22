@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Member extends Base {
 
     @Id
