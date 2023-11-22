@@ -7,10 +7,12 @@ import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
-import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
+
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +25,7 @@ import java.security.SecureRandom;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class Oauth2ServiceImpl {
+public class OauthServiceImpl {
 
     private final KakaoService kakaoService;
     private final NaverService naverService;
@@ -32,28 +34,10 @@ public class Oauth2ServiceImpl {
     private final RefreshTokenServiceImpl refreshTokenService;
     private final MemberRepository memberRepository;
 
-    public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
-        return platformToService(platform).getUserInfo(accessToken);
-    }
 
-    public void create(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform, Member member) {
+    public JwtTokenDto sign(OauthRequest oauthRequest, OauthPlatform platform) {
 
-        platformToService(platform).create(oauthUserInfoDto, member);
-    }
-
-
-    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
-
-        return platformToService(platform).isExists(oauthUserInfoDto);
-    }
-
-    public String getAccessToken(OauthSignInRequest oauthSignInRequest, OauthPlatform platform) {
-        return platformToService(platform).getAccessToken(oauthSignInRequest);
-    }
-
-    public JwtTokenDto signIn(OauthSignInRequest oauthSignInRequest, OauthPlatform platform) {
-
-        String accessToken = getAccessToken(oauthSignInRequest, platform);
+        String accessToken = getAccessToken(oauthRequest.oauthSignInRequest(), platform);
         log.info("토큰이 발급되었습니다. {}", accessToken);
 
 
@@ -72,7 +56,7 @@ public class Oauth2ServiceImpl {
 
         } else {
             //회원가입
-            Member member = convertSignUpDtoToMember(oauthSignInRequest, oauthUserInfoDto);
+            Member member = convertSignUpDtoToMember(oauthRequest.oauthSignUpRequest(), oauthUserInfoDto);
             memberRepository.save(member);
 
             create(oauthUserInfoDto, platform, member);
@@ -87,9 +71,38 @@ public class Oauth2ServiceImpl {
     }
 
 
-    public Member convertSignUpDtoToMember(OauthSignInRequest oauthSignInRequest, OauthUserInfoDto oauthUserInfoDto) {
+
+    public OauthService platformToService(OauthPlatform platform) {
+        if (platform.equals(OauthPlatform.NAVER)) {
+            return naverService;
+        } else if (platform.equals(OauthPlatform.KAKAO)) {
+            return kakaoService;
+        }
+        //TODO: 예외 코드 변경
+        else throw new RuntimeException("지원하지 않은 소셜로그인 플랫폼입니다.");
+    }
+
+    public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
+        return platformToService(platform).getUserInfo(accessToken);
+    }
+
+    public void create(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform, Member member) {
+        platformToService(platform).create(oauthUserInfoDto, member);
+    }
+
+
+    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
+        return platformToService(platform).isExists(oauthUserInfoDto);
+    }
+
+    public String getAccessToken(OauthSignInRequest oauthSignInRequest, OauthPlatform platform) {
+        return platformToService(platform).getAccessToken(oauthSignInRequest);
+    }
+
+
+    public Member convertSignUpDtoToMember(OauthSignUpRequest oauthSignUpRequest, OauthUserInfoDto oauthUserInfoDto) {
         final var role = Authority.ROLE_USER;
-        final var personalNumber = oauthSignInRequest.personalNumber();
+        final var personalNumber = oauthSignUpRequest.personalNumber();
 
         final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
         final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
@@ -102,24 +115,13 @@ public class Oauth2ServiceImpl {
                 .password(passwordEncoder.encode(randomStringPassword))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())
-                .fullName(oauthSignInRequest.fullname())
+                .fullName(oauthSignUpRequest.fullname())
                 .authority(role)
                 .age(authService.convertBirthdayToAge(birthday, firstNumber))
                 .gender(authService.convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
                 .isBanned(false)
                 .build();
-    }
-
-
-    public Oauth2Service platformToService(OauthPlatform platform) {
-        if (platform.equals(OauthPlatform.NAVER)) {
-            return naverService;
-        } else if (platform.equals(OauthPlatform.KAKAO)) {
-            return kakaoService;
-        }
-        //TODO: 예외 코드 변경
-        else throw new RuntimeException("지원하지 않은 소셜로그인 플랫폼입니다.");
     }
 
 

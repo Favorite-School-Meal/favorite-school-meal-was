@@ -1,13 +1,13 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
-import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
 
-public interface Oauth2Service {
+public interface OauthService {
 
 
     OauthUserInfoDto getUserInfo(String accessToken);

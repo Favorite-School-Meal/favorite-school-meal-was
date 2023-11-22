@@ -1,11 +1,10 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
-import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
-import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
 import com.nimbusds.jose.shaded.gson.JsonElement;
@@ -25,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoService implements Oauth2Service {
+public class KakaoService implements OauthService {
 
     private final OauthRepository oauthRepository;
 
