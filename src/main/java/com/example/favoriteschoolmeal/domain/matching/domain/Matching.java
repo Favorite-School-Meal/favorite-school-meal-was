@@ -1,9 +1,16 @@
 package com.example.favoriteschoolmeal.domain.matching.domain;
 
 
-import com.example.favoriteschoolmeal.domain.model.GroupState;
-import com.example.favoriteschoolmeal.domain.model.Location;
-import jakarta.persistence.*;
+import com.example.favoriteschoolmeal.domain.model.MatchingStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,19 +29,29 @@ public class Matching {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "group_state", nullable = false)
-    private GroupState groupState;
+    @Column(name = "matching_status", nullable = false)
+    private MatchingStatus matchingStatus;
 
     @Column(name = "max_participant", nullable = false)
-    private Long maxParticipant;
+    private Integer maxParticipant;
 
-    @Embedded
-    private Location location;
+    @Column(name = "meeting_date_time", nullable = false)
+    private LocalDateTime meetingDateTime;
 
     @Builder
-    public Matching(GroupState groupState, Long maxParticipant, Location location) {
-        this.groupState = groupState;
+    public Matching(MatchingStatus matchingStatus, Integer maxParticipant,
+            LocalDateTime meetingDateTime) {
+        this.matchingStatus = matchingStatus;
         this.maxParticipant = maxParticipant;
-        this.location = location;
+        this.meetingDateTime = meetingDateTime;
+    }
+
+    public void modifyDetails(final LocalDateTime meetingDateTime, final Integer maxParticipant) {
+        this.meetingDateTime = meetingDateTime;
+        this.maxParticipant = maxParticipant;
+    }
+
+    public void completeMatching() {
+        this.matchingStatus = MatchingStatus.CLOSED;
     }
 }

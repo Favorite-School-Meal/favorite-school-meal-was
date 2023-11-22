@@ -80,8 +80,9 @@ public class PostController {
 
     @DeleteMapping("/posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void postRemove(@PathVariable Long postId) {
+    public ApiResponse<Void> postRemove(@PathVariable Long postId) {
         postService.removePost(postId);
+        return ApiResponse.createSuccess(null);
     }
 
     private ApiResponse<PostResponse> postAddAndRespond(final CreatePostRequest request,

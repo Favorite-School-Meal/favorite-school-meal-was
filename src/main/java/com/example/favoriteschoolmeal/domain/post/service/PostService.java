@@ -40,10 +40,9 @@ public class PostService {
     }
 
     public Post addPost(final CreatePostCommand command) {
-        // TODO: 추후 아래 주석 해제
-        // verifyRoleUser();
+        verifyUserOrAdmin();
         final Member member = getMemberOrThrow(getCurrentMemberId());
-        final Matching matching = createMatching();
+        final Matching matching = createMatching(member, command);
         final Restaurant restaurant = findRestaurantByIdOrElseNull(command.restaurantId());
 
         final Post post = createPost(command, member, matching, restaurant);
@@ -51,14 +50,14 @@ public class PostService {
     }
 
     public Post modifyPost(final Long postId, final CreatePostCommand command) {
-        // TODO: 추후 아래 주석 해제
-        // verifyRoleUser();
+        verifyUserOrAdmin();
         final Long currentMemberId = getCurrentMemberId();
 
         final Post post = getPostOrThrow(postId);
         verifyPostOwner(post.getMember().getId(), currentMemberId);
 
         modifyTitleAndContent(post, command);
+        modifyMatchingDetails(post.getMatching(), command);
         return postRepository.save(post);
     }
 
@@ -71,7 +70,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<Post> findAllPostByRestaurantId(final Long restaurantId, final Pageable pageable) {
-        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(restaurantId, pageable);
+        final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(
+                restaurantId, pageable);
         summarizePostsIfNotNull(posts);
         return posts;
     }
@@ -85,6 +85,10 @@ public class PostService {
         final Post post = getPostOrThrow(postId);
         verifyPostOwnerOrAdmin(post.getMember().getId(), getCurrentMemberId());
         postRepository.delete(post);
+    }
+
+    public Optional<Post> findPostOptionally(final Long postId) {
+        return postRepository.findById(postId);
     }
 
     private Post getPostOrThrow(final Long postId) {
@@ -116,13 +120,18 @@ public class PostService {
                 .orElse(null);
     }
 
-    private Matching createMatching() {
-        return matchingService.addMatching()
-                .orElseThrow(() -> new PostException(PostExceptionType.MATCHING_NOT_FOUND));
+    private Matching createMatching(final Member member, final CreatePostCommand command) {
+        return matchingService.addMatching(member, command.meetingDateTime(),
+                command.maxParticipant());
     }
 
     private void modifyTitleAndContent(final Post post, final CreatePostCommand command) {
         post.modifyTitleAndContent(command.title(), command.content());
+    }
+
+    private void modifyMatchingDetails(final Matching matching, final CreatePostCommand command) {
+        matchingService.modifyDetails(matching, command.meetingDateTime(),
+                command.maxParticipant());
     }
 
     private void summarizeContent(final Post post) {
@@ -150,8 +159,8 @@ public class PostService {
                 .build();
     }
 
-    private void verifyRoleUser() {
-        SecurityUtils.checkUserAuthority("ROLE_USER",
+    private void verifyUserOrAdmin() {
+        SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
     }
 
@@ -168,12 +177,8 @@ public class PostService {
     }
 
     private Long getCurrentMemberId() {
-        return 1L;
-        // TODO: 추후 위 코드 삭제 및 아래 코드 주석 해제
-        /*
         return SecurityUtils.getCurrentMemberId(
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
-      */
     }
 
     public Optional<Post> findPostOptionally(final Long postId) {
