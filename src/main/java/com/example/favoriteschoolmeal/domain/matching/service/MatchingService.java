@@ -84,6 +84,17 @@ public class MatchingService {
         processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.REJECTED);
     }
 
+    public void completeMatching(final Long postId) {
+        verifyRoleUser();
+        final Member host = getMemberOrThrow(getCurrentMemberId());
+        final Post post = getPostOrThrow(postId);
+        verifyPostOwner(post, host);
+        final Matching matching = getMatchingFromPost(post);
+        verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
+        matching.completeMatching();
+        matchingRepository.save(matching);
+    }
+
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
     }

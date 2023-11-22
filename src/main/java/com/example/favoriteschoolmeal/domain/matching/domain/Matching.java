@@ -50,4 +50,8 @@ public class Matching {
         this.meetingDateTime = meetingDateTime;
         this.maxParticipant = maxParticipant;
     }
+
+    public void completeMatching() {
+        this.matchingStatus = MatchingStatus.CLOSED;
+    }
 }

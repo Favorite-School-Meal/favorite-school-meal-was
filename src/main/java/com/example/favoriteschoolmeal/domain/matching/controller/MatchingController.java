@@ -4,6 +4,7 @@ import com.example.favoriteschoolmeal.domain.matching.service.MatchingService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class MatchingController {
         return ApiResponse.createSuccess(null);
     }
 
-    @PostMapping("/accept-application/{memberId}")
+    @PatchMapping("/accept-application/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> matchingApplicationAccept(
             @PathVariable final Long postId,
@@ -45,7 +46,7 @@ public class MatchingController {
         return ApiResponse.createSuccess(null);
     }
 
-    @PostMapping("/reject-application/{memberId}")
+    @PatchMapping("/reject-application/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> matchingApplicationReject(
             @PathVariable final Long postId,
@@ -54,5 +55,11 @@ public class MatchingController {
         return ApiResponse.createSuccess(null);
     }
 
-    // TODO: Host가 매칭 상태(모집 중, 모집 완료) 관리
+    @PatchMapping("/complete-matching")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> matchingComplete(
+            @PathVariable final Long postId) {
+        matchingService.completeMatching(postId);
+        return ApiResponse.createSuccess(null);
+    }
 }
