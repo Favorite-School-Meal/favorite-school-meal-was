@@ -38,4 +38,8 @@ public class Comment extends Base {
         this.post = post;
         this.content = content;
     }
+
+    public void modifyContent(String content) {
+        this.content = content;
+    }
 }

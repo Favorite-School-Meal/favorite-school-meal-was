@@ -12,6 +12,8 @@ import com.example.favoriteschoolmeal.domain.post.exception.PostException;
 import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+import java.util.List;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +40,34 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public Comment modifyComment(final Long commentId, final CreateCommentCommand command) {
+        verifyUserOrAdmin();
+        final Long currentMemberId = getCurrentMemberId();
+
+        final Comment comment = getCommentOrThrow(commentId);
+        verifyCommentOwner(comment.getMember().getId(), currentMemberId);
+
+        comment.modifyContent(command.content());
+        return commentRepository.save(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Comment> findAllPost(Long postId) {
+        final Post post = getPostOrThrow(postId);
+        return commentRepository.findAllByPost(post, Sort.by("createdAt").ascending());
+    }
+
     private Comment createComment(CreateCommentCommand command, Post post, Member member) {
         return Comment.builder()
                 .content(command.content())
                 .post(post)
                 .member(member)
                 .build();
+    }
+
+    private Comment getCommentOrThrow(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(CommentExceptionType.COMMENT_NOT_FOUND));
     }
 
     private Post getPostOrThrow(final Long postId) {
@@ -64,5 +88,11 @@ public class CommentService {
     private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private void verifyCommentOwner(final Long commentOwnerId, final Long currentMemberId) {
+        if (!commentOwnerId.equals(currentMemberId) && !SecurityUtils.isAdmin()) {
+            throw new CommentException(CommentExceptionType.UNAUTHORIZED_ACCESS);
+        }
     }
 }
