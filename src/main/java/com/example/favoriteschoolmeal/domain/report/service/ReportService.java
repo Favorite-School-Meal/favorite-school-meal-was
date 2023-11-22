@@ -77,12 +77,13 @@ public class ReportService {
         }
     }
 
-    private Member getReportedMemberOrThrow(Report report){
-        if(report.getReportedMember() == null){
+    private Member getReportedMemberOrThrow(Report report) {
+        if (report.getReportedMember() == null) {
             throw new ReportException(ReportExceptionType.MEMBER_NOT_FOUND);
         }
         return report.getReportedMember();
     }
+
     private Report createReport(CreateReportRequest request, Member reporter) {
 
         if (request.reportType().equals(ReportType.PROFILE)) {
@@ -177,7 +178,8 @@ public class ReportService {
     }
 
     private void verifyRoleUser() {
-        SecurityUtils.checkUserAuthority("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+        SecurityUtils.checkUserOrAdminOrThrow(() -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+//    ("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
     private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String title, String content) {
@@ -195,7 +197,7 @@ public class ReportService {
     }
 
     private void verifyRoleAdmin() {
-        SecurityUtils.checkUserAuthority("ROLE_ADMIN", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+        SecurityUtils.checkAdminOrThrow(() -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
     private Report getReportOrThrow(Long reportId) {
