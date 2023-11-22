@@ -9,6 +9,7 @@ import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
+import com.example.favoriteschoolmeal.domain.report.controller.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
@@ -60,6 +61,28 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
+    public ReportResponse blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
+        verifyRoleAdmin();
+        Report report = getReportOrThrow(reportId);
+        checkNotResolved(report);
+        Member reportedMember = getReportedMemberOrThrow(report);
+        memberService.blockMember(reportedMember, blockRequest.blockHours());
+        report.resolveReport();
+        return ReportResponse.from(report);
+    }
+
+    private static void checkNotResolved(Report report) {
+        if (report.getIsResolved()) {
+            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
+        }
+    }
+
+    private Member getReportedMemberOrThrow(Report report){
+        if(report.getReportedMember() == null){
+            throw new ReportException(ReportExceptionType.MEMBER_NOT_FOUND);
+        }
+        return report.getReportedMember();
+    }
     private Report createReport(CreateReportRequest request, Member reporter) {
 
         if (request.reportType().equals(ReportType.PROFILE)) {
@@ -179,4 +202,6 @@ public class ReportService {
         return reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportException(ReportExceptionType.REPORT_NOT_FOUND));
     }
+
+
 }

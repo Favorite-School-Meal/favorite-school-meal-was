@@ -68,4 +68,7 @@ public class Report extends Base {
         this.isResolved = isResolved;
     }
 
+    public void resolveReport() {
+        this.isResolved = true;
+    }
 }
