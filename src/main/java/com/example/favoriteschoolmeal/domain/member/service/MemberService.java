@@ -20,4 +20,8 @@ public class MemberService {
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
     }
+
+    public void blockMember(Member reportedMember, Long blockHours) {
+        //TODO: 추후 구현
+    }
 }
