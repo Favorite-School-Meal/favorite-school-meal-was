@@ -40,8 +40,6 @@ public class Member extends Base {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-//    @Column(name = "is_banned", nullable = false)
-//    private Boolean isBanned;
     @Column(name = "unblock_date", nullable = true)
     private LocalDateTime unblockDate;
 
@@ -74,5 +72,9 @@ public class Member extends Base {
         else{
             this.unblockDate = this.unblockDate.plusHours(blockHours);
         }
+    }
+
+    public boolean isBanned() {
+        return this.unblockDate!=null && this.unblockDate.isAfter(LocalDateTime.now());
     }
 }

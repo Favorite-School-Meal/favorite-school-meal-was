@@ -47,6 +47,9 @@ public class OauthServiceImpl {
         Oauth existOauth = isExists(oauthUserInfoDto, platform);
         log.info("유저 정보 존재 확인. {}", existOauth);
         if (existOauth != null) { //이미 존재하는 계정이면
+            //정지 여부 확인
+            checkBlcokOrThrow(existOauth.getMember());
+
             //로그인
 
             JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.getMember());
@@ -69,8 +72,6 @@ public class OauthServiceImpl {
         }
 
     }
-
-
 
     public OauthService platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
@@ -136,5 +137,10 @@ public class OauthServiceImpl {
         }
 
         return sb.toString();
+    }
+
+    private void checkBlcokOrThrow(Member member) {
+        if(member.isBanned())
+            throw new RuntimeException("정지된 계정입니다.");
     }
 }
