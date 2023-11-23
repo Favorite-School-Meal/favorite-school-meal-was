@@ -39,7 +39,7 @@ public class OauthController {
      * @param
      * @return
      */
-    @PostMapping("/sign/naver")
+    @GetMapping("/sign/naver")
     public ApiResponse<JwtTokenDto> NaverSign(@RequestBody OauthRequest oauthRequest) {
         JwtTokenDto jwtTokenDto = oauthService.sign(oauthRequest, OauthPlatform.NAVER);
         return ApiResponse.createSuccess(jwtTokenDto);
@@ -51,8 +51,8 @@ public class OauthController {
     }
 
     @GetMapping("/naver/callback")
-    public @ResponseBody String naverCallback(String code){
-        return code;
+    public @ResponseBody String naverCallback(@RequestParam String code, @RequestParam String state) {
+        return "Received code: " + code + ", state: " + state;
     }
 
 }

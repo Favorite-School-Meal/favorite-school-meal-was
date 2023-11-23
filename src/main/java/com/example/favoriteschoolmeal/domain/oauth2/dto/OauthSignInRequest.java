@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public record OauthSignInRequest(
         @NotBlank
-        String authorizeCode
+        String authorizeCode,
+
+        @NotBlank
+        String state
 ) {
 }

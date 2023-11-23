@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 

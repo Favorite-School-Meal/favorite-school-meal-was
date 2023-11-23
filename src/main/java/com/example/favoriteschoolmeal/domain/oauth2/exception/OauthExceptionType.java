@@ -41,6 +41,12 @@ public enum OauthExceptionType implements BaseExceptionType {
             400,
             HttpStatus.BAD_REQUEST,
             "Json parse exception"
+    ),
+
+    UNSUPPORTED_ENCODING_EXCEPTION(
+            500,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "State code Encoding error"
     )
     ;
 

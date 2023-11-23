@@ -32,5 +32,5 @@ oauth:
     api-url: ${NAVER_API_URL}
     auth-url: ${NAVER_AUTH_URL}
     client-id: ${NAVER_CLIENT_ID}
-    secret-key: ${NAVER_SECRET_KEY}
+    client-secret: ${NAVER_CLIENT_SECRET}
 
