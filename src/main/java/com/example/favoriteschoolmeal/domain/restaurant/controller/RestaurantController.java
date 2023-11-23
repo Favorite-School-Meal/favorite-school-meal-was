@@ -18,10 +18,8 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
-    public ApiResponse<RestaurantResponse> restaurantAdd(@RequestPart("dto") CreateRestaurantRequest request,
-                                                         @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
-                                                         @RequestPart(value = "menuImage", required = false) MultipartFile menuImage){
-        RestaurantResponse response = restaurantService.addRestaurant(request, thumbnail, menuImage);
+    public ApiResponse<RestaurantResponse> restaurantAdd(@RequestPart("dto") CreateRestaurantRequest request){
+        RestaurantResponse response = restaurantService.addRestaurant(request);
         return ApiResponse.createSuccess(response);
     }
 

@@ -20,18 +20,15 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public RestaurantResponse addRestaurant(CreateRestaurantRequest request,
-            MultipartFile thumbnail, MultipartFile menuImage) {
-        //TODO: file처리 추가
-
+    public RestaurantResponse addRestaurant(CreateRestaurantRequest request) {
         Restaurant restaurant = Restaurant.builder()
                 .name(request.name())
                 .location(request.location())
                 .isOnCampus(request.isOnCampus())
                 .category(request.category())
                 .businessHours(request.businessHours())
-                //TODO: thumbnail, menuImage 처리 추가
-                .thumbnailId(1L) //임시로 1로 설정
+                .thumbnailUrl(request.thumbnailUrl())
+                .menuImageUrl(request.menuImageUrl())
                 .build();
 
         restaurantRepository.save(restaurant);
@@ -59,11 +56,8 @@ public class RestaurantService {
                 .orElseThrow(() -> new RestaurantNotFoundException(
                         RestaurantExceptionType.RESTAURANT_NOT_FOUND));
 
-        //TODO: file처리 추가
-        Long thumbnailId = 1L; //임시로 1로 설정
-        Long menuImageId = 1L; //임시로 1로 설정
         restaurant.update(request.isOnCampus(), request.location(), request.category(),
-                request.name(), request.businessHours(), thumbnailId, menuImageId);
+                request.name(), request.businessHours(), request.thumbnailUrl(), request.menuImageUrl());
         return RestaurantResponse.of(restaurant);
     }
 

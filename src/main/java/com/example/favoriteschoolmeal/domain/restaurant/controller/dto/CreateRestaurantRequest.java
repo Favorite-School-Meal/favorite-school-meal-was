@@ -15,5 +15,10 @@ public record CreateRestaurantRequest(
         @NotBlank
         String category,
         @NotBlank
-        String businessHours) {
+        String businessHours,
+
+        String thumbnailUrl,
+
+        String menuImageUrl
+) {
 }
