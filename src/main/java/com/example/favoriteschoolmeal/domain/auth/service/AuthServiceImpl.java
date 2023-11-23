@@ -7,6 +7,9 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import jakarta.transaction.Transactional;
@@ -97,6 +100,16 @@ public class AuthServiceImpl implements AuthService {
             throw new NoSuchElementException();
         }
         //TODO: exception 다시 설정
+    }
+
+    public void checkDuplication(OauthUserInfoDto oauthUserInfoDto) {
+
+        if (memberRepository.findByNickname(oauthUserInfoDto.getNickname()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+        if (memberRepository.findByEmail(oauthUserInfoDto.getEmail()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_EMAIL_EXCEPTION);
+        }
     }
 
 

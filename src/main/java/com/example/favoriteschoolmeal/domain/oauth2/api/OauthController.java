@@ -4,8 +4,9 @@ package com.example.favoriteschoolmeal.domain.oauth2.api;
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
-import com.example.favoriteschoolmeal.domain.oauth2.service.OauthServiceImpl;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+import com.example.favoriteschoolmeal.domain.oauth2.service.OauthConvertService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OauthController {
 
-    private final OauthServiceImpl oauthService;
+    private final OauthConvertService oauthService;
 
     /**
      * kakao 회원가입 및 로그인을 처리하는 메서드
@@ -27,9 +28,14 @@ public class OauthController {
      * @return
      */
     @PostMapping("/sign/kakao")
-    public ApiResponse<JwtTokenDto> kakaoSign(@RequestBody OauthRequest oauthRequest) {
-        JwtTokenDto jwtTokenDto = oauthService.sign(oauthRequest, OauthPlatform.KAKAO);
-        return ApiResponse.createSuccess(jwtTokenDto);
+    public ApiResponse<?> kakaoSign(@RequestBody OauthRequest oauthRequest) {
+
+        try{
+            JwtTokenDto jwtTokenDto = oauthService.sign(oauthRequest, OauthPlatform.KAKAO);
+            return ApiResponse.createSuccess(jwtTokenDto);
+        } catch (OauthException e){
+            return ApiResponse.createError(OauthExceptionType.OAUTH_KAKAO_NOT_FOUND);
+        }
     }
 
 

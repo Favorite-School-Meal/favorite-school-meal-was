@@ -1,15 +1,19 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
+import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
+import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenService;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
@@ -19,12 +23,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -34,6 +41,8 @@ public class KakaoService implements OauthService {
     private final OauthRepository oauthRepository;
     private final AuthServiceImpl authService;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final MemberRepository memberRepository;
 
     @Value("${oauth.kakao.api-url}")
     private String apiURL;
@@ -43,6 +52,50 @@ public class KakaoService implements OauthService {
 
     @Value("${oauth.kakao.client-id}")
     private String clientId;
+
+    @Override
+    public JwtTokenDto sign(OauthRequest oauthRequest) {
+        String accessToken = getAccessToken(oauthRequest.oauthSignInRequest());
+
+        OauthUserInfoDto oauthUserInfoDto = getUserInfo(accessToken);
+
+        Optional<Oauth> existOauth = isExists(oauthUserInfoDto);
+
+        if (existOauth.isPresent()) {
+
+            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.get().getMember());
+            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
+
+            return jwtTokenDto;
+
+        } else {
+
+            if (!oauthRequest.oauthSignUpRequest().fullname().isEmpty() && !oauthRequest.oauthSignUpRequest().personalNumber().isEmpty()) {
+
+                OauthUserInfoDto newOauthUserInfoDto = OauthUserInfoDto.builder()
+                        .platformId(oauthUserInfoDto.getPlatformId())
+                        .fullname(oauthRequest.oauthSignUpRequest().fullname())
+                        .personalNumber(oauthRequest.oauthSignUpRequest().personalNumber())
+                        .nickname(oauthUserInfoDto.getNickname())
+                        .email(oauthUserInfoDto.getEmail())
+                        .build();
+
+                authService.checkDuplication(newOauthUserInfoDto);
+
+                Member member = convertToMember(newOauthUserInfoDto);
+                memberRepository.save(member);
+
+                create(oauthUserInfoDto, member);
+
+                JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(member);
+                refreshTokenService.createRefreshToken(jwtTokenDto, member.getUsername());
+
+                log.info("유저가 로그인 되었습니다. {}", member.getNickname());
+                return jwtTokenDto;
+            }
+            throw new OauthException(OauthExceptionType.OAUTH_KAKAO_NOT_FOUND);
+        }
+    }
 
     @Override
     public OauthUserInfoDto getUserInfo(String accessToken) {
@@ -85,9 +138,9 @@ public class KakaoService implements OauthService {
 
         } catch (IOException e) {
             throw new OauthException(OauthExceptionType.GET_USERINFO_IO_EXCEPTION);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new OauthException(OauthExceptionType.GET_USERINFO_NULL);
-        } catch (JsonParseException e){
+        } catch (JsonParseException e) {
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
     }
@@ -125,25 +178,19 @@ public class KakaoService implements OauthService {
         String accessToken = "";
 
         String requestURL = authURL + "/oauth/token";
+        UriComponents uriComponents = UriComponentsBuilder
+                .fromUriString(requestURL)
+                .queryParam("grant_type", "authorization_code")
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", "http://localhost:8080/api/v1/oauth/kakao/callback")
+                .queryParam("code", authorizeCode)
+                .build();
 
         try {
-            URL url = new URL(requestURL);
 
+            URL url = new URL(uriComponents.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
             connection.setRequestMethod("POST");
-            connection.setDoOutput(true); //출력 스트림을 사용하여 요청 바디를 전송할 수 있도록 설정
-
-
-            // POST 요청에서 필요한 파라미터를 OutputStream을 통해 전송
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-            String sb = "grant_type=authorization_code" +
-                    "&client_id=" + clientId +
-                    "&redirect_uri=http://localhost:8080/api/v1/oauth/kakao/callback" +
-                    "&code=" + authorizeCode;
-            //TODO: client_secret 추가
-            bw.write(sb); //구성된 문자열을 출력 스트림을 통해 서버로 전송
-            bw.flush();
 
             int responseCode = connection.getResponseCode(); //서버로부터의 응답 코드
 
@@ -161,7 +208,6 @@ public class KakaoService implements OauthService {
             JsonElement jsonElement = JsonParser.parseString(result.toString());
             accessToken = jsonElement.getAsJsonObject().get("access_token").getAsString();
 
-            bw.close();
             br.close();
 
 
@@ -169,7 +215,7 @@ public class KakaoService implements OauthService {
             throw new OauthException(OauthExceptionType.MALFORMED_URL_EXCEPTION);
         } catch (IOException e) {
             throw new OauthException(OauthExceptionType.GET_ACCESSTOKEN_IO_EXCEPTION);
-        } catch (JsonParseException e){
+        } catch (JsonParseException e) {
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
 

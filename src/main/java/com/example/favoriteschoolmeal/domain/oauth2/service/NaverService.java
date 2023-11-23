@@ -1,17 +1,21 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
+import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
+import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenService;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
@@ -32,7 +36,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +49,8 @@ public class NaverService implements OauthService {
     private final OauthRepository oauthRepository;
     private final AuthServiceImpl authService;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final MemberRepository memberRepository;
 
     @Value("${oauth.naver.api-url}")
     private String apiURL;
@@ -59,6 +64,39 @@ public class NaverService implements OauthService {
     @Value(("${oauth.naver.client-secret}"))
     private String clientSecret;
 
+
+    @Override
+    public JwtTokenDto sign(OauthRequest oauthRequest) {
+        String accessToken = getAccessToken(oauthRequest.oauthSignInRequest());
+
+        OauthUserInfoDto oauthUserInfoDto = getUserInfo(accessToken);
+
+        Optional<Oauth> existOauth = isExists(oauthUserInfoDto);
+
+        if (existOauth.isPresent()) {
+
+            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.get().getMember());
+            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
+
+            return jwtTokenDto;
+
+        } else {
+
+            authService.checkDuplication(oauthUserInfoDto);
+
+            Member member = convertToMember(oauthUserInfoDto);
+            memberRepository.save(member);
+
+            create(oauthUserInfoDto, member);
+
+            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(member);
+            refreshTokenService.createRefreshToken(jwtTokenDto, member.getUsername());
+
+            log.info("유저가 로그인 되었습니다. {}", member.getNickname());
+            return jwtTokenDto;
+        }
+
+    }
 
     @Override
     public OauthUserInfoDto getUserInfo(String accessToken) {
@@ -108,9 +146,9 @@ public class NaverService implements OauthService {
 
         } catch (IOException e) {
             throw new OauthException(OauthExceptionType.GET_USERINFO_IO_EXCEPTION);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new OauthException(OauthExceptionType.GET_USERINFO_NULL);
-        } catch (JsonParseException e){
+        } catch (JsonParseException e) {
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
 
@@ -166,7 +204,7 @@ public class NaverService implements OauthService {
         try {
             URL url = new URL(uriComponents.toString());
 
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();
@@ -191,7 +229,7 @@ public class NaverService implements OauthService {
             throw new OauthException(OauthExceptionType.MALFORMED_URL_EXCEPTION);
         } catch (IOException e) {
             throw new OauthException(OauthExceptionType.GET_ACCESSTOKEN_IO_EXCEPTION);
-        } catch (JsonParseException e){
+        } catch (JsonParseException e) {
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
         }
 
@@ -224,7 +262,7 @@ public class NaverService implements OauthService {
                 .build();
     }
 
-    public static Integer convertBirthdayToAge(String birthdayString){
+    public static Integer convertBirthdayToAge(String birthdayString) {
 
 
         String birthdayDate = birthdayString.replace("-", "");
@@ -236,7 +274,6 @@ public class NaverService implements OauthService {
         return Period.between(birthday, currentDate).getYears();
 
     }
-
 
 
 }

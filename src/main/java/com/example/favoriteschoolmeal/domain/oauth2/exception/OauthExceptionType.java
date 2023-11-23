@@ -59,7 +59,14 @@ public enum OauthExceptionType implements BaseExceptionType {
             400,
             HttpStatus.BAD_REQUEST,
             "이미 가입된 email 입니다."
-    )
+    ),
+
+    OAUTH_KAKAO_NOT_FOUND(
+            400,
+            HttpStatus.NOT_FOUND,
+            "회원가입을 진행해야 합니다."
+    ),
+
     ;
 
 
