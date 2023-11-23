@@ -120,7 +120,7 @@ public class OauthServiceImpl {
                 .age(authService.convertBirthdayToAge(birthday, firstNumber))
                 .gender(authService.convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
-                .isBanned(false)
+                .unblockDate(null)
                 .build();
     }
 

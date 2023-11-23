@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
                 .age(convertBirthdayToAge(birthday, firstNumber))
                 .gender(convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
-                .isBanned(false)
+                .unblockDate(null)
                 .build();
     }
 
