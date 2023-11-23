@@ -76,6 +76,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException();
         }
 
+        checkBlockOrThrow(member);
+
         JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
         refreshTokenService.createRefreshToken(jwtTokenDto, signInRequest.username());
 
@@ -122,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
                 .age(convertBirthdayToAge(birthday, firstNumber))
                 .gender(convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
-                .isBanned(false)
+                .unblockDate(null)
                 .build();
     }
 
@@ -177,5 +179,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-
+    private void checkBlockOrThrow(Member member) {
+        if(member.isBanned()){
+            //TODO: Exception 계정이 정지되었습니다.
+            throw new RuntimeException("계정이 정지되었습니다.");
+        }
+    }
 }

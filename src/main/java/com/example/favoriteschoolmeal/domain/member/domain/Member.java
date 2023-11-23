@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "member")
 @Getter
@@ -38,8 +40,8 @@ public class Member extends Base {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @Column(name = "is_banned", nullable = false)
-    private Boolean isBanned;
+    @Column(name = "unblock_date", nullable = true)
+    private LocalDateTime unblockDate;
 
     @Column(name = "age", nullable = false)
     private Integer age;
@@ -51,16 +53,28 @@ public class Member extends Base {
     private String introduction;
 
     @Builder
-    public Member(String username, String nickname, String fullName, String password, String email, Authority authority, Boolean isBanned, Integer age, Gender gender, String introduction) {
+    public Member(String username, String nickname, String fullName, String password, String email, Authority authority, LocalDateTime unblockDate, Integer age, Gender gender, String introduction) {
         this.username = username;
         this.nickname = nickname;
         this.fullName = fullName;
         this.password = password;
         this.email = email;
         this.authority = authority;
-        this.isBanned = isBanned;
+        this.unblockDate = unblockDate;
         this.age = age;
         this.gender = gender;
         this.introduction = introduction;
+    }
+
+    public void block(Long blockHours) {
+        if(this.unblockDate==null || this.unblockDate.isBefore(LocalDateTime.now())){
+            this.unblockDate = LocalDateTime.now().plusHours(blockHours);}
+        else{
+            this.unblockDate = this.unblockDate.plusHours(blockHours);
+        }
+    }
+
+    public boolean isBanned() {
+        return this.unblockDate!=null && this.unblockDate.isAfter(LocalDateTime.now());
     }
 }

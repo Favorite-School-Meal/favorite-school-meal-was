@@ -38,7 +38,7 @@ public class ReportService {
     private final ChatService chatService;
 
     public ReportResponse addReport(CreateReportRequest request) {
-        verifyRoleUser();
+        verifyRoleUserOrAdmin();
         Member reporter = getMemberOrThrow(getCurrentMemberId());
 
         Report report = createReport(request, reporter);
@@ -177,7 +177,7 @@ public class ReportService {
         return SecurityUtils.getCurrentMemberId(() -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
     }
 
-    private void verifyRoleUser() {
+    private void verifyRoleUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(() -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
 //    ("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
