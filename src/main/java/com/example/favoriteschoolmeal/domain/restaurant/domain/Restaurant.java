@@ -34,30 +34,30 @@ public class Restaurant extends Base {
     @Column(name = "business_hours", nullable = false, length = 100)
     private String businessHours;
 
-    @Column(name = "thumbnail_id", nullable = false, length = 100)
-    private Long thumbnailId;
+    @Column(name = "thumbnail_url", nullable = false, length = 100)
+    private String thumbnailUrl;
 
-    @Column(name = "menu_image_id", nullable = true, length = 100)
-    private Long menuImageId;
+    @Column(name = "menu_image_url", nullable = true, length = 100)
+    private String menuImageUrl;
 
     @Builder
-    public Restaurant(Boolean isOnCampus, Location location, String category, String name, String businessHours, Long thumbnailId, Long menuImageId) {
+    public Restaurant(Boolean isOnCampus, Location location, String category, String name, String businessHours, String thumbnailUrl, String menuImageUrl) {
         this.isOnCampus = isOnCampus;
         this.location = location;
         this.category = category;
         this.name = name;
         this.businessHours = businessHours;
-        this.thumbnailId = thumbnailId;
-        this.menuImageId = menuImageId;
+        this.thumbnailUrl = thumbnailUrl;
+        this.menuImageUrl = menuImageUrl;
     }
 
-    public void update(Boolean isOnCampus, Location location, String category, String name, String businessHours, Long thumbnailId, Long menuImageId) {
+    public void update(Boolean isOnCampus, Location location, String category, String name, String businessHours, String thumbnailUrl, String menuImageUrl) {
         this.isOnCampus = isOnCampus;
         this.location = location;
         this.category = category;
         this.name = name;
         this.businessHours = businessHours;
-        this.thumbnailId = thumbnailId;
-        this.menuImageId = menuImageId;
+        this.thumbnailUrl = thumbnailUrl;
+        this.menuImageUrl = menuImageUrl;
     }
 }

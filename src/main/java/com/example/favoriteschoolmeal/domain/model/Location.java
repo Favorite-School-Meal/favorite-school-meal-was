@@ -6,8 +6,8 @@ import lombok.Getter;
 @Embeddable
 @Getter
 public class Location {
-    private String longitude;
-    private String latitude;
+    private Double longitude;
+    private Double latitude;
 
     public Location() {
 
