@@ -1,6 +1,8 @@
 package com.example.favoriteschoolmeal.global.security.userdetails;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (member.isPresent()) {
             return new CustomUserDetails(member.get());
         } else {
-            throw new UsernameNotFoundException("유저를 찾을 수 없습니다. " + username);
+            throw new MemberException(MemberExceptionType.MEMBER_NOT_FOUND);
         }
     }
 }

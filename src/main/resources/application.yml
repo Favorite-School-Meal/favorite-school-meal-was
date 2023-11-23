@@ -27,3 +27,10 @@ oauth:
     api-url: ${KAKAO_API_URL}
     auth-url: ${KAKAO_AUTH_URL}
     client-id: ${KAKAO_CLIENT_ID}
+
+  naver:
+    api-url: ${NAVER_API_URL}
+    auth-url: ${NAVER_AUTH_URL}
+    client-id: ${NAVER_CLIENT_ID}
+    secret-key: ${NAVER_SECRET_KEY}
+

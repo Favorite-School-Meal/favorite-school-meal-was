@@ -49,4 +49,10 @@ public class OauthController {
     public @ResponseBody String kakaoCallback(String code){
         return code;
     }
+
+    @GetMapping("/naver/callback")
+    public @ResponseBody String naverCallback(String code){
+        return code;
+    }
+
 }

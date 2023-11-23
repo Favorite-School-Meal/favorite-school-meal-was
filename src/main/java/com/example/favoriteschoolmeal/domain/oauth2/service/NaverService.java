@@ -38,4 +38,5 @@ public class NaverService implements OauthService {
     public String getAccessToken(OauthSignInRequest oauthSignInRequest) {
         return null;
     }
+
 }
