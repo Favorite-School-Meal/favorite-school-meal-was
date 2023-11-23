@@ -23,4 +23,6 @@ public interface OauthService {
 
     String getAccessToken(OauthSignInRequest oauthSignInRequest);
 
+    Member convertToMember(OauthUserInfoDto oauthUserInfoDto);
+
 }

@@ -1,6 +1,8 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
+import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -29,6 +32,8 @@ import java.util.Optional;
 public class KakaoService implements OauthService {
 
     private final OauthRepository oauthRepository;
+    private final AuthServiceImpl authService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${oauth.kakao.api-url}")
     private String apiURL;
@@ -169,5 +174,30 @@ public class KakaoService implements OauthService {
         }
 
         return accessToken;
+    }
+
+    @Override
+    public Member convertToMember(OauthUserInfoDto oauthUserInfoDto) {
+        final var role = Authority.ROLE_USER;
+        final var personalNumber = oauthUserInfoDto.getPersonalNumber();
+
+        final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
+        final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
+
+        String randomStringUsername = authService.generateRandomString(10);
+        String randomStringPassword = authService.generateRandomString(10);
+
+        return Member.builder()
+                .username(randomStringUsername)
+                .password(passwordEncoder.encode(randomStringPassword))
+                .nickname(oauthUserInfoDto.getNickname())
+                .email(oauthUserInfoDto.getEmail())
+                .fullName(oauthUserInfoDto.getFullname())
+                .authority(role)
+                .age(authService.convertBirthdayToAge(birthday, firstNumber))
+                .gender(authService.convertPersonalNumberToGender(firstNumber))
+                .introduction(null)
+                .isBanned(false)
+                .build();
     }
 }

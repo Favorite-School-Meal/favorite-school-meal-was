@@ -34,7 +34,7 @@ public class Oauth {
     private String nickname;
 
     @JoinColumn(name = "member_id", nullable = false)
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Member member;
 
     @Column

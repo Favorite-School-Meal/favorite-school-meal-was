@@ -1,6 +1,10 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
+import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.Authority;
+import com.example.favoriteschoolmeal.domain.model.Gender;
+import com.example.favoriteschoolmeal.domain.model.OauthPlatform;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
@@ -15,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,6 +32,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Slf4j
@@ -35,6 +44,8 @@ import java.util.Optional;
 public class NaverService implements OauthService {
 
     private final OauthRepository oauthRepository;
+    private final AuthServiceImpl authService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${oauth.naver.api-url}")
     private String apiURL;
@@ -47,6 +58,7 @@ public class NaverService implements OauthService {
 
     @Value(("${oauth.naver.client-secret}"))
     private String clientSecret;
+
 
     @Override
     public OauthUserInfoDto getUserInfo(String accessToken) {
@@ -84,18 +96,13 @@ public class NaverService implements OauthService {
             String birthday = naverAccount.getAsJsonObject().get("birthyear").getAsString() + naverAccount.getAsJsonObject().get("birthday").getAsString();
             String age = naverAccount.getAsJsonObject().get("age").getAsString();
 
-            log.info("platformid. {}", platformId);
-            log.info("fullname. {}", fullname);
-            log.info("gender {}", gender);
-            log.info("birthday. {}", birthday);
-
             return OauthUserInfoDto.builder()
                     .platformId(platformId)
                     .fullname(fullname)
                     .nickname(nickname)
                     .email(email)
-                    .gender(gender)
                     .birthday(birthday)
+                    .gender(gender)
                     .age(age)
                     .build();
 
@@ -112,6 +119,15 @@ public class NaverService implements OauthService {
 
     @Override
     public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
+
+        Oauth oauth = Oauth.builder()
+                .member(member)
+                .oauthPlatform(OauthPlatform.NAVER)
+                .platformId(oauthUserInfoDto.getPlatformId())
+                .nickname(oauthUserInfoDto.getNickname())
+                .email(oauthUserInfoDto.getEmail())
+                .build();
+        oauthRepository.save(oauth);
     }
 
     @Override
@@ -120,7 +136,8 @@ public class NaverService implements OauthService {
 
     @Override
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
-        return null;
+
+        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.NAVER);
     }
 
     @Override
@@ -170,8 +187,6 @@ public class NaverService implements OauthService {
 
             br.close();
 
-        } catch (UnsupportedEncodingException e){
-            throw new OauthException(OauthExceptionType.UNSUPPORTED_ENCODING_EXCEPTION);
         } catch (MalformedURLException e) {
             throw new OauthException(OauthExceptionType.MALFORMED_URL_EXCEPTION);
         } catch (IOException e) {
@@ -182,5 +197,46 @@ public class NaverService implements OauthService {
 
         return accessToken;
     }
+
+    @Override
+    public Member convertToMember(OauthUserInfoDto oauthUserInfoDto) {
+        final var role = Authority.ROLE_USER;
+
+        final var gender = oauthUserInfoDto.getGender().equals("M") ? Gender.MALE : Gender.FEMALE;
+
+        final var age = convertBirthdayToAge(oauthUserInfoDto.getBirthday());
+
+
+        String randomStringUsername = authService.generateRandomString(10);
+        String randomStringPassword = authService.generateRandomString(10);
+
+        return Member.builder()
+                .username(randomStringUsername)
+                .password(passwordEncoder.encode(randomStringPassword))
+                .nickname(oauthUserInfoDto.getNickname())
+                .email(oauthUserInfoDto.getEmail())
+                .fullName(oauthUserInfoDto.getFullname())
+                .authority(role)
+                .age(age)
+                .gender(gender)
+                .introduction(null)
+                .isBanned(false)
+                .build();
+    }
+
+    public static Integer convertBirthdayToAge(String birthdayString){
+
+
+        String birthdayDate = birthdayString.replace("-", "");
+
+        LocalDate birthday = LocalDate.parse(birthdayDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        LocalDate currentDate = LocalDate.now();
+
+        return Period.between(birthday, currentDate).getYears();
+
+    }
+
+
 
 }

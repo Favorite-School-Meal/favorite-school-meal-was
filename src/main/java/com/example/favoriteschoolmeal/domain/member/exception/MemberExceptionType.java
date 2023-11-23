@@ -24,16 +24,16 @@ public enum MemberExceptionType implements BaseExceptionType {
 
     @Override
     public int errorCode() {
-        return 0;
+        return errorCode;
     }
 
     @Override
     public HttpStatus httpStatus() {
-        return null;
+        return httpStatus;
     }
 
     @Override
     public String errorMessage() {
-        return null;
+        return errorMessage;
     }
 }

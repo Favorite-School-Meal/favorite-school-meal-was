@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.member.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,4 +25,5 @@ public class MemberService {
     public void blockMember(Member reportedMember, Long blockHours) {
         //TODO: 추후 구현
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
+import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
 import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -33,12 +35,12 @@ public class OauthServiceImpl {
     private final KakaoService kakaoService;
     private final NaverService naverService;
     private final AuthServiceImpl authService;
-    private final PasswordEncoder passwordEncoder;
     private final RefreshTokenServiceImpl refreshTokenService;
     private final MemberRepository memberRepository;
 
 
     public JwtTokenDto sign(OauthRequest oauthRequest, OauthPlatform platform) {
+        //kakao만 oauthRequest의 oauthSignUpRequest의 정보를 OauthUserInfo에 넣어야함.
 
         String accessToken = getAccessToken(oauthRequest.oauthSignInRequest(), platform);
         log.info("토큰이 발급되었습니다. {}", accessToken);
@@ -47,8 +49,11 @@ public class OauthServiceImpl {
         OauthUserInfoDto oauthUserInfoDto = getUserInfo(accessToken, platform);
         log.info("유저 정보를 가져왔습니다. {}, {}", oauthUserInfoDto.getPlatformId(), oauthUserInfoDto.getNickname());
 
+
+
         Optional<Oauth> existOauth = isExists(oauthUserInfoDto, platform);
         log.info("유저 정보 존재 확인. {}", existOauth);
+
         if (existOauth.isPresent()) {
 
             JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.get().getMember());
@@ -58,7 +63,9 @@ public class OauthServiceImpl {
 
         } else {
 
-            Member member = convertSignUpDtoToMember(oauthRequest.oauthSignUpRequest(), oauthUserInfoDto);
+            checkDuplication(oauthUserInfoDto);
+
+            Member member = convertToMember(oauthUserInfoDto, platform);
             memberRepository.save(member);
 
             create(oauthUserInfoDto, platform, member);
@@ -73,14 +80,12 @@ public class OauthServiceImpl {
     }
 
 
-
     public OauthService platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
             return naverService;
         } else if (platform.equals(OauthPlatform.KAKAO)) {
             return kakaoService;
-        }
-        else throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
+        } else throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
     }
 
     public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
@@ -100,42 +105,19 @@ public class OauthServiceImpl {
         return platformToService(platform).getAccessToken(oauthSignInRequest);
     }
 
-
-    public Member convertSignUpDtoToMember(OauthSignUpRequest oauthSignUpRequest, OauthUserInfoDto oauthUserInfoDto) {
-        final var role = Authority.ROLE_USER;
-        final var personalNumber = oauthSignUpRequest.personalNumber();
-
-        final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
-        final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
-
-        String randomStringUsername = generateRandomString(10);
-        String randomStringPassword = generateRandomString(10);
-
-        return Member.builder()
-                .username(randomStringUsername)
-                .password(passwordEncoder.encode(randomStringPassword))
-                .nickname(oauthUserInfoDto.getNickname())
-                .email(oauthUserInfoDto.getEmail())
-                .fullName(oauthSignUpRequest.fullname())
-                .authority(role)
-                .age(authService.convertBirthdayToAge(birthday, firstNumber))
-                .gender(authService.convertPersonalNumberToGender(firstNumber))
-                .introduction(null)
-                .isBanned(false)
-                .build();
+    public Member convertToMember(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
+        return platformToService(platform).convertToMember(oauthUserInfoDto);
     }
 
+    private void checkDuplication(OauthUserInfoDto oauthUserInfoDto) {
 
-    public static String generateRandomString(int length) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(characters.length());
-            sb.append(characters.charAt(index));
+        if (memberRepository.findByNickname(oauthUserInfoDto.getNickname()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
         }
-
-        return sb.toString();
+        if (memberRepository.findByEmail(oauthUserInfoDto.getEmail()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_EMAIL_EXCEPTION);
+        }
     }
+
+
 }

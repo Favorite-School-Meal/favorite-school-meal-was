@@ -22,4 +22,5 @@ public class OauthUserInfoDto {
     private String gender;
     private String age;
     private String birthday;
+    private String personalNumber;
 }
