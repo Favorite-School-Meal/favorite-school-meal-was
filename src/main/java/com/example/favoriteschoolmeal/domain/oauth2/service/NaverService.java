@@ -40,6 +40,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -244,13 +245,9 @@ public class NaverService implements OauthService {
 
         final var age = convertBirthdayToAge(oauthUserInfoDto.getBirthday());
 
-
-        String randomStringUsername = authService.generateRandomString(10);
-        String randomStringPassword = authService.generateRandomString(10);
-
         return Member.builder()
-                .username(randomStringUsername)
-                .password(passwordEncoder.encode(randomStringPassword))
+                .username(UUID.randomUUID().toString().substring(0,16))
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())
                 .fullName(oauthUserInfoDto.getFullname())
@@ -264,15 +261,12 @@ public class NaverService implements OauthService {
 
     public static Integer convertBirthdayToAge(String birthdayString) {
 
-
         String birthdayDate = birthdayString.replace("-", "");
 
         LocalDate birthday = LocalDate.parse(birthdayDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-
         LocalDate currentDate = LocalDate.now();
 
         return Period.between(birthday, currentDate).getYears();
-
     }
 
 

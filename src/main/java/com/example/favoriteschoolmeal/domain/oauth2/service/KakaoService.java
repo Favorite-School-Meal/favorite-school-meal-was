@@ -230,12 +230,10 @@ public class KakaoService implements OauthService {
         final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
         final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
 
-        String randomStringUsername = authService.generateRandomString(10);
-        String randomStringPassword = authService.generateRandomString(10);
 
         return Member.builder()
-                .username(randomStringUsername)
-                .password(passwordEncoder.encode(randomStringPassword))
+                .username(UUID.randomUUID().toString().substring(0,16))
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())
                 .fullName(oauthUserInfoDto.getFullname())
