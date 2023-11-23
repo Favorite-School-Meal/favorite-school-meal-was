@@ -3,6 +3,8 @@ package com.example.favoriteschoolmeal.domain.auth.service;
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.auth.dto.SignInRequest;
 import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
+import com.example.favoriteschoolmeal.domain.auth.exception.AuthException;
+import com.example.favoriteschoolmeal.domain.auth.exception.AuthExceptionType;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
@@ -73,11 +75,10 @@ public class AuthServiceImpl implements AuthService {
         Optional<Member> memberOptional = memberRepository.findByUsername(signInRequest.username());
 
         // 사용자가 존재하지 않는 경우 예외 던지기
-        Member member = memberOptional.orElseThrow(() -> new NoSuchElementException("존재하지 않는 아이디 입니다."));
-        //TODO: Exception 사용자가 존재하지 않습니다.
+        Member member = memberOptional.orElseThrow(() -> new AuthException(AuthExceptionType.MEMBER_NOT_FOUND));
+
         if (!passwordEncoder.matches(signInRequest.password(), member.getPassword())) {
-            //TODO: Exception 비밀번호가 일치하지 않습니다.
-            throw new RuntimeException();
+            throw new AuthException(AuthExceptionType.INVALID_PASSWORD);
         }
 
         JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
@@ -94,12 +95,11 @@ public class AuthServiceImpl implements AuthService {
     private void checkDuplication(SignUpRequest signUpRequest) {
 
         if (memberRepository.findByUsername(signUpRequest.username()).isPresent()) {
-            throw new NoSuchElementException();
+            throw new AuthException(AuthExceptionType.DUPLICATE_USERNAME_EXCEPTION);
         }
         if (memberRepository.findByNickname(signUpRequest.nickname()).isPresent()) {
-            throw new NoSuchElementException();
+            throw new AuthException(AuthExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
         }
-        //TODO: exception 다시 설정
     }
 
     public void checkDuplication(OauthUserInfoDto oauthUserInfoDto) {
@@ -150,7 +150,6 @@ public class AuthServiceImpl implements AuthService {
 
         LocalDate birthday = LocalDate.parse(birthdayString, DateTimeFormatter.ofPattern("yyMMdd"));
 
-
         if (firstNumber.equals("1") || firstNumber.equals("2"))
             birthday = birthday.minusYears(100);
 
@@ -190,19 +189,4 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .build();
     }
-
-    public static String generateRandomString(int length) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(characters.length());
-            sb.append(characters.charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-
 }
