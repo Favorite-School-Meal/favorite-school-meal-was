@@ -37,10 +37,9 @@ public class RestaurantController {
 
     @PutMapping("/{restaurantId}")
     public ApiResponse<RestaurantResponse> restaurantModify(@PathVariable("restaurantId") Long restaurantId,
-                                                            @RequestPart("dto") CreateRestaurantRequest request,
-                                                            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
-                                                            @RequestPart(value = "menuImage", required = false) MultipartFile menuImage){
-        RestaurantResponse response = restaurantService.modifyRestaurant(restaurantId, request, thumbnail, menuImage);
+                                                            @RequestPart CreateRestaurantRequest request
+                                                            ){
+        RestaurantResponse response = restaurantService.modifyRestaurant(restaurantId, request);
         return ApiResponse.createSuccess(response);
     }
 

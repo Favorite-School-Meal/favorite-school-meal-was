@@ -35,14 +35,9 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant);
     }
 
-    // TODO: PR에서 리팩토링 제안 예정 (주석 작성자: 조예림)
     public RestaurantResponse findRestaurant(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(
-                        RestaurantExceptionType.RESTAURANT_NOT_FOUND));
-
+        Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         return RestaurantResponse.of(restaurant);
-
     }
 
     public List<RestaurantResponse> findAllRestaurant() {
@@ -50,12 +45,8 @@ public class RestaurantService {
         return restaurants.stream().map(RestaurantResponse::of).toList();
     }
 
-    public RestaurantResponse modifyRestaurant(Long restaurantId, CreateRestaurantRequest request,
-            MultipartFile thumbnail, MultipartFile menuImage) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(
-                        RestaurantExceptionType.RESTAURANT_NOT_FOUND));
-
+    public RestaurantResponse modifyRestaurant(Long restaurantId, CreateRestaurantRequest request) {
+        Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurant.update(request.isOnCampus(), request.location(), request.category(),
                 request.name(), request.businessHours(), request.thumbnailUrl(), request.menuImageUrl());
         return RestaurantResponse.of(restaurant);
@@ -63,15 +54,18 @@ public class RestaurantService {
 
 
     public Long deleteRestaurant(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(
-                        RestaurantExceptionType.RESTAURANT_NOT_FOUND));
-
+        Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurantRepository.delete(restaurant);
         return restaurantId;
     }
 
     public Optional<Restaurant> findRestaurantOptionally(Long restaurantId) {
         return restaurantRepository.findById(restaurantId);
+    }
+
+    private Restaurant getRestaurantOrThrow(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(
+                        RestaurantExceptionType.RESTAURANT_NOT_FOUND));
     }
 }
