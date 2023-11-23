@@ -6,7 +6,6 @@ import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantServic
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
-    public ApiResponse<RestaurantResponse> restaurantAdd(@RequestPart("dto") CreateRestaurantRequest request){
+    public ApiResponse<RestaurantResponse> restaurantAdd(@RequestBody CreateRestaurantRequest request){
         RestaurantResponse response = restaurantService.addRestaurant(request);
         return ApiResponse.createSuccess(response);
     }
@@ -37,7 +36,7 @@ public class RestaurantController {
 
     @PutMapping("/{restaurantId}")
     public ApiResponse<RestaurantResponse> restaurantModify(@PathVariable("restaurantId") Long restaurantId,
-                                                            @RequestPart CreateRestaurantRequest request
+                                                            @RequestBody CreateRestaurantRequest request
                                                             ){
         RestaurantResponse response = restaurantService.modifyRestaurant(restaurantId, request);
         return ApiResponse.createSuccess(response);

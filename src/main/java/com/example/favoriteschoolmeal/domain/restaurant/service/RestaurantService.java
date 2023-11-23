@@ -4,14 +4,14 @@ import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.CreateRes
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.RestaurantResponse;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
-import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantNotFoundException;
+import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantException;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
+import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +21,8 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
     public RestaurantResponse addRestaurant(CreateRestaurantRequest request) {
+        verifyRoleAdmin();
+
         Restaurant restaurant = Restaurant.builder()
                 .name(request.name())
                 .location(request.location())
@@ -46,6 +48,7 @@ public class RestaurantService {
     }
 
     public RestaurantResponse modifyRestaurant(Long restaurantId, CreateRestaurantRequest request) {
+        verifyRoleAdmin();
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurant.update(request.isOnCampus(), request.location(), request.category(),
                 request.name(), request.businessHours(), request.thumbnailUrl(), request.menuImageUrl());
@@ -54,10 +57,13 @@ public class RestaurantService {
 
 
     public Long deleteRestaurant(Long restaurantId) {
+        verifyRoleAdmin();
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurantRepository.delete(restaurant);
         return restaurantId;
     }
+
+
 
     public Optional<Restaurant> findRestaurantOptionally(Long restaurantId) {
         return restaurantRepository.findById(restaurantId);
@@ -65,7 +71,11 @@ public class RestaurantService {
 
     private Restaurant getRestaurantOrThrow(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RestaurantNotFoundException(
+                .orElseThrow(() -> new RestaurantException(
                         RestaurantExceptionType.RESTAURANT_NOT_FOUND));
+    }
+
+    private void verifyRoleAdmin() {
+        SecurityUtils.checkAdminOrThrow(() -> new RestaurantException(RestaurantExceptionType.UNAUTHORIZED_ACCESS));
     }
 }

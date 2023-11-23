@@ -9,6 +9,10 @@ public enum RestaurantExceptionType implements BaseExceptionType {
                 404,
                 HttpStatus.NOT_FOUND,
                 "Restaurant not found"
+        ), UNAUTHORIZED_ACCESS(
+                401,
+                HttpStatus.UNAUTHORIZED,
+                "Unauthorized access"
         );
 
         private final int errorCode;
