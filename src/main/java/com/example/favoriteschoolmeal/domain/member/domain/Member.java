@@ -67,4 +67,12 @@ public class Member extends Base {
         this.gender = gender;
         this.introduction = introduction;
     }
+
+    public void block(Long blockHours) {
+        if(this.unblockDate==null || this.unblockDate.isBefore(LocalDateTime.now())){
+            this.unblockDate = LocalDateTime.now().plusHours(blockHours);}
+        else{
+            this.unblockDate = this.unblockDate.plusHours(blockHours);
+        }
+    }
 }
