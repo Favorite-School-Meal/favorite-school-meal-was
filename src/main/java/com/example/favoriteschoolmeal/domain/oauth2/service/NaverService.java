@@ -174,6 +174,7 @@ public class NaverService implements OauthService {
     }
 
     @Override
+
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
 
         return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.NAVER);
@@ -255,7 +256,6 @@ public class NaverService implements OauthService {
                 .age(age)
                 .gender(gender)
                 .introduction(null)
-                .isBanned(false)
                 .build();
     }
 

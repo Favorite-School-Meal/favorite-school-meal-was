@@ -12,6 +12,7 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenService;
 import com.nimbusds.jose.shaded.gson.JsonElement;
@@ -20,8 +21,10 @@ import com.nimbusds.jose.shaded.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -142,12 +145,13 @@ public class KakaoService implements OauthService {
             throw new OauthException(OauthExceptionType.GET_USERINFO_NULL);
         } catch (JsonParseException e) {
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
+
         }
     }
 
     @Override
     public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
-
+      
         Oauth oauth = Oauth.builder()
                 .member(member)
                 .oauthPlatform(OauthPlatform.KAKAO)
@@ -168,6 +172,7 @@ public class KakaoService implements OauthService {
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
 
         return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.KAKAO);
+
     }
 
     @Override
@@ -241,7 +246,6 @@ public class KakaoService implements OauthService {
                 .age(authService.convertBirthdayToAge(birthday, firstNumber))
                 .gender(authService.convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
-                .isBanned(false)
                 .build();
     }
 }

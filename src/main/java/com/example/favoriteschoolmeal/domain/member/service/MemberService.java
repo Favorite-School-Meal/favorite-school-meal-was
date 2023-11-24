@@ -23,7 +23,7 @@ public class MemberService {
     }
 
     public void blockMember(Member reportedMember, Long blockHours) {
-        //TODO: 추후 구현
+        reportedMember.block(blockHours);
     }
 
 }
