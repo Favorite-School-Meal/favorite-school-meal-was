@@ -1,6 +1,8 @@
 package com.example.favoriteschoolmeal.global.security.token.refresh;
 
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
+import com.example.favoriteschoolmeal.global.security.exception.JwtException;
+import com.example.favoriteschoolmeal.global.security.exception.JwtExceptionType;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             refreshTokenRepository.delete(refreshToken.get());
             log.info("delete refresh token. username : {}", username);
         } else {
-            throw new NoSuchElementException("Refresh token not found for username: " + username);
+            throw new JwtException(JwtExceptionType.REFRESHTOKEN_NOT_FOUND);
         }
 
     }

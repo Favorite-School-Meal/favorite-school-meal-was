@@ -9,6 +9,8 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class NaverService implements OauthService {
@@ -28,7 +30,8 @@ public class NaverService implements OauthService {
     }
 
     @Override
-    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto) {
+
+    public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
         return null;
     }
 

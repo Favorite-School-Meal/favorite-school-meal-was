@@ -180,5 +180,6 @@ public class PostService {
         return SecurityUtils.getCurrentMemberId(
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
     }
+
 }
 
