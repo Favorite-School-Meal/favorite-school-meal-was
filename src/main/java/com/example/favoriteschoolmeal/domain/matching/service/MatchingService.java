@@ -39,21 +39,22 @@ public class MatchingService {
         this.memberService = memberService;
     }
 
-    public Matching addMatching(final Member host, final LocalDateTime meetingDateTime,
+    public Matching addMatching(final Member host, final LocalDateTime startDateTime, final LocalDateTime endDateTime,
             final Integer maxParticipant) {
         final Matching matching = Matching.builder()
                 .matchingStatus(MatchingStatus.IN_PROGRESS)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
                 .maxParticipant(maxParticipant)
-                .meetingDateTime(meetingDateTime)
                 .build();
         final Matching savedMatching = matchingRepository.save(matching);
         addHostMemberToMatching(savedMatching, host);
         return savedMatching;
     }
 
-    public void modifyDetails(final Matching matching, final LocalDateTime meetingDateTime,
+    public void modifyDetails(final Matching matching, LocalDateTime startDateTime, LocalDateTime endDateTime,
             final Integer maxParticipant) {
-        matching.modifyDetails(meetingDateTime, maxParticipant);
+        matching.modifyDetails(startDateTime, endDateTime, maxParticipant);
         matchingRepository.save(matching);
     }
 

@@ -18,7 +18,7 @@ public record CommentResponse(
                 comment.getMember().getUsername(),
                 comment.getId(),
                 comment.getContent(),
-                comment.getCreatedAt().toString()
+                comment.getFormattedCreatedAt()
         );
     }
 

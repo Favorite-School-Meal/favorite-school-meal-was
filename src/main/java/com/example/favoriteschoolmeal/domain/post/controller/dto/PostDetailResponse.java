@@ -29,7 +29,7 @@ public record PostDetailResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getCreatedAt().toString(),
+                post.getFormattedCreatedAt(),
 
                 post.getMember().getId(),
                 post.getMember().getUsername(),

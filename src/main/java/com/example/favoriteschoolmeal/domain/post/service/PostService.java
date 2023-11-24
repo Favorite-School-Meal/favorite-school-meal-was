@@ -17,7 +17,9 @@ import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantService;
+import com.example.favoriteschoolmeal.global.common.util.DateTimeUtil;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -138,7 +140,8 @@ public class PostService {
     }
 
     private Matching createMatching(final Member member, final CreatePostRequest request) {
-        return matchingService.addMatching(member, request.meetingDateTime(),
+        LocalDateTime[] localDateTimes = DateTimeUtil.parseDateTimeRange(request.meetingDateTime());
+        return matchingService.addMatching(member, localDateTimes[0], localDateTimes[1],
                 request.maxParticipant());
     }
 
@@ -147,7 +150,8 @@ public class PostService {
     }
 
     private void modifyMatchingDetails(final Matching matching, final CreatePostRequest request) {
-        matchingService.modifyDetails(matching, request.meetingDateTime(),
+        LocalDateTime[] localDateTimes = DateTimeUtil.parseDateTimeRange(request.meetingDateTime());
+        matchingService.modifyDetails(matching, localDateTimes[0], localDateTimes[1],
                 request.maxParticipant());
     }
 

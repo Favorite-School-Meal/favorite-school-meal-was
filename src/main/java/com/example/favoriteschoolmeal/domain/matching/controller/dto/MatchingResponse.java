@@ -13,7 +13,7 @@ public record MatchingResponse(
         return new MatchingResponse(
                 matching.getId(),
                 matching.getMatchingStatus().name(),
-                matching.getMeetingDateTime().toString(),
+                matching.getMeetingDateTime(),
                 approvedParticipant,
                 matching.getMaxParticipant()
         );

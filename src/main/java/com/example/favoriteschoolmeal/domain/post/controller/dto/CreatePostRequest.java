@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record CreatePostRequest(
         @NotBlank String title,
         @NotBlank String content,
-        @NotNull @Future LocalDateTime meetingDateTime,
+        @NotNull String meetingDateTime,
         @NotNull @Min(2) Integer maxParticipant) {
 
 }
