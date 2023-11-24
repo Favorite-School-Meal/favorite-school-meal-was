@@ -53,7 +53,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<List<CommentResponse>> commentList(
             @PathVariable final Long postId) {
-        final List<Comment> comments = commentService.findAllPost(postId);
+        final List<Comment> comments = commentService.findAllComment(postId);
         final List<CommentResponse> commentResponses = CommentResponse.listFrom(comments);
         return ApiResponse.createSuccess(commentResponses);
     }

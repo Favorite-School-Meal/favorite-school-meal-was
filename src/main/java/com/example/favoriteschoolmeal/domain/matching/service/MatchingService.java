@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.matching.service;
 
+import com.example.favoriteschoolmeal.domain.matching.controller.dto.MatchingResponse;
 import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.domain.MatchingMember;
 import com.example.favoriteschoolmeal.domain.matching.exception.MatchingException;
@@ -95,8 +96,18 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
+    public MatchingResponse createMatchingResponse(Matching matching) {
+        Integer approvedParticipant = calculateApprovedParticipant(matching);
+        return MatchingResponse.from(matching, approvedParticipant);
+    }
+
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
+    }
+
+    private Integer calculateApprovedParticipant(final Matching matching) {
+        return Math.toIntExact(matchingMemberRepository.countByMatchingAndMatchingRequestStatus(
+                matching, MatchingRequestStatus.ACCEPTED));
     }
 
     private void checkIfMatchingIsAvailable(final Matching matching, final Member member) {
@@ -109,7 +120,7 @@ public class MatchingService {
         final boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching,
                 applicant).isPresent();
         final boolean isMatchingFull =
-                matchingMemberRepository.countByMatching(matching) >= matching.getMaxParticipant();
+                matchingMemberRepository.countByMatchingAndMatchingRequestStatus(matching, MatchingRequestStatus.ACCEPTED) >= matching.getMaxParticipant();
         final boolean isMatchingOpen = matching.getMatchingStatus().equals(MatchingStatus.IN_PROGRESS);
 
         return !alreadyApplied && !isMatchingFull && isMatchingOpen;

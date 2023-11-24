@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.comment.service;
 
+import com.example.favoriteschoolmeal.domain.comment.controller.dto.CommentResponse;
 import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.comment.exception.CommentException;
 import com.example.favoriteschoolmeal.domain.comment.exception.CommentExceptionType;
@@ -10,27 +11,22 @@ import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.exception.PostException;
 import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
-import com.example.favoriteschoolmeal.domain.post.service.PostService;
+import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
     private final MemberService memberService;
-
-    public CommentService(final CommentRepository commentRepository, final PostService postService,
-            final MemberService memberService) {
-        this.commentRepository = commentRepository;
-        this.postService = postService;
-        this.memberService = memberService;
-    }
 
     public Comment addComment(final CreateCommentCommand command) {
         verifyUserOrAdmin();
@@ -52,7 +48,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Comment> findAllPost(final Long postId) {
+    public List<Comment> findAllComment(final Long postId) {
         final Post post = getPostOrThrow(postId);
         return commentRepository.findAllByPost(post, Sort.by("createdAt").ascending());
     }
@@ -63,6 +59,12 @@ public class CommentService {
         final Comment comment = getCommentOrThrow(commentId);
         verifyCommentOwner(comment.getMember().getId(), getCurrentMemberId());
         commentRepository.delete(comment);
+    }
+
+    public List<CommentResponse> createCommentResponseList(Post post) {
+        // 해당 게시글의 댓글 목록을 찾아 CommentResponse 리스트로 변환
+        List<Comment> comments = findAllComment(post.getId());
+        return CommentResponse.listFrom(comments);
     }
 
     private Comment createComment(CreateCommentCommand command, Post post, Member member) {
@@ -79,7 +81,7 @@ public class CommentService {
     }
 
     private Post getPostOrThrow(final Long postId) {
-        return postService.findPostOptionally(postId)
+        return postRepository.findById(postId)
                 .orElseThrow(() -> new CommentException(CommentExceptionType.POST_NOT_FOUND));
     }
 
