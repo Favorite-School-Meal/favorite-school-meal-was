@@ -141,6 +141,7 @@ public class OauthServiceImpl {
 
     private void checkBlockOrThrow(Member member) {
         if(member.isBanned())
+            //TODO: MemberException으로 변경
             throw new RuntimeException("정지된 계정입니다.");
     }
 }

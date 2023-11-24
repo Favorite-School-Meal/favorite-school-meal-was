@@ -181,7 +181,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void checkBlockOrThrow(Member member) {
         if(member.isBanned()){
-            //TODO: Exception 계정이 정지되었습니다.
+            //TODO: MemberException으로 변경
             throw new RuntimeException("계정이 정지되었습니다.");
         }
     }
