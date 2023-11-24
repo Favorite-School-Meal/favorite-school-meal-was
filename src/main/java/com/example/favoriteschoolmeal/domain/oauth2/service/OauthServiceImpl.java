@@ -12,6 +12,8 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+
+import java.util.Optional;
+
 
 
 @Slf4j
@@ -44,21 +49,17 @@ public class OauthServiceImpl {
         OauthUserInfoDto oauthUserInfoDto = getUserInfo(accessToken, platform);
         log.info("유저 정보를 가져왔습니다. {}, {}", oauthUserInfoDto.getPlatformId(), oauthUserInfoDto.getNickname());
 
-        Oauth existOauth = isExists(oauthUserInfoDto, platform);
+        Optional<Oauth> existOauth = isExists(oauthUserInfoDto, platform);
         log.info("유저 정보 존재 확인. {}", existOauth);
-        if (existOauth != null) { //이미 존재하는 계정이면
-            //정지 여부 확인
-            checkBlcokOrThrow(existOauth.getMember());
+        if (existOauth.isPresent()) {
 
-            //로그인
-
-            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.getMember());
-            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.getMember().getUsername());
+            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.get().getMember());
+            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
 
             return jwtTokenDto;
 
         } else {
-            //회원가입
+          
             Member member = convertSignUpDtoToMember(oauthRequest.oauthSignUpRequest(), oauthUserInfoDto);
             memberRepository.save(member);
 
@@ -73,14 +74,16 @@ public class OauthServiceImpl {
 
     }
 
+
     public OauthService platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
             return naverService;
         } else if (platform.equals(OauthPlatform.KAKAO)) {
             return kakaoService;
         }
-        //TODO: 예외 코드 변경
-        else throw new RuntimeException("지원하지 않은 소셜로그인 플랫폼입니다.");
+
+        else throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
+
     }
 
     public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
@@ -92,7 +95,8 @@ public class OauthServiceImpl {
     }
 
 
-    public Oauth isExists(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
+    public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
+
         return platformToService(platform).isExists(oauthUserInfoDto);
     }
 
@@ -112,7 +116,7 @@ public class OauthServiceImpl {
         String randomStringPassword = generateRandomString(10);
 
         return Member.builder()
-                .username(randomStringUsername)//TODO: 난수로 생성?
+                .username(randomStringUsername)
                 .password(passwordEncoder.encode(randomStringPassword))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())
