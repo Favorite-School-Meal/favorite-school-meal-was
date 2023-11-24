@@ -65,7 +65,8 @@ public class PostService {
         modifyMatchingDetails(post.getMatching(), request);
         final Post savedPost = postRepository.save(post);
 
-        MatchingResponse matchingResponse = matchingService.createMatchingResponse(post.getMatching());
+        MatchingResponse matchingResponse = matchingService.createMatchingResponse(
+                post.getMatching());
         List<CommentResponse> commentResponse = commentService.createCommentResponseList(savedPost);
         return PostDetailResponse.from(savedPost, matchingResponse, commentResponse);
     }
@@ -81,7 +82,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedPostListResponse findAllPostByRestaurantId(final Pageable pageable, final Long restaurantId) {
+    public PaginatedPostListResponse findAllPostByRestaurantId(final Pageable pageable,
+            final Long restaurantId) {
         final Page<Post> posts = postRepository.findAllByRestaurantIdOrderByStatusAndTime(
                 pageable, restaurantId);
         summarizePostsIfNotNull(posts);
