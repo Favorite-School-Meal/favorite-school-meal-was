@@ -14,6 +14,7 @@ import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,10 @@ public class CommentService {
     public List<CommentResponse> createCommentResponseList(Post post) {
         List<Comment> comments = findAllComment(post.getId());
         return CommentResponse.listFrom(comments);
+    }
+
+    public Optional<Comment> findCommentOptionally(Long commentId) {
+        return commentRepository.findById(commentId);
     }
 
     private Comment createComment(CreateCommentCommand command, Post post, Member member) {
