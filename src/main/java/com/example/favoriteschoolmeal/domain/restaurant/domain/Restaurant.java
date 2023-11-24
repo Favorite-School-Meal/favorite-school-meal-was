@@ -34,10 +34,10 @@ public class Restaurant extends Base {
     @Column(name = "business_hours", nullable = false, length = 100)
     private String businessHours;
 
-    @Column(name = "thumbnail_url", nullable = false, length = 100)
+    @Column(name = "thumbnail_url", nullable = false, length = 300)
     private String thumbnailUrl;
 
-    @Column(name = "menu_image_url", nullable = true, length = 100)
+    @Column(name = "menu_image_url", nullable = true, length = 300)
     private String menuImageUrl;
 
     @Builder
