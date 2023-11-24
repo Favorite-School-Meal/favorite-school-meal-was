@@ -8,6 +8,7 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
@@ -15,7 +16,9 @@ import com.nimbusds.jose.shaded.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.json.JsonParseException;
+
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -85,12 +88,13 @@ public class KakaoService implements OauthService {
             throw new OauthException(OauthExceptionType.GET_USERINFO_NULL);
         } catch (JsonParseException e){
             throw new OauthException(OauthExceptionType.JSON_PARSE_EXCEPTION);
+
         }
     }
 
     @Override
     public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
-
+      
         Oauth oauth = Oauth.builder()
                 .member(member)
                 .oauthPlatform(OauthPlatform.KAKAO)
@@ -111,6 +115,7 @@ public class KakaoService implements OauthService {
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
 
         return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.KAKAO);
+
     }
 
     @Override

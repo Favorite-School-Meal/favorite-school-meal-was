@@ -12,9 +12,9 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignUpRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 
-
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+
 import java.util.Optional;
+
 
 
 @Slf4j
@@ -57,7 +59,7 @@ public class OauthServiceImpl {
             return jwtTokenDto;
 
         } else {
-
+          
             Member member = convertSignUpDtoToMember(oauthRequest.oauthSignUpRequest(), oauthUserInfoDto);
             memberRepository.save(member);
 
@@ -73,14 +75,15 @@ public class OauthServiceImpl {
     }
 
 
-
     public OauthService platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
             return naverService;
         } else if (platform.equals(OauthPlatform.KAKAO)) {
             return kakaoService;
         }
+
         else throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
+
     }
 
     public OauthUserInfoDto getUserInfo(String accessToken, OauthPlatform platform) {
@@ -93,6 +96,7 @@ public class OauthServiceImpl {
 
 
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto, OauthPlatform platform) {
+
         return platformToService(platform).isExists(oauthUserInfoDto);
     }
 
@@ -121,7 +125,7 @@ public class OauthServiceImpl {
                 .age(authService.convertBirthdayToAge(birthday, firstNumber))
                 .gender(authService.convertPersonalNumberToGender(firstNumber))
                 .introduction(null)
-                .isBanned(false)
+                .unblockDate(null)
                 .build();
     }
 
@@ -137,5 +141,10 @@ public class OauthServiceImpl {
         }
 
         return sb.toString();
+    }
+
+    private void checkBlcokOrThrow(Member member) {
+        if(member.isBanned())
+            throw new RuntimeException("정지된 계정입니다.");
     }
 }
