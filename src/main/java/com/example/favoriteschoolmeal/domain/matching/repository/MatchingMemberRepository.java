@@ -24,7 +24,7 @@ public interface MatchingMemberRepository extends JpaRepository<MatchingMember, 
      * 주어진 매칭과 매칭 요청 상태에 해당하는 매칭 멤버 수를 반환합니다.
      *
      * @param matching 매칭 엔티티
-     * @param status 매칭 요청 상태
+     * @param status   매칭 요청 상태
      * @return 해당 조건을 만족하는 매칭 멤버 수
      */
     long countByMatchingAndMatchingRequestStatus(Matching matching, MatchingRequestStatus status);

@@ -51,7 +51,8 @@ public class Matching {
         this.endDateTime = endDateTime;
     }
 
-    public void modifyDetails(LocalDateTime startDateTime, LocalDateTime endDateTime, Integer maxParticipant) {
+    public void modifyDetails(LocalDateTime startDateTime, LocalDateTime endDateTime,
+            Integer maxParticipant) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxParticipant = maxParticipant;

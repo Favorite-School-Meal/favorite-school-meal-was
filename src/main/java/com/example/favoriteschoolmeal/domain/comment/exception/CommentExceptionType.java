@@ -27,13 +27,15 @@ public enum CommentExceptionType implements BaseExceptionType {
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
-    ),;
+    ),
+    ;
 
     private final int errorCode;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    CommentExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    CommentExceptionType(final int errorCode, final HttpStatus httpStatus,
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

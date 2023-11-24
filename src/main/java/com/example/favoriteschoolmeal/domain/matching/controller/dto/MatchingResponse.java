@@ -9,7 +9,8 @@ public record MatchingResponse(
         Integer approvedParticipant,
         Integer maxParticipant) {
 
-    public static MatchingResponse from(final Matching matching, final Integer approvedParticipant) {
+    public static MatchingResponse from(final Matching matching,
+            final Integer approvedParticipant) {
         return new MatchingResponse(
                 matching.getId(),
                 matching.getMatchingStatus().name(),

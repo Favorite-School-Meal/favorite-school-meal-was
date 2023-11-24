@@ -21,7 +21,8 @@ public record PostSummaryResponse(
 
         Integer commentCount) {
 
-    public static PostSummaryResponse from(final Post post, final MatchingResponse matching, final Integer commentCount) {
+    public static PostSummaryResponse from(final Post post, final MatchingResponse matching,
+            final Integer commentCount) {
         return new PostSummaryResponse(
                 post.getId(),
                 post.getTitle(),
