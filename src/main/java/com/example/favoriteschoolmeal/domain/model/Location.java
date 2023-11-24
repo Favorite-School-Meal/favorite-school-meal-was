@@ -8,8 +8,4 @@ import lombok.Getter;
 public class Location {
     private Double longitude;
     private Double latitude;
-
-    public Location() {
-
-    }
 }
