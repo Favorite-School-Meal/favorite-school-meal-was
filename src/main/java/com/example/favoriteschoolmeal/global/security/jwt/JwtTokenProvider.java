@@ -1,5 +1,7 @@
 package com.example.favoriteschoolmeal.global.security.jwt;
 
+import com.example.favoriteschoolmeal.global.security.exception.JwtException;
+import com.example.favoriteschoolmeal.global.security.exception.JwtExceptionType;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshToken;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenRepository;
 import com.example.favoriteschoolmeal.global.security.userdetails.UserDetailsServiceImpl;
@@ -23,7 +25,6 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-
 
     private final String secretKey;
     private final long tokenExpirationTime;
@@ -130,7 +131,6 @@ public class JwtTokenProvider {
      *
      * @param refreshToken AccessToken 재발급에 사용될 RefreshToken
      * @return 재발급된 AccessToken 문자열
-     * @throws IllegalArgumentException 잘못된 토큰인 경우 발생하는 예외
      */
     public String reCreateAccessToken(String refreshToken) {
 
@@ -142,10 +142,10 @@ public class JwtTokenProvider {
 
 
             if (!refreshToken.equals(existRefreshToken)) {
-                throw new RuntimeException(); //예외 변경
+                throw new JwtException(JwtExceptionType.INVALID_REFRESHTOKEN_EXCEPTION);
             }
         } else {
-            throw new RuntimeException();
+            throw new JwtException(JwtExceptionType.REFRESHTOKEN_NOT_FOUND);
         }
         return createAccessToken(username);
     }
@@ -173,15 +173,14 @@ public class JwtTokenProvider {
             return !claims.getBody().getExpiration().before(new Date());
 
         } catch (MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다: {}", e.getMessage());
+            throw new JwtException(JwtExceptionType.MALFORMED_JWT_EXCEPTION);
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다: {}", e.getMessage());
+            throw new JwtException(JwtExceptionType.EXPIRED_JWT_EXCEPTION);
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다: {}", e.getMessage());
+            throw new JwtException(JwtExceptionType.UNSUPPORTED_JWT_EXCEPTION);
         } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다: {}", e.getMessage());
+            throw new JwtException(JwtExceptionType.ILLEAGAL_ARGUMENT_EXCEPTION);
         }
-        return false;
     }
 
 }

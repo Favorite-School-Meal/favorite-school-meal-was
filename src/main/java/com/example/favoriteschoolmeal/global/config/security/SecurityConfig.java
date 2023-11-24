@@ -33,12 +33,19 @@ public class SecurityConfig {
 
     private static final String[] publicEndpoints = {
 
-            "api/v1/auth",
+            "api/v1/auth/**",
+
+            "api/v1/oauth/**",
 
             // TODO: 추후 아래 코드 삭제
             "api/**",
 
-            //TODO: swagger 추가
+            /* swagger v3*/
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+
+
+
     };
 
     @Bean

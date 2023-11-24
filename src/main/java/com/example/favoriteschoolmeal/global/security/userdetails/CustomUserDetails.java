@@ -20,6 +20,7 @@ public class CustomUserDetails implements UserDetails {
         this.member = member;
     }
 
+
     public Long getMemberId() {
         return member.getId();
     }
