@@ -61,8 +61,12 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    public int countCommentByPostId(final Long postId) {
+        final Post post = getPostOrThrow(postId);
+        return commentRepository.countByPost(post);
+    }
+
     public List<CommentResponse> createCommentResponseList(Post post) {
-        // 해당 게시글의 댓글 목록을 찾아 CommentResponse 리스트로 변환
         List<Comment> comments = findAllComment(post.getId());
         return CommentResponse.listFrom(comments);
     }

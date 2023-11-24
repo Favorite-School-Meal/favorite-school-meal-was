@@ -20,7 +20,8 @@ public record PostDetailResponse(
         String restaurantName,
 
         MatchingResponse matching,
-        List<CommentResponse> comments) {
+        List<CommentResponse> comments,
+        Integer commentCount) {
 
     public static PostDetailResponse from(final Post post, final MatchingResponse matching,
             final List<CommentResponse> comments) {
@@ -37,7 +38,8 @@ public record PostDetailResponse(
                 Optional.ofNullable(post.getRestaurant()).map(Restaurant::getName).orElse(null),
 
                 matching,
-                comments
+                comments,
+                comments.size()
         );
     }
 }

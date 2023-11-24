@@ -17,9 +17,11 @@ public record PostSummaryResponse(
         Long restaurantId,
         String restaurantName,
 
-        MatchingResponse matching) {
+        MatchingResponse matching,
 
-    public static PostSummaryResponse from(final Post post, final MatchingResponse matching) {
+        Integer commentCount) {
+
+    public static PostSummaryResponse from(final Post post, final MatchingResponse matching, final Integer commentCount) {
         return new PostSummaryResponse(
                 post.getId(),
                 post.getTitle(),
@@ -31,8 +33,10 @@ public record PostSummaryResponse(
 
                 Optional.ofNullable(post.getRestaurant()).map(Restaurant::getId).orElse(null),
                 Optional.ofNullable(post.getRestaurant()).map(Restaurant::getName).orElse(null),
-                matching
+
+                matching,
+
+                commentCount
         );
     }
-
 }

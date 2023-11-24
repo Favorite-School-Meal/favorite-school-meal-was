@@ -168,7 +168,8 @@ public class PostService {
     private PostSummaryResponse convertToPostSummaryResponse(final Post post) {
         MatchingResponse matchingResponse = matchingService.createMatchingResponse(
                 post.getMatching());
-        return PostSummaryResponse.from(post, matchingResponse);
+        Integer commentCount = commentService.countCommentByPostId(post.getId());
+        return PostSummaryResponse.from(post, matchingResponse, commentCount);
     }
 
     private Post createPost(final CreatePostRequest request, final Member member,

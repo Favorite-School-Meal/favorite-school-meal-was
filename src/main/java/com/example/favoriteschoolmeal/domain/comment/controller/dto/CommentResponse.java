@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record CommentResponse(
-        Long memberId, // 사용자 아이디
-        String username, // 사용자 이름
-        Long commentId, // 댓글 아이디
-        String content, // 댓글 내용
-        String createdAt // 댓글 작성 시간
+        Long memberId,
+        String username,
+        Long commentId,
+        String content,
+        String createdAt
 ) {
 
     public static CommentResponse from(final Comment comment) {
