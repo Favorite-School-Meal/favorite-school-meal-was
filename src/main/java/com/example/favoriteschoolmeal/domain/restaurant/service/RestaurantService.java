@@ -8,8 +8,10 @@ import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExcep
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +64,6 @@ public class RestaurantService {
         restaurantRepository.delete(restaurant);
         return restaurantId;
     }
-
 
 
     public Optional<Restaurant> findRestaurantOptionally(Long restaurantId) {

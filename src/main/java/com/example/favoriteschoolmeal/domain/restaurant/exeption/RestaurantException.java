@@ -5,15 +5,15 @@ import com.example.favoriteschoolmeal.global.exception.BaseExceptionType;
 
 public class RestaurantException extends BaseException {
 
-        private final RestaurantExceptionType restaurantExceptionType;
+    private final RestaurantExceptionType restaurantExceptionType;
 
-        public RestaurantException(final RestaurantExceptionType restaurantExceptionType) {
-            this.restaurantExceptionType = restaurantExceptionType;
-        }
+    public RestaurantException(final RestaurantExceptionType restaurantExceptionType) {
+        this.restaurantExceptionType = restaurantExceptionType;
+    }
 
-        @Override
-        public BaseExceptionType exceptionType() {
-            return restaurantExceptionType;
-        }
+    @Override
+    public BaseExceptionType exceptionType() {
+        return restaurantExceptionType;
+    }
 
 }
