@@ -3,6 +3,7 @@ package com.example.favoriteschoolmeal.domain.member.dto;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 
+
 public record MemberDetailResponse(
 
         String nickname,
@@ -20,7 +21,8 @@ public record MemberDetailResponse(
                 member.getEmail(),
                 member.getAge(),
                 member.getGender(),
-                member.getIntroduction()
+                member.getIntroduction(),
+
         );
     }
 }

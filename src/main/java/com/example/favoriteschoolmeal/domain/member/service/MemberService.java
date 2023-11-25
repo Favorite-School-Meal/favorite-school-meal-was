@@ -40,7 +40,10 @@ public class MemberService {
     public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId){
 
         verifyUserOrAdmin();
+        final Long currentMemberId = getCurrentMemberId();
+
         final Member member = getMemberOrThrow(memberId);
+        verifyMemberOwner(memberId, currentMemberId);
 
         modifyIntroduction(member, request);
         final Member savedMember = memberRepository.save(member);
@@ -89,6 +92,12 @@ public class MemberService {
     private void verifyAdmin(){
         SecurityUtils.checkAdminOrThrow(
                 () -> new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private void verifyMemberOwner(final Long memberOwnerId, final Long currentMemberId){
+        if(!memberOwnerId.equals(currentMemberId)){
+            throw new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS);
+        }
     }
 
     private Long getCurrentMemberId(){
