@@ -52,4 +52,8 @@ public class Notification extends Base {
         this.notificationType = notificationType;
         this.isRead = isRead;
     }
+
+    public void readNotification() {
+        this.isRead = true;
+    }
 }

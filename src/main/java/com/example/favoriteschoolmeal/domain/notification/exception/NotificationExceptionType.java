@@ -5,6 +5,12 @@ import org.springframework.http.HttpStatus;
 
 public enum NotificationExceptionType implements BaseExceptionType {
 
+    NOTIFICATION_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Notification not found"
+    ),
+
     MEMBER_NOT_FOUND(
             404,
             HttpStatus.NOT_FOUND,

@@ -43,7 +43,9 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Transactional(readOnly = true)
     public NotificationListResponse findAllNotification() {
+        verifyUserOrAdmin();
         Member member = getMemberOrThrow(getCurrentMemberId());
         List<NotificationResponse> notificationResponseList = notificationRepository
                 .findAllByMember(member)
@@ -53,10 +55,26 @@ public class NotificationService {
         return NotificationListResponse.from(notificationResponseList);
     }
 
+    @Transactional(readOnly = true)
     public UnreadNotificationStatusResponse hasUnreadNotifications() {
+        verifyUserOrAdmin();
         Member member = getMemberOrThrow(getCurrentMemberId());
         return UnreadNotificationStatusResponse.from(
                 notificationRepository.existsByMemberAndIsRead(member, false));
+    }
+
+    public NotificationResponse readNotification(final Long notificationId) {
+        verifyUserOrAdmin();
+        Notification notification = getNotificationOrThrow(notificationId);
+        notification.readNotification();
+        Notification savedNotification = notificationRepository.save(notification);
+        return NotificationResponse.from(savedNotification);
+    }
+
+    private Notification getNotificationOrThrow(Long notificationId) {
+        return notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotificationException(
+                        NotificationExceptionType.NOTIFICATION_NOT_FOUND));
     }
 
     private Member getMemberOrThrow(final Long memberId) {
@@ -68,5 +86,10 @@ public class NotificationService {
     private Long getCurrentMemberId() {
         return SecurityUtils.getCurrentMemberId(
                 () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
+    }
+
+    private void verifyUserOrAdmin() {
+        SecurityUtils.checkUserOrAdminOrThrow(
+                () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
     }
 }
