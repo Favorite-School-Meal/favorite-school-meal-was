@@ -77,4 +77,8 @@ public class Member extends Base {
     public boolean isBanned() {
         return this.unblockDate!=null && this.unblockDate.isAfter(LocalDateTime.now());
     }
+
+    public void modifyIntroduction(final String introduction){
+        this.introduction = introduction;
+    }
 }
