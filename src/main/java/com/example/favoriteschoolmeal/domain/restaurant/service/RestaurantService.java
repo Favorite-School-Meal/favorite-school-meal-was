@@ -22,7 +22,7 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public RestaurantResponse addRestaurant(CreateRestaurantRequest request) {
+    public RestaurantResponse addRestaurant(final CreateRestaurantRequest request) {
         verifyRoleAdmin();
 
         Restaurant restaurant = Restaurant.builder()
@@ -39,7 +39,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant);
     }
 
-    public RestaurantResponse findRestaurant(Long restaurantId) {
+    public RestaurantResponse findRestaurant(final Long restaurantId) {
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         return RestaurantResponse.of(restaurant);
     }
@@ -49,7 +49,7 @@ public class RestaurantService {
         return restaurants.stream().map(RestaurantResponse::of).toList();
     }
 
-    public RestaurantResponse modifyRestaurant(Long restaurantId, CreateRestaurantRequest request) {
+    public RestaurantResponse modifyRestaurant(final Long restaurantId, final CreateRestaurantRequest request) {
         verifyRoleAdmin();
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurant.update(request.isOnCampus(), request.location(), request.category(),
@@ -58,7 +58,7 @@ public class RestaurantService {
     }
 
 
-    public Long deleteRestaurant(Long restaurantId) {
+    public Long deleteRestaurant(final Long restaurantId) {
         verifyRoleAdmin();
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurantRepository.delete(restaurant);
@@ -66,11 +66,11 @@ public class RestaurantService {
     }
 
 
-    public Optional<Restaurant> findRestaurantOptionally(Long restaurantId) {
+    public Optional<Restaurant> findRestaurantOptionally(final Long restaurantId) {
         return restaurantRepository.findById(restaurantId);
     }
 
-    private Restaurant getRestaurantOrThrow(Long restaurantId) {
+    private Restaurant getRestaurantOrThrow(final Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantException(
                         RestaurantExceptionType.RESTAURANT_NOT_FOUND));
