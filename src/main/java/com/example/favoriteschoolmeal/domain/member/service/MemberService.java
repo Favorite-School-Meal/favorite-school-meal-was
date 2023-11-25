@@ -3,11 +3,14 @@ package com.example.favoriteschoolmeal.domain.member.service;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
+import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,14 +36,12 @@ public class MemberService {
     }
 
 
-    public MemberDetailResponse modifyMember(final ModifyMemberRequest modifyMemberRequest, final Long memberId){
+    public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId){
 
         verifyUserOrAdmin();
-
         final Member member = getMemberOrThrow(memberId);
 
-        modifyIntroduction(member, modifyMemberRequest);
-
+        modifyIntroduction(member, request);
         final Member savedMember = memberRepository.save(member);
 
         return MemberDetailResponse.from(savedMember);
@@ -54,8 +55,14 @@ public class MemberService {
     }
 
 
-    private void modifyIntroduction(final Member member, final ModifyMemberRequest modifyMemberRequest){
-        member.modifyIntroduction(modifyMemberRequest.introduction());
+    @Transactional(readOnly = true)
+    public PaginatedMemberListResponse findAllPost(final Pageable pageable){
+
+        return null;
+    }
+
+    private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
+        member.modifyIntroduction(request.introduction());
     }
 
     private Member getMemberOrThrow(final Long memberId){
