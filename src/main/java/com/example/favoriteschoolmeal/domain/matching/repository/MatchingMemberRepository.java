@@ -37,4 +37,14 @@ public interface MatchingMemberRepository extends JpaRepository<MatchingMember, 
      * @return 해당 Matching에 연관된 MatchingMember 리스트
      */
     List<MatchingMember> findAllByMatching(Matching matching);
+
+    /**
+     * 특정 Matching에 대한 특정 MatchingRequestStatus를 가진 MatchingMember를 조회합니다.
+     *
+     * @param matching 조회할 Matching 엔티티
+     * @param status   조회할 MatchingRequestStatus
+     * @return 해당 Matching에 연관된 MatchingMember 리스트
+     */
+    List<MatchingMember> findByMatchingAndMatchingRequestStatus(Matching matching,
+            MatchingRequestStatus status);
 }

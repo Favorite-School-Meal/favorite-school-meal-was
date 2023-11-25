@@ -8,6 +8,8 @@ import com.example.favoriteschoolmeal.domain.comment.repository.CommentRepositor
 import com.example.favoriteschoolmeal.domain.comment.service.dto.CreateCommentCommand;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
+import com.example.favoriteschoolmeal.domain.model.NotificationType;
+import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.exception.PostException;
 import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
@@ -28,13 +30,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final MemberService memberService;
+    private final NotificationService notificationService;
 
     public Comment addComment(final CreateCommentCommand command) {
         verifyUserOrAdmin();
         final Post post = getPostOrThrow(command.postId());
         final Member member = getMemberOrThrow(getCurrentMemberId());
         final Comment comment = createComment(command, post, member);
-        return commentRepository.save(comment);
+        final Comment savedComment = commentRepository.save(comment);
+        notificationService.createNotification(post.getId(), post.getMember().getId(),
+                NotificationType.COMMENT_POSTED);
+        return savedComment;
     }
 
     public Comment modifyComment(final Long commentId, final CreateCommentCommand command) {
