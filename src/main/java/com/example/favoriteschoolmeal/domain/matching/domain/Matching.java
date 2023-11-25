@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.matching.domain;
 
 
 import com.example.favoriteschoolmeal.domain.model.MatchingStatus;
+import com.example.favoriteschoolmeal.global.common.util.DateTimeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,23 +36,33 @@ public class Matching {
     @Column(name = "max_participant", nullable = false)
     private Integer maxParticipant;
 
-    @Column(name = "meeting_date_time", nullable = false)
-    private LocalDateTime meetingDateTime;
+    @Column(name = "start_date_time", nullable = false)
+    private LocalDateTime startDateTime;
+
+    @Column(name = "end_date_time", nullable = false)
+    private LocalDateTime endDateTime;
 
     @Builder
     public Matching(MatchingStatus matchingStatus, Integer maxParticipant,
-            LocalDateTime meetingDateTime) {
+            LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.matchingStatus = matchingStatus;
         this.maxParticipant = maxParticipant;
-        this.meetingDateTime = meetingDateTime;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
-    public void modifyDetails(final LocalDateTime meetingDateTime, final Integer maxParticipant) {
-        this.meetingDateTime = meetingDateTime;
+    public void modifyDetails(LocalDateTime startDateTime, LocalDateTime endDateTime,
+            Integer maxParticipant) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
         this.maxParticipant = maxParticipant;
     }
 
     public void completeMatching() {
         this.matchingStatus = MatchingStatus.CLOSED;
+    }
+
+    public String getMeetingDateTime() {
+        return DateTimeUtil.formatDateTimeRange(startDateTime, endDateTime);
     }
 }
