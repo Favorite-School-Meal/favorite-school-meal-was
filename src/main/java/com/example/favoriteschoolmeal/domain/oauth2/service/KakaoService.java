@@ -66,6 +66,8 @@ public class KakaoService implements OauthService {
 
         if (existOauth.isPresent()) {
 
+            authService.checkBlockOrThrow(existOauth.get().getMember());
+
             JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(existOauth.get().getMember());
             refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
 
@@ -151,7 +153,7 @@ public class KakaoService implements OauthService {
 
     @Override
     public void create(OauthUserInfoDto oauthUserInfoDto, Member member) {
-      
+
         Oauth oauth = Oauth.builder()
                 .member(member)
                 .oauthPlatform(OauthPlatform.KAKAO)
@@ -237,7 +239,7 @@ public class KakaoService implements OauthService {
 
 
         return Member.builder()
-                .username(UUID.randomUUID().toString().substring(0,16))
+                .username(UUID.randomUUID().toString().substring(0, 16))
                 .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())

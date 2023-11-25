@@ -20,7 +20,7 @@ public class MemberController {
 
 
     //개인정보수정
-    @PutMapping("/member/{memberId}")
+    @PutMapping("/members/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,
                                                           @RequestBody final ModifyMemberRequest request) {
@@ -29,7 +29,7 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
-    @GetMapping("/member/{memberId}")
+    @GetMapping("/members/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberDetails(@PathVariable final Long memberId){
 
@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     //관리자가 member 모두 불러오기
-    @GetMapping("/admin/member")
+    @GetMapping("/admin/members")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PaginatedMemberListResponse> memberList(Pageable pageable){
 

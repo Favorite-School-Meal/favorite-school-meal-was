@@ -76,6 +76,8 @@ public class NaverService implements OauthService {
 
         if (existOauth.isPresent()) {
 
+            authService.checkBlockOrThrow(existOauth.get().getMember());
+
             JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(existOauth.get().getMember());
             refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
 
@@ -247,7 +249,7 @@ public class NaverService implements OauthService {
         final var age = convertBirthdayToAge(oauthUserInfoDto.getBirthday());
 
         return Member.builder()
-                .username(UUID.randomUUID().toString().substring(0,16))
+                .username(UUID.randomUUID().toString().substring(0, 16))
                 .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .nickname(oauthUserInfoDto.getNickname())
                 .email(oauthUserInfoDto.getEmail())

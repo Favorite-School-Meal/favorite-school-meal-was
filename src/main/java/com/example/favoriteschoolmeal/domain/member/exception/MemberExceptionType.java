@@ -15,7 +15,14 @@ public enum MemberExceptionType implements BaseExceptionType {
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
-    );
+    ),
+
+    MEMBER_BLOCKED(
+            403,
+            HttpStatus.FORBIDDEN,
+            "Member blocked"
+    ),;
+
 
     private final int errorCode;
     private final HttpStatus httpStatus;
