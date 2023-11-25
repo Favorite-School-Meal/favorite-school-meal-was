@@ -41,7 +41,32 @@ public enum OauthExceptionType implements BaseExceptionType {
             400,
             HttpStatus.BAD_REQUEST,
             "Json parse exception"
-    )
+    ),
+
+    UNSUPPORTED_ENCODING_EXCEPTION(
+            500,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "State code Encoding error"
+    ),
+
+    DUPLICATE_NICKNAME_EXCEPTION(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Nickname duplicated"
+    ),
+
+    DUPLICATE_EMAIL_EXCEPTION(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "이미 가입된 email 입니다."
+    ),
+
+    OAUTH_KAKAO_NOT_FOUND(
+            400,
+            HttpStatus.NOT_FOUND,
+            "회원가입을 진행해야 합니다."
+    ),
+
     ;
 
 
@@ -60,16 +85,16 @@ public enum OauthExceptionType implements BaseExceptionType {
 
     @Override
     public int errorCode() {
-        return 0;
+        return errorCode;
     }
 
     @Override
     public HttpStatus httpStatus() {
-        return null;
+        return httpStatus;
     }
 
     @Override
     public String errorMessage() {
-        return null;
+        return errorMessage;
     }
 }

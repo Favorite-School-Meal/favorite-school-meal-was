@@ -3,10 +3,17 @@ package com.example.favoriteschoolmeal.domain.auth.service;
 import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
 import com.example.favoriteschoolmeal.domain.auth.dto.SignInRequest;
 import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
+import com.example.favoriteschoolmeal.domain.auth.exception.AuthException;
+import com.example.favoriteschoolmeal.domain.auth.exception.AuthExceptionType;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import jakarta.transaction.Transactional;
@@ -18,8 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -48,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
         memberRepository.save(member);
 
-        JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
+        JwtTokenDto jwtTokenDto = createJwtTokenDto(member);
         refreshTokenService.createRefreshToken(jwtTokenDto, member.getUsername());
 
         return jwtTokenDto;
@@ -66,19 +71,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtTokenDto signIn(SignInRequest signInRequest) {
 
-        Optional<Member> memberOptional = memberRepository.findByUsername(signInRequest.username());
+        Member member = memberRepository.findByUsername(signInRequest.username())
+                .orElseThrow(() -> new AuthException(AuthExceptionType.MEMBER_NOT_FOUND));
 
-        // 사용자가 존재하지 않는 경우 예외 던지기
-        Member member = memberOptional.orElseThrow(() -> new NoSuchElementException("존재하지 않는 아이디 입니다."));
-        //TODO: Exception 사용자가 존재하지 않습니다.
         if (!passwordEncoder.matches(signInRequest.password(), member.getPassword())) {
-            //TODO: Exception 비밀번호가 일치하지 않습니다.
-            throw new RuntimeException();
+            throw new AuthException(AuthExceptionType.INVALID_PASSWORD);
         }
 
         checkBlockOrThrow(member);
 
-        JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
+        JwtTokenDto jwtTokenDto = createJwtTokenDto(member);
         refreshTokenService.createRefreshToken(jwtTokenDto, signInRequest.username());
 
         return jwtTokenDto;
@@ -92,12 +94,21 @@ public class AuthServiceImpl implements AuthService {
     private void checkDuplication(SignUpRequest signUpRequest) {
 
         if (memberRepository.findByUsername(signUpRequest.username()).isPresent()) {
-            throw new NoSuchElementException();
+            throw new AuthException(AuthExceptionType.DUPLICATE_USERNAME_EXCEPTION);
         }
         if (memberRepository.findByNickname(signUpRequest.nickname()).isPresent()) {
-            throw new NoSuchElementException();
+            throw new AuthException(AuthExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
         }
-        //TODO: exception 다시 설정
+    }
+
+    public void checkDuplication(OauthUserInfoDto oauthUserInfoDto) {
+
+        if (memberRepository.findByNickname(oauthUserInfoDto.getNickname()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+        if (memberRepository.findByEmail(oauthUserInfoDto.getEmail()).isPresent()) {
+            throw new OauthException(OauthExceptionType.DUPLICATE_EMAIL_EXCEPTION);
+        }
     }
 
 
@@ -138,7 +149,6 @@ public class AuthServiceImpl implements AuthService {
 
         LocalDate birthday = LocalDate.parse(birthdayString, DateTimeFormatter.ofPattern("yyMMdd"));
 
-
         if (firstNumber.equals("1") || firstNumber.equals("2"))
             birthday = birthday.minusYears(100);
 
@@ -168,7 +178,7 @@ public class AuthServiceImpl implements AuthService {
      * @param member
      * @return JwtTokenDto
      */
-    public JwtTokenDto creatJwtTokenDto(Member member) {
+    public JwtTokenDto createJwtTokenDto(Member member) {
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getUsername());
@@ -179,10 +189,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private void checkBlockOrThrow(Member member) {
-        if(member.isBanned()){
-            //TODO: MemberException으로 변경
-            throw new RuntimeException("계정이 정지되었습니다.");
+    public void checkBlockOrThrow(Member member) {
+        if (member.isBanned()) {
+            throw new MemberException(MemberExceptionType.MEMBER_BLOCKED);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.global.common;
 
+import com.example.favoriteschoolmeal.global.common.util.DateTimeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -23,5 +24,7 @@ public abstract class Base {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
+    public String getFormattedCreatedAt() {
+        return DateTimeUtil.formatSingleDateTime(this.createdAt);
+    }
 }

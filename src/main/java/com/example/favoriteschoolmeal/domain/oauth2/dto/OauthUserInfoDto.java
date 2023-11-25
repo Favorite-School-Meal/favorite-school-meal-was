@@ -16,6 +16,11 @@ import lombok.NoArgsConstructor;
 public class OauthUserInfoDto {
 
     private String platformId;
+    private String fullname;
     private String nickname;
     private String email;
+    private String gender;
+    private String age;
+    private String birthday;
+    private String personalNumber;
 }

@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.matching.service;
 
+import com.example.favoriteschoolmeal.domain.matching.controller.dto.MatchingResponse;
 import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.domain.MatchingMember;
 import com.example.favoriteschoolmeal.domain.matching.exception.MatchingException;
@@ -38,21 +39,23 @@ public class MatchingService {
         this.memberService = memberService;
     }
 
-    public Matching addMatching(final Member host, final LocalDateTime meetingDateTime,
+    public Matching addMatching(final Member host, final LocalDateTime startDateTime,
+            final LocalDateTime endDateTime,
             final Integer maxParticipant) {
         final Matching matching = Matching.builder()
                 .matchingStatus(MatchingStatus.IN_PROGRESS)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
                 .maxParticipant(maxParticipant)
-                .meetingDateTime(meetingDateTime)
                 .build();
         final Matching savedMatching = matchingRepository.save(matching);
         addHostMemberToMatching(savedMatching, host);
         return savedMatching;
     }
 
-    public void modifyDetails(final Matching matching, final LocalDateTime meetingDateTime,
-            final Integer maxParticipant) {
-        matching.modifyDetails(meetingDateTime, maxParticipant);
+    public void modifyDetails(final Matching matching, final LocalDateTime startDateTime,
+            final LocalDateTime endDateTime, final Integer maxParticipant) {
+        matching.modifyDetails(startDateTime, endDateTime, maxParticipant);
         matchingRepository.save(matching);
     }
 
@@ -95,8 +98,26 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
+    public MatchingResponse createMatchingResponse(final Matching matching) {
+        Integer approvedParticipant = calculateApprovedParticipant(matching);
+        return MatchingResponse.from(matching, approvedParticipant);
+    }
+
+    public void removeMatching(final Long matchingId) {
+        findMatchingOptionally(matchingId)
+                .ifPresent(matching -> {
+                    removeMatchingMembers(matching);
+                    matchingRepository.delete(matching);
+                });
+    }
+
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
+    }
+
+    private Integer calculateApprovedParticipant(final Matching matching) {
+        return Math.toIntExact(matchingMemberRepository.countByMatchingAndMatchingRequestStatus(
+                matching, MatchingRequestStatus.ACCEPTED));
     }
 
     private void checkIfMatchingIsAvailable(final Matching matching, final Member member) {
@@ -109,8 +130,10 @@ public class MatchingService {
         final boolean alreadyApplied = matchingMemberRepository.findByMatchingAndMember(matching,
                 applicant).isPresent();
         final boolean isMatchingFull =
-                matchingMemberRepository.countByMatching(matching) >= matching.getMaxParticipant();
-        final boolean isMatchingOpen = matching.getMatchingStatus().equals(MatchingStatus.IN_PROGRESS);
+                matchingMemberRepository.countByMatchingAndMatchingRequestStatus(matching,
+                        MatchingRequestStatus.ACCEPTED) >= matching.getMaxParticipant();
+        final boolean isMatchingOpen = matching.getMatchingStatus()
+                .equals(MatchingStatus.IN_PROGRESS);
 
         return !alreadyApplied && !isMatchingFull && isMatchingOpen;
     }
@@ -139,12 +162,14 @@ public class MatchingService {
         matchingMemberRepository.delete(matchingMember);
     }
 
-    private void updateMatchingMemberStatus(final MatchingMember matchingMember, final MatchingRequestStatus status) {
+    private void updateMatchingMemberStatus(final MatchingMember matchingMember,
+            final MatchingRequestStatus status) {
         matchingMember.updateMatchingRequestStatus(status);
         matchingMemberRepository.save(matchingMember);
     }
 
-    private void processMatchingApplication(final Long postId, final Long applicantMemberId, final MatchingRequestStatus status) {
+    private void processMatchingApplication(final Long postId, final Long applicantMemberId,
+            final MatchingRequestStatus status) {
         verifyUserOrAdmin();
         final Member host = getMemberOrThrow(getCurrentMemberId());
         final Member applicantMember = getMemberOrThrow(applicantMemberId);
@@ -156,10 +181,15 @@ public class MatchingService {
         updateMatchingMemberStatus(applicant, status);
     }
 
+    private void removeMatchingMembers(final Matching matching) {
+        matchingMemberRepository.deleteAll(matchingMemberRepository.findAllByMatching(matching));
+    }
+
     private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {
         return matchingMemberRepository
                 .findByMatchingAndMember(matching, member)
-                .orElseThrow(() -> new MatchingException(MatchingExceptionType.MATCHING_MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MatchingException(
+                        MatchingExceptionType.MATCHING_MEMBER_NOT_FOUND));
     }
 
     private Member getMemberOrThrow(final Long memberId) {

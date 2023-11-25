@@ -21,7 +21,7 @@ public class Oauth {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TINYINT", nullable = false)
+    @Column(nullable = false)
     private OauthPlatform oauthPlatform;
 
     @Column(nullable = false)
@@ -34,11 +34,9 @@ public class Oauth {
     private String nickname;
 
     @JoinColumn(name = "member_id", nullable = false)
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Member member;
 
-    @Column
-    private LocalDateTime deletedAt;
 
     @Builder
     public Oauth(OauthPlatform oauthPlatform, String platformId, String email, String nickname, Member member) {
@@ -49,7 +47,4 @@ public class Oauth {
         this.member = member;
     }
 
-    public boolean isDeleted() {
-        return deletedAt != null;
-    }
 }
