@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.notification.domain;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.NotificationType;
+import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "notification")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public class Notification extends Base {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
