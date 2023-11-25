@@ -53,9 +53,8 @@ public class MatchingService {
         return savedMatching;
     }
 
-    public void modifyDetails(final Matching matching, LocalDateTime startDateTime,
-            LocalDateTime endDateTime,
-            final Integer maxParticipant) {
+    public void modifyDetails(final Matching matching, final LocalDateTime startDateTime,
+            final LocalDateTime endDateTime, final Integer maxParticipant) {
         matching.modifyDetails(startDateTime, endDateTime, maxParticipant);
         matchingRepository.save(matching);
     }
