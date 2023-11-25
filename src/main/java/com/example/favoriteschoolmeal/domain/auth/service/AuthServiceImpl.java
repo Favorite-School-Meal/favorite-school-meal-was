@@ -6,6 +6,8 @@ import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
 import com.example.favoriteschoolmeal.domain.auth.exception.AuthException;
 import com.example.favoriteschoolmeal.domain.auth.exception.AuthExceptionType;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
+import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
@@ -187,10 +189,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private void checkBlockOrThrow(Member member) {
-        if(member.isBanned()){
-            //TODO: Exception 계정이 정지되었습니다.
-            throw new RuntimeException("계정이 정지되었습니다.");
+    public void checkBlockOrThrow(Member member) {
+        if (member.isBanned()) {
+            throw new MemberException(MemberExceptionType.MEMBER_BLOCKED);
         }
     }
 }

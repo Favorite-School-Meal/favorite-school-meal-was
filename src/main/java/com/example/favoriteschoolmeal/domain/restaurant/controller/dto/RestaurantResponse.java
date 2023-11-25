@@ -21,9 +21,8 @@ public record RestaurantResponse(
                 restaurant.getIsOnCampus(),
                 restaurant.getCategory(),
                 restaurant.getBusinessHours(),
-                //TODO: thumbnail_url, menuImage_url 처리 추가
-                "thumbnail_url",
-                "menuImage_url"
+                restaurant.getThumbnailUrl(),
+                restaurant.getMenuImageUrl()
         );
     }
 }
