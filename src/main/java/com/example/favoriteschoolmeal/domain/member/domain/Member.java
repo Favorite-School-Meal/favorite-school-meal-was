@@ -81,4 +81,6 @@ public class Member extends Base {
     public void modifyIntroduction(final String introduction){
         this.introduction = introduction;
     }
+
+    public void summarizeIntroduction(String summarizedIntroduction) {this.introduction = summarizedIntroduction;}
 }

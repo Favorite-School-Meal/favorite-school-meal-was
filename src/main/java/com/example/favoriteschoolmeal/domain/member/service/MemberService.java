@@ -2,18 +2,19 @@ package com.example.favoriteschoolmeal.domain.member.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.MemberSummaryResponse;
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,9 +57,18 @@ public class MemberService {
 
 
     @Transactional(readOnly = true)
-    public PaginatedMemberListResponse findAllPost(final Pageable pageable){
+    public PaginatedMemberListResponse findAllMember(final Pageable pageable){
 
-        return null;
+        verifyAdmin();
+
+        final Page<Member> members = memberRepository.findAllOrderByCreatedAt(pageable);
+        summarizeMembersIfNotNull(members);
+
+        List<MemberSummaryResponse> responses = members.stream()
+                .map(this::convertToSummaryResponse).toList();
+
+        return PaginatedMemberListResponse.from(responses, members.getNumber(),
+                members.getTotalPages(), members.getTotalElements());
     }
 
     private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
@@ -76,9 +86,33 @@ public class MemberService {
                 () -> new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS));
     }
 
+    private void verifyAdmin(){
+        SecurityUtils.checkAdminOrThrow(
+                () -> new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
     private Long getCurrentMemberId(){
         return SecurityUtils.getCurrentMemberId(
                 () -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+    }
+
+    private MemberSummaryResponse convertToSummaryResponse(final Member member){
+        return MemberSummaryResponse.from(member);
+    }
+
+    private void summarizeIntroduction(final Member member){
+        String summarizedIntroduction = Optional.ofNullable(member.getIntroduction())
+                .filter(introduction -> introduction.length() > 50)
+                .map(introduction -> introduction.substring(0, 50) + "...")
+                .orElse(member.getIntroduction());
+
+        member.summarizeIntroduction(summarizedIntroduction);
+    }
+
+    private void summarizeMembersIfNotNull(Page<Member> members){
+        if(!members.isEmpty()){
+            members.forEach(this::summarizeIntroduction);
+        }
     }
 
 

@@ -13,8 +13,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByUsername(String username);
     Optional<Member> findByNickname(String nickname);
     Optional<Member> findByEmail(String email);
-    Member findById(String memberId);
-
 
     @Query("SELECT m FROM Member m ORDER BY m.createdAt DESC")
     Page<Member> findAllOrderByCreatedAt(Pageable pageable);

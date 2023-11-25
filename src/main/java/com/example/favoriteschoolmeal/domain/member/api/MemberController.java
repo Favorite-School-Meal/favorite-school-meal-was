@@ -42,7 +42,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PaginatedMemberListResponse> memberList(Pageable pageable){
 
-        final PaginatedMemberListResponse response = memberService.
-        return null;
+        final PaginatedMemberListResponse response = memberService.findAllMember(pageable);
+        return ApiResponse.createSuccess(response);
     }
 }
