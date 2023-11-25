@@ -11,6 +11,7 @@ public enum MemberExceptionType implements BaseExceptionType {
             "Member not found"
     ),
 
+
     UNAUTHORIZED_ACCESS(
             401,
             HttpStatus.UNAUTHORIZED,
