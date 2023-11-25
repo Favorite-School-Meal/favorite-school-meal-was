@@ -20,12 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -54,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
 
         memberRepository.save(member);
 
-        JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
+        JwtTokenDto jwtTokenDto = createJwtTokenDto(member);
         refreshTokenService.createRefreshToken(jwtTokenDto, member.getUsername());
 
         return jwtTokenDto;
@@ -72,10 +69,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtTokenDto signIn(SignInRequest signInRequest) {
 
-        Optional<Member> memberOptional = memberRepository.findByUsername(signInRequest.username());
-
-        // 사용자가 존재하지 않는 경우 예외 던지기
-        Member member = memberOptional.orElseThrow(() -> new AuthException(AuthExceptionType.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findByUsername(signInRequest.username())
+                .orElseThrow(() -> new AuthException(AuthExceptionType.MEMBER_NOT_FOUND));
 
         if (!passwordEncoder.matches(signInRequest.password(), member.getPassword())) {
             throw new AuthException(AuthExceptionType.INVALID_PASSWORD);
@@ -83,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
 
         checkBlockOrThrow(member);
 
-        JwtTokenDto jwtTokenDto = creatJwtTokenDto(member);
+        JwtTokenDto jwtTokenDto = createJwtTokenDto(member);
         refreshTokenService.createRefreshToken(jwtTokenDto, signInRequest.username());
 
         return jwtTokenDto;
@@ -181,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
      * @param member
      * @return JwtTokenDto
      */
-    public JwtTokenDto creatJwtTokenDto(Member member) {
+    public JwtTokenDto createJwtTokenDto(Member member) {
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getUsername());

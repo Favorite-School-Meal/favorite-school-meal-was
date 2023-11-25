@@ -76,7 +76,7 @@ public class NaverService implements OauthService {
 
         if (existOauth.isPresent()) {
 
-            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(existOauth.get().getMember());
+            JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(existOauth.get().getMember());
             refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
 
             return jwtTokenDto;
@@ -90,7 +90,7 @@ public class NaverService implements OauthService {
 
             create(oauthUserInfoDto, member);
 
-            JwtTokenDto jwtTokenDto = authService.creatJwtTokenDto(member);
+            JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(member);
             refreshTokenService.createRefreshToken(jwtTokenDto, member.getUsername());
 
             log.info("유저가 로그인 되었습니다. {}", member.getNickname());

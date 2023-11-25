@@ -45,8 +45,8 @@ public class OauthController {
      * @param
      * @return
      */
-    @GetMapping("/sign/naver")
-    public ApiResponse<JwtTokenDto> NaverSign(@RequestBody OauthRequest oauthRequest) {
+    @PostMapping("/sign/naver")
+    public ApiResponse<JwtTokenDto> naverSign(@RequestBody OauthRequest oauthRequest) {
         JwtTokenDto jwtTokenDto = oauthService.sign(oauthRequest, OauthPlatform.NAVER);
         return ApiResponse.createSuccess(jwtTokenDto);
     }
