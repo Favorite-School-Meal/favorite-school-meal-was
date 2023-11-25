@@ -105,6 +105,7 @@ public class PostService {
         verifyUserOrAdmin();
         final Post post = getPostOrThrow(postId);
         verifyPostOwnerOrAdmin(post.getMember().getId(), getCurrentMemberId());
+        removeRelatedEntities(post);
         postRepository.delete(post);
     }
 
@@ -176,6 +177,21 @@ public class PostService {
                 post.getMatching());
         Integer commentCount = commentService.countCommentByPostId(post.getId());
         return PostSummaryResponse.from(post, matchingResponse, commentCount);
+    }
+
+    private void removeRelatedEntities(final Post post) {
+        removeMatching(post.getMatching());
+        removeComments(post);
+    }
+
+    private void removeMatching(final Matching matching) {
+        if (matching != null) {
+            matchingService.removeMatching(matching.getId());
+        }
+    }
+
+    private void removeComments(final Post post) {
+        commentService.removeCommentsByPost(post);
     }
 
     private Post createPost(final CreatePostRequest request, final Member member,

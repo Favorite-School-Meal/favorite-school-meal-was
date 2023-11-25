@@ -72,6 +72,10 @@ public class CommentService {
         return CommentResponse.listFrom(comments);
     }
 
+    public void removeCommentsByPost(final Post post) {
+        commentRepository.deleteAll(commentRepository.findAllByPost(post));
+    }
+
     public Optional<Comment> findCommentOptionally(Long commentId) {
         return commentRepository.findById(commentId);
     }

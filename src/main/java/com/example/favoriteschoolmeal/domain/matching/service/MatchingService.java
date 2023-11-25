@@ -98,9 +98,17 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
-    public MatchingResponse createMatchingResponse(Matching matching) {
+    public MatchingResponse createMatchingResponse(final Matching matching) {
         Integer approvedParticipant = calculateApprovedParticipant(matching);
         return MatchingResponse.from(matching, approvedParticipant);
+    }
+
+    public void removeMatching(final Long matchingId) {
+        findMatchingOptionally(matchingId)
+                .ifPresent(matching -> {
+                    removeMatchingMembers(matching);
+                    matchingRepository.delete(matching);
+                });
     }
 
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
@@ -171,6 +179,10 @@ public class MatchingService {
         verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
         final MatchingMember applicant = getMatchingMemberOrThrow(matching, applicantMember);
         updateMatchingMemberStatus(applicant, status);
+    }
+
+    private void removeMatchingMembers(final Matching matching) {
+        matchingMemberRepository.deleteAll(matchingMemberRepository.findAllByMatching(matching));
     }
 
     private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {
