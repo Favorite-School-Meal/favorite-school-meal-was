@@ -9,6 +9,11 @@ public enum MemberExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Member not found"
+    ),
+    MEMBER_BLOCKED(
+            403,
+            HttpStatus.FORBIDDEN,
+            "Member blocked"
     ),;
 
     private final int errorCode;
