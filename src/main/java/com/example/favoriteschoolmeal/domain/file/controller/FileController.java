@@ -1,5 +1,7 @@
 package com.example.favoriteschoolmeal.domain.file.controller;
 
+import com.example.favoriteschoolmeal.domain.file.exeption.FileException;
+import com.example.favoriteschoolmeal.domain.file.exeption.FileExceptionType;
 import com.example.favoriteschoolmeal.domain.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +30,15 @@ public class FileController {
     @Value("${file.dir}")
     private String fileDir;
 
+     /**
+      * /images/{savedName} 형식으로 요청하면 해당 이미지를 불러옵니다.
+      *
+      * @param savedName 불러올 이미지의 이름
+      *                  (이미지의 이름은 uuid + 확장자로 구성되며, FileEntity의 savedName 필드 값과 동일합니다.)
+      *                  ex) 1234-1234-1234-1234.jpg
+      *
+      * @return 이미지 파일
+     **/
     @GetMapping("/images/{savedName}")
     public ResponseEntity<Resource> serveFile(@PathVariable String savedName) {
 
@@ -36,7 +47,7 @@ public class FileController {
         try {
             resource = new UrlResource(new File(savedPath).toURI());
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Error loading image: " + e.getMessage());
+            throw new FileException(FileExceptionType.MALFORMED_URL);
         }
 
         return ResponseEntity.ok()
@@ -45,10 +56,22 @@ public class FileController {
     }
 
     /**
-     * 테스트용 업로드
-     * */
+     * 테스트용 업로드 api
+     * 추후 삭제 예정
+     * 작성자: 염동환
+     */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(MultipartFile files) {
         return ResponseEntity.ok(fileService.saveFile(files).toString());
+    }
+
+    /**
+     * 테스트용 url 반환 api
+     * 추후 삭제 예정
+     * 작성자: 염동환
+     */
+    @GetMapping("/url/{fileId}")
+    public ResponseEntity<String> getUrl(@PathVariable Long fileId) {
+        return ResponseEntity.ok(fileService.getImageUrlOrNullByFileId(fileId));
     }
 }
