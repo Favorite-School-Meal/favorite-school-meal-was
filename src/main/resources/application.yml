@@ -12,6 +12,14 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
     open-in-view: true
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 10MB
+
+file:
+  dir: ${FILE_DIR}
+
 logging:
   level:
     org.hibernate.SQL: debug
