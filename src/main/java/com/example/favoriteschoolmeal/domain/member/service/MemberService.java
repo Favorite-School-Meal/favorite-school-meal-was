@@ -9,6 +9,7 @@ import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
+@AllArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
 
-
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-
-    }
 
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
