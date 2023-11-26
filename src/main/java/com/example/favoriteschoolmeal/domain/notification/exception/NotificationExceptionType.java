@@ -15,6 +15,12 @@ public enum NotificationExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Member not found"
+    ),
+
+    UNAUTHORIZED_ACCESS(
+            401,
+            HttpStatus.UNAUTHORIZED,
+            "Unauthorized access"
     );
 
     private final int errorCode;

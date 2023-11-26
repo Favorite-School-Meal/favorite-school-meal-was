@@ -62,31 +62,33 @@ public class MatchingService {
 
         checkIfMatchingIsAvailable(matching, applicant);
         addMatchingMember(matching, applicant);
-        notificationService.createNotification(postId, post.getMember().getId(),
+        notificationService.createNotification(applicant.getId(), post.getMember().getId(), postId,
                 NotificationType.MATCHING_REQUESTED);
     }
 
     public void cancelMatchingApplication(final Long postId) {
         verifyUserOrAdmin();
-        final Member currentMember = getMemberOrThrow(getCurrentMemberId());
+        final Member applicant = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
         final Matching matching = getMatchingFromPost(post);
-        final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, currentMember);
+        final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, applicant);
         verifyCancellation(matchingMember);
         cancelMatchingMember(matchingMember);
-        notificationService.createNotification(postId, post.getMember().getId(),
+        notificationService.createNotification(applicant.getId(), post.getMember().getId(), postId,
                 NotificationType.MATCHING_CANCELED);
     }
 
     public void acceptMatchingApplication(final Long postId, final Long applicantMemberId) {
-        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.ACCEPTED);
-        notificationService.createNotification(postId, applicantMemberId,
+        Post post = getPostOrThrow(postId);
+        processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.ACCEPTED);
+        notificationService.createNotification(post.getMember().getId(), applicantMemberId, postId,
                 NotificationType.MATCHING_ACCEPTED);
     }
 
     public void rejectMatchingApplication(final Long postId, final Long applicantMemberId) {
-        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.REJECTED);
-        notificationService.createNotification(postId, applicantMemberId,
+        Post post = getPostOrThrow(postId);
+        processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.REJECTED);
+        notificationService.createNotification(post.getMember().getId(), applicantMemberId, postId,
                 NotificationType.MATCHING_REJECTED);
     }
 
@@ -99,7 +101,7 @@ public class MatchingService {
         verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
         matching.completeMatching();
         matchingRepository.save(matching);
-        sendNotificationToAcceptedMatchingMembers(matching, postId);
+        sendNotificationToAcceptedMatchingMembers(matching, post);
     }
 
     public MatchingResponse createMatchingResponse(final Matching matching) {
@@ -172,12 +174,11 @@ public class MatchingService {
         matchingMemberRepository.save(matchingMember);
     }
 
-    private void processMatchingApplication(final Long postId, final Long applicantMemberId,
+    private void processMatchingApplication(final Post post, final Long applicantMemberId,
             final MatchingRequestStatus status) {
         verifyUserOrAdmin();
         final Member host = getMemberOrThrow(getCurrentMemberId());
         final Member applicantMember = getMemberOrThrow(applicantMemberId);
-        final Post post = getPostOrThrow(postId);
         verifyPostOwner(post, host);
         final Matching matching = getMatchingFromPost(post);
         verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
@@ -190,13 +191,14 @@ public class MatchingService {
     }
 
     private void sendNotificationToAcceptedMatchingMembers(final Matching matching,
-            final Long postId) {
+            final Post post) {
         matchingMemberRepository.findByMatchingAndMatchingRequestStatus(matching,
                         MatchingRequestStatus.ACCEPTED)
                 .stream()
                 .filter(matchingMember -> matchingMember.getRoleType().equals(RoleType.GUEST))
-                .forEach(matchingMember -> notificationService.createNotification(postId,
-                        matchingMember.getMember().getId(), NotificationType.MATCHING_COMPLETED));
+                .forEach(matchingMember -> notificationService.createNotification(
+                        post.getMember().getId(), matchingMember.getMember().getId(), post.getId(),
+                        NotificationType.MATCHING_COMPLETED));
     }
 
     private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {

@@ -10,8 +10,6 @@ import com.example.favoriteschoolmeal.domain.notification.domain.Notification;
 import com.example.favoriteschoolmeal.domain.notification.exception.NotificationException;
 import com.example.favoriteschoolmeal.domain.notification.exception.NotificationExceptionType;
 import com.example.favoriteschoolmeal.domain.notification.repository.NotificationRepository;
-import com.example.favoriteschoolmeal.domain.post.exception.PostException;
-import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,11 +29,12 @@ public class NotificationService {
         this.memberService = memberService;
     }
 
-    public void createNotification(final Long postId, final Long memberId,
+    public void createNotification(final Long senderId, final Long receiverId, final Long postId,
             final NotificationType notificationType) {
-        Member member = getMemberOrThrow(memberId);
+        Member member = getMemberOrThrow(receiverId);
         Notification notification = Notification.builder()
-                .member(member)
+                .senderId(senderId)
+                .receiver(member)
                 .postId(postId)
                 .notificationType(notificationType)
                 .isRead(false)
@@ -46,9 +45,9 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public NotificationListResponse findAllNotification() {
         verifyUserOrAdmin();
-        Member member = getMemberOrThrow(getCurrentMemberId());
+        Member receiver = getMemberOrThrow(getCurrentMemberId());
         List<NotificationResponse> notificationResponseList = notificationRepository
-                .findAllByMember(member)
+                .findAllByReceiver(receiver)
                 .stream()
                 .map(NotificationResponse::from)
                 .collect(Collectors.toList());
@@ -58,14 +57,15 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public UnreadNotificationStatusResponse hasUnreadNotifications() {
         verifyUserOrAdmin();
-        Member member = getMemberOrThrow(getCurrentMemberId());
+        Member receiver = getMemberOrThrow(getCurrentMemberId());
         return UnreadNotificationStatusResponse.from(
-                notificationRepository.existsByMemberAndIsRead(member, false));
+                notificationRepository.existsByReceiverAndIsRead(receiver, false));
     }
 
     public NotificationResponse readNotification(final Long notificationId) {
         verifyUserOrAdmin();
         Notification notification = getNotificationOrThrow(notificationId);
+        verifyNotificationReceiver(notification, getCurrentMemberId());
         notification.readNotification();
         Notification savedNotification = notificationRepository.save(notification);
         return NotificationResponse.from(savedNotification);
@@ -85,11 +85,17 @@ public class NotificationService {
 
     private Long getCurrentMemberId() {
         return SecurityUtils.getCurrentMemberId(
-                () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
+                () -> new NotificationException(NotificationExceptionType.MEMBER_NOT_FOUND));
     }
 
     private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
-                () -> new PostException(PostExceptionType.UNAUTHORIZED_ACCESS));
+                () -> new NotificationException(NotificationExceptionType.UNAUTHORIZED_ACCESS));
+    }
+
+    private void verifyNotificationReceiver(Notification notification, Long currentMemberId) {
+        if (!notification.getReceiver().getId().equals(currentMemberId)) {
+            throw new NotificationException(NotificationExceptionType.UNAUTHORIZED_ACCESS);
+        }
     }
 }
