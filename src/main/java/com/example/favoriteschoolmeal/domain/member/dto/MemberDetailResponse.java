@@ -21,7 +21,7 @@ public record MemberDetailResponse(
                 member.getEmail(),
                 member.getAge(),
                 member.getGender(),
-                member.getIntroduction(),
+                member.getIntroduction()
 
         );
     }
