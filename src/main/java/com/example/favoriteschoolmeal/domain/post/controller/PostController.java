@@ -69,6 +69,15 @@ public class PostController {
         return ApiResponse.createSuccess(response);
     }
 
+    @GetMapping("/members/{memberId}/posts")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PaginatedPostListResponse> postListByMemberId(
+            @PathVariable Long memberId, Pageable pageable) {
+        final PaginatedPostListResponse response = postService.findAllPostByMemberId(pageable,
+                memberId);
+        return ApiResponse.createSuccess(response);
+    }
+
     @GetMapping("/posts/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PostDetailResponse> postDetails(@PathVariable Long postId) {
