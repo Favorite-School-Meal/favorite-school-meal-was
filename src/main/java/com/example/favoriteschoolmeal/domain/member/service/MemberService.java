@@ -1,10 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.service;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberSummaryResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
@@ -50,10 +47,16 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberDetailResponse findMember(final Long memberId){
+    public MemberDetailResponse findDetailMember(final Long memberId){
 
         final Member member = getMemberOrThrow(memberId);
         return MemberDetailResponse.from(member);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberSimpleResponse findSimpleMember(final Long memberId){
+        final Member member = getMemberOrThrow(memberId);
+        return MemberSimpleResponse.from(member);
     }
 
     @Transactional(readOnly = true)

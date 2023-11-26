@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.member.api;
 
 
 import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
@@ -33,7 +34,15 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberDetails(@PathVariable final Long memberId){
 
-        final MemberDetailResponse response = memberService.findMember(memberId);
+        final MemberDetailResponse response = memberService.findDetailMember(memberId);
+        return ApiResponse.createSuccess(response);
+    }
+
+    @GetMapping("/members/simple/{memberId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberSimpleResponse> memberSimples(@PathVariable final Long memberId){
+
+        final MemberSimpleResponse response = memberService.findSimpleMember(memberId);
         return ApiResponse.createSuccess(response);
     }
 
