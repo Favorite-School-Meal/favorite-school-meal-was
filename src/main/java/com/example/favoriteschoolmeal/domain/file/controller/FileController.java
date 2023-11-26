@@ -62,16 +62,9 @@ public class FileController {
      */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(MultipartFile files) {
-        return ResponseEntity.ok(fileService.saveFile(files).toString());
+        Long savedFileId = fileService.saveFile(files);
+        return ResponseEntity.ok(fileService.getImageUrlOrNullByFileId(savedFileId));
+
     }
 
-    /**
-     * 테스트용 url 반환 api
-     * 추후 삭제 예정
-     * 작성자: 염동환
-     */
-    @GetMapping("/url/{fileId}")
-    public ResponseEntity<String> getUrl(@PathVariable Long fileId) {
-        return ResponseEntity.ok(fileService.getImageUrlOrNullByFileId(fileId));
-    }
 }
