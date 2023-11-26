@@ -11,33 +11,28 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.MatchingRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.MatchingStatus;
+import com.example.favoriteschoolmeal.domain.model.NotificationType;
 import com.example.favoriteschoolmeal.domain.model.RoleType;
+import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final MatchingMemberRepository matchingMemberRepository;
     private final PostRepository postRepository;
     private final MemberService memberService;
-
-    public MatchingService(final MatchingRepository matchingRepository,
-            final MatchingMemberRepository matchingMemberRepository,
-            final PostRepository postRepository,
-            final MemberService memberService) {
-        this.matchingRepository = matchingRepository;
-        this.matchingMemberRepository = matchingMemberRepository;
-        this.postRepository = postRepository;
-        this.memberService = memberService;
-    }
+    private final NotificationService notificationService;
 
     public Matching addMatching(final Member host, final LocalDateTime startDateTime,
             final LocalDateTime endDateTime,
@@ -67,24 +62,34 @@ public class MatchingService {
 
         checkIfMatchingIsAvailable(matching, applicant);
         addMatchingMember(matching, applicant);
+        notificationService.createNotification(applicant.getId(), post.getMember().getId(), postId,
+                NotificationType.MATCHING_REQUESTED);
     }
 
     public void cancelMatchingApplication(final Long postId) {
         verifyUserOrAdmin();
-        final Member currentMember = getMemberOrThrow(getCurrentMemberId());
+        final Member applicant = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
         final Matching matching = getMatchingFromPost(post);
-        final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, currentMember);
+        final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, applicant);
         verifyCancellation(matchingMember);
         cancelMatchingMember(matchingMember);
+        notificationService.createNotification(applicant.getId(), post.getMember().getId(), postId,
+                NotificationType.MATCHING_CANCELED);
     }
 
     public void acceptMatchingApplication(final Long postId, final Long applicantMemberId) {
-        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.ACCEPTED);
+        Post post = getPostOrThrow(postId);
+        processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.ACCEPTED);
+        notificationService.createNotification(post.getMember().getId(), applicantMemberId, postId,
+                NotificationType.MATCHING_ACCEPTED);
     }
 
     public void rejectMatchingApplication(final Long postId, final Long applicantMemberId) {
-        processMatchingApplication(postId, applicantMemberId, MatchingRequestStatus.REJECTED);
+        Post post = getPostOrThrow(postId);
+        processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.REJECTED);
+        notificationService.createNotification(post.getMember().getId(), applicantMemberId, postId,
+                NotificationType.MATCHING_REJECTED);
     }
 
     public void completeMatching(final Long postId) {
@@ -96,6 +101,7 @@ public class MatchingService {
         verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
         matching.completeMatching();
         matchingRepository.save(matching);
+        sendNotificationToAcceptedMatchingMembers(matching, post);
     }
 
     public MatchingResponse createMatchingResponse(final Matching matching) {
@@ -168,12 +174,11 @@ public class MatchingService {
         matchingMemberRepository.save(matchingMember);
     }
 
-    private void processMatchingApplication(final Long postId, final Long applicantMemberId,
+    private void processMatchingApplication(final Post post, final Long applicantMemberId,
             final MatchingRequestStatus status) {
         verifyUserOrAdmin();
         final Member host = getMemberOrThrow(getCurrentMemberId());
         final Member applicantMember = getMemberOrThrow(applicantMemberId);
-        final Post post = getPostOrThrow(postId);
         verifyPostOwner(post, host);
         final Matching matching = getMatchingFromPost(post);
         verifyMatchingStatus(matching, MatchingStatus.IN_PROGRESS);
@@ -183,6 +188,17 @@ public class MatchingService {
 
     private void removeMatchingMembers(final Matching matching) {
         matchingMemberRepository.deleteAll(matchingMemberRepository.findAllByMatching(matching));
+    }
+
+    private void sendNotificationToAcceptedMatchingMembers(final Matching matching,
+            final Post post) {
+        matchingMemberRepository.findByMatchingAndMatchingRequestStatus(matching,
+                        MatchingRequestStatus.ACCEPTED)
+                .stream()
+                .filter(matchingMember -> matchingMember.getRoleType().equals(RoleType.GUEST))
+                .forEach(matchingMember -> notificationService.createNotification(
+                        post.getMember().getId(), matchingMember.getMember().getId(), post.getId(),
+                        NotificationType.MATCHING_COMPLETED));
     }
 
     private MatchingMember getMatchingMemberOrThrow(final Matching matching, final Member member) {
