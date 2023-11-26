@@ -37,6 +37,17 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
+    //현재 로그인된 사용자의 회원 정보 (메서드명이 마음에 안들긴함)
+    @GetMapping("/members")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberDetailResponse> memberCurrent(){
+
+        final MemberDetailResponse response = memberService.findCurrentMember();
+        return ApiResponse.createSuccess(response);
+    }
+
+
+
     //관리자가 member 모두 불러오기
     @GetMapping("/admin/members")
     @ResponseStatus(HttpStatus.OK)

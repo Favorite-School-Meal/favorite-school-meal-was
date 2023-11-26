@@ -56,6 +56,14 @@ public class MemberService {
         return MemberDetailResponse.from(member);
     }
 
+    @Transactional(readOnly = true)
+    public MemberDetailResponse findCurrentMember(){
+
+        final Long currentMemberId = getCurrentMemberId();
+        final Member member = getMemberOrThrow(currentMemberId);
+
+        return MemberDetailResponse.from(member);
+    }
 
     @Transactional(readOnly = true)
     public PaginatedMemberListResponse findAllMember(final Pageable pageable){
