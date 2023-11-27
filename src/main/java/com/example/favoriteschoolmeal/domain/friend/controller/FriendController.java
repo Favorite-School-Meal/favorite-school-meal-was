@@ -3,6 +3,7 @@ package com.example.favoriteschoolmeal.domain.friend.controller;
 import com.example.favoriteschoolmeal.domain.friend.service.FriendService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,12 +14,14 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping("member/{memberId}/request-friend")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Void> friendRequest(@PathVariable final Long memberId){
         friendService.requestFriend(memberId);
         return ApiResponse.createSuccess(null);
     }
 
     @DeleteMapping("member/{memberId}/cancel-friend-request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> friendRequestCancel(@PathVariable final Long memberId){
         friendService.cancelFriendRequest(memberId);
         return ApiResponse.createSuccess(null);

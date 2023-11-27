@@ -40,6 +40,19 @@ public class FriendService {
 
     }
 
+    public void cancelFriendRequest(Long memberId) {
+        verifyUserOrAdmin();
+        Member sender = getMemberOrThrow(getCurrentMemberId());
+        Member receiver = getMemberOrThrow(memberId);
+        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        friendRepository.delete(friend);
+    }
+
+    private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
+        return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
+                .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
+    }
+
     private void checkAvailableFriendRequestOrThrow(Member sender, Member receiver) {
         if (friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING).isPresent()) {
             throw new FriendException(FriendExceptionType.ALREADY_REQUESTED);
