@@ -72,7 +72,7 @@ public class FileService {
                 .originalName(origName)
                 .savedName(savedName)
                 .savedPath(savedPath)
-                .url(viewPath + savedName)
+                .endpoint(viewPath + savedName)
                 .build();
     }
 

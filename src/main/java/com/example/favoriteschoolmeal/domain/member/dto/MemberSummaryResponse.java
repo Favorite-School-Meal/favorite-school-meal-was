@@ -20,7 +20,7 @@ public record MemberSummaryResponse(
         Integer age,
         Gender gender,
         String introduction,
-        String profileImageUrl
+        String profileImageEndpoint
 ) {
 
     public static MemberSummaryResponse from(final Member member){
@@ -36,7 +36,7 @@ public record MemberSummaryResponse(
                 member.getGender(),
                 member.getIntroduction(),
                 Optional.ofNullable(member.getProfileImage())
-                        .map(FileEntity::getUrl)
+                        .map(FileEntity::getEndpoint)
                         .orElse(null)
         );
     }
