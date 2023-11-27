@@ -38,4 +38,8 @@ public class Friend extends Base {
         this.receiver = receiver;
         this.friendRequestStatus = friendRequestStatus;
     }
+
+    public void accept() {
+        this.friendRequestStatus = FriendRequestStatus.ACCEPTED;
+    }
 }

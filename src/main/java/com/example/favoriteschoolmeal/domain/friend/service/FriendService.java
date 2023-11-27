@@ -78,4 +78,11 @@ public class FriendService {
     }
 
 
+    public void acceptFriendRequest(Long memberId) {
+        verifyUserOrAdmin();
+        Member sender = getMemberOrThrow(memberId);
+        Member receiver = getMemberOrThrow(getCurrentMemberId());
+        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        friend.accept();
+    }
 }

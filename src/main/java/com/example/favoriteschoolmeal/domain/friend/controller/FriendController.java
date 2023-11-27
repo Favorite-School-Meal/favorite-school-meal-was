@@ -13,30 +13,31 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @PostMapping("member/{memberId}/request-friend")
+    @PostMapping("/members/{memberId}/request-friend")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Void> friendRequest(@PathVariable final Long memberId){
         friendService.requestFriend(memberId);
         return ApiResponse.createSuccess(null);
     }
 
-    @DeleteMapping("member/{memberId}/cancel-friend-request")
+    @DeleteMapping("/members/{memberId}/cancel-friend-request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> friendRequestCancel(@PathVariable final Long memberId){
         friendService.cancelFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
-    @PatchMapping("member/{memberId}/friend-accept")
+    @PatchMapping("/members/{memberId}/friend-accept")
     public ApiResponse<Void> friendAccept(@PathVariable final Long memberId){
+        friendService.acceptFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
 
-    @PatchMapping("member/{memberId}/friend-reject")
+    @PatchMapping("/members/{memberId}/friend-reject")
     public ApiResponse<Void> friendReject(@PathVariable final Long memberId){
         return ApiResponse.createSuccess(null);
     }
 
-    @GetMapping("member/{memberId}/friends")
+    @GetMapping("/members/{memberId}/friends")
     public ApiResponse<Void> friendList(@PathVariable final Long memberId){
         return ApiResponse.createSuccess(null);
     }
