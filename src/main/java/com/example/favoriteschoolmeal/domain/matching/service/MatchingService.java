@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.matching.service;
 
 import com.example.favoriteschoolmeal.domain.matching.controller.dto.MatchingResponse;
+import com.example.favoriteschoolmeal.domain.matching.controller.dto.MemberMatchingCountResponse;
 import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.domain.MatchingMember;
 import com.example.favoriteschoolmeal.domain.matching.exception.MatchingException;
@@ -18,6 +19,7 @@ import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -117,8 +119,49 @@ public class MatchingService {
                 });
     }
 
+    /**
+     * 주어진 멤버 ID에 해당하는 사용자의 유효한 매칭 횟수를 계산합니다.
+     * <p>
+     * 이 메소드는 다음과 같은 과정을 거칩니다: 1. 주어진 멤버 ID를 바탕으로 멤버 엔티티를 조회합니다. 멤버를 찾지 못하면 예외를 발생시킵니다. 2. 조회된 멤버와
+     * 연관된 모든 매칭 멤버를 가져옵니다. 3. 가져온 매칭 멤버 리스트를 통해 유효한 매칭 횟수를 계산합니다. 4. 계산된 매칭 횟수를 반환합니다.
+     *
+     * @param memberId 매칭 횟수를 계산할 멤버의 ID
+     * @return 멤버의 유효한 매칭 횟수를 담은 응답 객체
+     */
+    @Transactional(readOnly = true)
+    public MemberMatchingCountResponse countMatching(final Long memberId) {
+        verifyRequesterOrAdmin(memberId);
+        Member member = getMemberOrThrow(memberId);
+        List<MatchingMember> matchingMembers = matchingMemberRepository.findAllByMember(member);
+        long count = calculateValidMatchingCount(matchingMembers);
+        return MemberMatchingCountResponse.from(count);
+    }
+
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
+    }
+
+    /**
+     * 주어진 매칭 멤버 리스트에서 유효한 매칭의 수를 계산합니다.
+     * <p>
+     * 유효한 매칭의 기준은 다음과 같습니다: 1. 매칭의 상태가 'CLOSED' (완료된 매칭) 여야 합니다. 2. 매칭 멤버의 요청 상태가 'ACCEPTED' (수락된
+     * 상태) 여야 합니다. 3. 각 매칭에 최소 2명 이상의 'ACCEPTED' 상태인 매칭 멤버가 있어야 합니다.
+     * <p>
+     * 이 기준에 따라 매칭 멤버 리스트를 필터링하고, 해당하는 매칭의 수를 계산하여 반환합니다.
+     *
+     * @param matchingMembers 계산 대상이 되는 매칭 멤버 리스트
+     * @return 유효한 매칭의 수
+     */
+    private long calculateValidMatchingCount(final List<MatchingMember> matchingMembers) {
+        return matchingMembers.stream()
+                .filter(matchingMember -> matchingMember.getMatching().getMatchingStatus()
+                        == MatchingStatus.CLOSED)
+                .filter(matchingMember -> matchingMember.getMatchingRequestStatus()
+                        == MatchingRequestStatus.ACCEPTED)
+                .filter(matchingMember ->
+                        matchingMemberRepository.countByMatchingAndMatchingRequestStatus(
+                                matchingMember.getMatching(), MatchingRequestStatus.ACCEPTED) >= 2)
+                .count();
     }
 
     private Integer calculateApprovedParticipant(final Matching matching) {
@@ -248,6 +291,18 @@ public class MatchingService {
     private void verifyMatchingStatus(final Matching matching, final MatchingStatus status) {
         if (!matching.getMatchingStatus().equals(status)) {
             throw new MatchingException(MatchingExceptionType.INVALID_OPERATION);
+        }
+    }
+
+    /**
+     * 요청한 사용자가 해당 멤버 또는 관리자인지 확인합니다.
+     *
+     * @param memberId 검증할 멤버의 ID
+     */
+    private void verifyRequesterOrAdmin(Long memberId) {
+        Long currentMemberId = getCurrentMemberId();
+        if (!currentMemberId.equals(memberId) && !SecurityUtils.isAdmin()) {
+            throw new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS);
         }
     }
 }

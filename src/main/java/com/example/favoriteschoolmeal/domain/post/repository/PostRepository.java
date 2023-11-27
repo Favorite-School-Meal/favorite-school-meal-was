@@ -15,8 +15,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllOrderByStatusAndTime(Pageable pageable);
 
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.matching m WHERE p.restaurant.id = :restaurantId ORDER BY m.matchingStatus DESC, p.createdAt DESC")
-    Page<Post> findAllByRestaurantIdOrderByStatusAndTime(Pageable pageable, @Param("restaurantId") Long restaurantId);
+    Page<Post> findAllByRestaurantIdOrderByStatusAndTime(Pageable pageable,
+            @Param("restaurantId") Long restaurantId);
 
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.matching m WHERE p.member.id = :memberId ORDER BY m.matchingStatus DESC, p.createdAt DESC")
-    Page<Post> findAllByMemberIdOrderByStatusAndTime(Pageable pageable, @Param("memberId") Long memberId);
+    Page<Post> findAllByMemberIdOrderByStatusAndTime(Pageable pageable,
+            @Param("memberId") Long memberId);
 }
