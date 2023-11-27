@@ -94,6 +94,18 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public PaginatedPostListResponse findAllPostByMemberId(final Pageable pageable,
+            final Long memberId) {
+        final Page<Post> posts = postRepository.findAllByMemberIdOrderByStatusAndTime(pageable,
+                memberId);
+        summarizePostsIfNotNull(posts);
+        List<PostSummaryResponse> postSummaryResponses = posts.stream()
+                .map(this::convertToPostSummaryResponse).toList();
+        return PaginatedPostListResponse.from(postSummaryResponses, posts.getNumber(),
+                posts.getTotalPages(), posts.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
     public PostDetailResponse findPost(final Long postId) {
         final Post post = getPostOrThrow(postId);
         return PostDetailResponse.from(post,
