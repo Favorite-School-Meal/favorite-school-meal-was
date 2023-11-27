@@ -12,16 +12,16 @@ public class FileEntity {
     @Column(name = "file_id")
     private Long id;
 
-    private String orgNm;
+    private String originalName;
 
-    private String savedNm;
+    private String savedName;
 
     private String savedPath;
 
     @Builder
-    public FileEntity(String orgNm, String savedNm, String savedPath) {
-        this.orgNm = orgNm;
-        this.savedNm = savedNm;
+    public FileEntity(String originalName, String savedName, String savedPath) {
+        this.originalName = originalName;
+        this.savedName = savedName;
         this.savedPath = savedPath;
     }
 }

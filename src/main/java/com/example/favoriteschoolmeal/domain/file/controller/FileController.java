@@ -42,13 +42,7 @@ public class FileController {
     @GetMapping("/images/{savedName}")
     public ResponseEntity<Resource> serveFile(@PathVariable String savedName) {
 
-        String savedPath = fileDir + savedName;
-        Resource resource;
-        try {
-            resource = new UrlResource(new File(savedPath).toURI());
-        } catch (MalformedURLException e) {
-            throw new FileException(FileExceptionType.MALFORMED_URL);
-        }
+        Resource resource = fileService.loadFileAsResource(savedName);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
