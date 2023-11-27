@@ -3,6 +3,8 @@ package com.example.favoriteschoolmeal.domain.email.service;
 
 import com.example.favoriteschoolmeal.domain.email.domain.EmailMessage;
 import com.example.favoriteschoolmeal.domain.email.dto.EmailPostRequest;
+import com.example.favoriteschoolmeal.domain.email.exception.EmailException;
+import com.example.favoriteschoolmeal.domain.email.exception.EmailExceptionType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
@@ -32,7 +34,7 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new EmailException(EmailExceptionType.EMAIL_SEND_FAILURE);
         }
 
     }
@@ -45,7 +47,7 @@ public class EmailService {
         return EmailMessage.builder()
                 .toEmail(request.email())
                 .subject("[최애의 학식] 임시 비밀번호")
-                .message(username + " 님의 임시 비밀번호 입니다.\r\n" + tempPassword)
+                .message(username + "님의 임시 비밀번호 입니다.\r\n" + tempPassword)
                 .build();
     }
 
