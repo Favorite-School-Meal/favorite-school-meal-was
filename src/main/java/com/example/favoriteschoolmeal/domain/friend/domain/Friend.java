@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.friend.domain;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.FriendRequestStatus;
 import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,13 +28,14 @@ public class Friend extends Base {
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 
-    @Column(name = "is_accepted", nullable = false)
-    private Boolean isAccepted;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "friend_request_status", nullable = false)
+    private FriendRequestStatus friendRequestStatus;
 
     @Builder
-    public Friend(Member sender, Member receiver, Boolean isAccepted) {
+    public Friend(Member sender, Member receiver, FriendRequestStatus friendRequestStatus) {
         this.sender = sender;
         this.receiver = receiver;
-        this.isAccepted = isAccepted;
+        this.friendRequestStatus = friendRequestStatus;
     }
 }

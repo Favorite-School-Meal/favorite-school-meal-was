@@ -12,13 +12,15 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @PostMapping("member/{memberId}/friend-request")
+    @PostMapping("member/{memberId}/request-friend")
     public ApiResponse<Void> friendRequest(@PathVariable final Long memberId){
+        friendService.requestFriend(memberId);
         return ApiResponse.createSuccess(null);
     }
 
-    @DeleteMapping("member/{memberId}/friend-cancel")
-    public ApiResponse<Void> friendCancel(@PathVariable final Long memberId){
+    @DeleteMapping("member/{memberId}/cancel-friend-request")
+    public ApiResponse<Void> friendRequestCancel(@PathVariable final Long memberId){
+        friendService.cancelFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
     @PatchMapping("member/{memberId}/friend-accept")
