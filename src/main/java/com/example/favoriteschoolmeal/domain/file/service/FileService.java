@@ -6,12 +6,15 @@ import com.example.favoriteschoolmeal.domain.file.exeption.FileExceptionType;
 import com.example.favoriteschoolmeal.domain.file.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,7 +29,7 @@ public class FileService {
     private final FileRepository fileRepository;
 
     // 이미지를 불러올 때 사용할 경로
-    final String viewPath = "/api/v1/images/";
+    private final String viewPath = "/api/v1/images/";
 
     /**
      * 파일을 저장하고 저장된 파일의 id를 반환하는 메서드입니다.
@@ -38,42 +41,13 @@ public class FileService {
         if (files.isEmpty()) {
             return null;
         }
-
-        // 원래 파일 이름 추출
-        String origName = files.getOriginalFilename();
-        if (origName == null || origName.isEmpty()) {
-            throw new FileException(FileExceptionType.EMPTY_FILE_NAME);
-        }
-        // 파일 이름으로 쓸 uuid 생성
-        String uuid = UUID.randomUUID().toString();
-
-        // 확장자 추출(ex : .jpg) 현재 jpg만 허용
-        String extension = origName.substring(origName.lastIndexOf("."));
-        if (!extension.equalsIgnoreCase(".jpg")) {
-            throw new FileException(FileExceptionType.UNSUPPORTED_EXTENSION);
-        }
-
-        // uuid와 확장자 결합
-        String savedName = uuid + extension;
-
-        // 파일을 불러올 때 사용할 파일 경로
+        String origName = getOriginalNameOrThrow(files);
+        String savedName = getSavedNameOrThrow(origName);
         String savedPath = fileDir + savedName;
 
-        // 파일 엔티티 생성
-        FileEntity file = FileEntity.builder()
-                .orgNm(origName)
-                .savedNm(savedName)
-                .savedPath(savedPath)
-                .build();
+        transferFileToSavedPath(files, savedPath);
 
-        // 실제로 로컬에 uuid를 파일명으로 저장
-        try {
-            files.transferTo(new File(savedPath));
-        } catch (IOException e) {
-            throw new FileException(FileExceptionType.FILE_IO_EXCEPTION);
-        }
-
-        // 데이터베이스에 파일 정보 저장
+        FileEntity file = createFileEntity(origName, savedName, savedPath);
         FileEntity savedFile = fileRepository.save(file);
 
         return savedFile.getId();
@@ -91,10 +65,69 @@ public class FileService {
      * @return 파일 조회 URL
      */
     public String getImageUrlOrNullByFileId(Long fileId) {
-        if(fileId == null) {
-            return "null1";
+        if (fileId == null) {
+            return null;
         }
         Optional<FileEntity> file = findFileOptionally(fileId);
-        return file.map(f -> viewPath + f.getSavedNm()).orElse("null");
+        return file.map(f -> viewPath + f.getSavedName()).orElse(null);
     }
+
+    public Resource loadFileAsResource(String savedName) {
+        String savedPath = fileDir + savedName;
+        Resource resource;
+        try {
+            resource = new UrlResource(new File(savedPath).toURI());
+        } catch (MalformedURLException e) {
+            throw new FileException(FileExceptionType.MALFORMED_URL);
+        }
+        return resource;
+    }
+    private static FileEntity createFileEntity(String origName, String savedName, String savedPath) {
+        return FileEntity.builder()
+                .originalName(origName)
+                .savedName(savedName)
+                .savedPath(savedPath)
+                .build();
+    }
+
+
+    /**
+     * 실제로 로컬에 파일을 저장하는 메서드입니다.
+     * */
+    private static void transferFileToSavedPath(MultipartFile files, String savedPath) {
+        try {
+            files.transferTo(new File(savedPath));
+        } catch (IOException e) {
+            throw new FileException(FileExceptionType.FILE_IO_EXCEPTION);
+        }
+    }
+
+    private static String getSavedNameOrThrow(String origName) {
+        // 파일 이름으로 쓸 uuid 생성
+        String uuid = UUID.randomUUID().toString();
+
+        String extension = getExtensionOrThrow(origName);
+
+        // uuid와 확장자 결합
+        return uuid + extension;
+    }
+
+    private static String getExtensionOrThrow(String origName) {
+        // 확장자 추출(ex : .jpg) 현재 jpg만 허용
+        String extension = origName.substring(origName.lastIndexOf("."));
+        if (!extension.equalsIgnoreCase(".jpg")) {
+            throw new FileException(FileExceptionType.UNSUPPORTED_EXTENSION);
+        }
+        return extension;
+    }
+
+    private static String getOriginalNameOrThrow(MultipartFile files) {
+        // 원래 파일 이름 추출
+        String origName = files.getOriginalFilename();
+        if (origName == null || origName.isEmpty()) {
+            throw new FileException(FileExceptionType.EMPTY_FILE_NAME);
+        }
+        return origName;
+    }
+
 }
