@@ -40,10 +40,12 @@ public class FriendController {
         return ApiResponse.createSuccess(null);
     }
 
-    @GetMapping("/members/{memberId}/friends")
-    public ApiResponse<PaginatedMemberListResponse> friendList(@PathVariable final Long memberId,
-                                                               Pageable pageable){
-        PaginatedMemberListResponse response = friendService.findAllFriends(memberId, pageable);
+    /**
+     * 현재 로그인한 사용자의 친구 목록을 조회한다.
+     * */
+    @GetMapping("/friends")
+    public ApiResponse<PaginatedMemberListResponse> friendList(Pageable pageable){
+        PaginatedMemberListResponse response = friendService.findAllFriends(pageable);
         return ApiResponse.createSuccess(response);
     }
 

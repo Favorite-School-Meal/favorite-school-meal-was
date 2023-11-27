@@ -41,7 +41,7 @@ public class FriendService {
         friendRepository.save(friend);
 
         //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST로 수정
-        notificationService.createNotification(sender.getId(), receiver.getId(), null, NotificationType.COMMENT_POSTED);
+//        notificationService.createNotification(sender.getId(), receiver.getId(), null, NotificationType.COMMENT_POSTED);
 
     }
 
@@ -61,7 +61,7 @@ public class FriendService {
         friend.accept();
         //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED로 수정
         //알림은 sender와 receiver가 반대로 되어야 함
-        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
+//        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
 
     }
 
@@ -73,13 +73,13 @@ public class FriendService {
         friendRepository.delete(friend);
         //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_REJECTED로 수정
         //알림은 sender와 receiver가 반대로 되어야 함
-        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
+//        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
     }
 
     @Transactional(readOnly = true)
-    public PaginatedMemberListResponse findAllFriends(Long memberId, Pageable pageable) {
+    public PaginatedMemberListResponse findAllFriends(Pageable pageable) {
         verifyUserOrAdmin();
-        verifyMemberOwnerOrAdmin(memberId, getCurrentMemberId());
+        Long memberId = getCurrentMemberId();
         Page<Member> friends = friendRepository.findFriendByMemberId(memberId,pageable);
         return memberService.getPaginatedMemberListResponse(friends);
 
