@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.friend.controller;
 
+import com.example.favoriteschoolmeal.domain.friend.controller.dto.MemberFriendCountResponse;
 import com.example.favoriteschoolmeal.domain.friend.service.FriendService;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
@@ -28,15 +29,21 @@ public class FriendController {
         friendService.cancelFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
-    @PatchMapping("/members/{memberId}/friend-accept")
+    @PatchMapping("/members/{memberId}/accept-friend")
     public ApiResponse<Void> friendAccept(@PathVariable final Long memberId){
         friendService.acceptFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
 
-    @PatchMapping("/members/{memberId}/friend-reject")
+    @PatchMapping("/members/{memberId}/reject-friend")
     public ApiResponse<Void> friendReject(@PathVariable final Long memberId){
         friendService.rejectFriendRequest(memberId);
+        return ApiResponse.createSuccess(null);
+    }
+
+    @DeleteMapping("/members/{memberId}/delete-friend")
+    public ApiResponse<Void> unfriend(@PathVariable final Long memberId){
+        friendService.deleteFriend(memberId);
         return ApiResponse.createSuccess(null);
     }
 
@@ -46,6 +53,12 @@ public class FriendController {
     @GetMapping("/friends")
     public ApiResponse<PaginatedMemberListResponse> friendList(Pageable pageable){
         PaginatedMemberListResponse response = friendService.findAllFriends(pageable);
+        return ApiResponse.createSuccess(response);
+    }
+
+    @GetMapping("/members/{memberId}/friend-count")
+    public ApiResponse<MemberFriendCountResponse> friendCount(@PathVariable final Long memberId){
+        MemberFriendCountResponse response = friendService.countFriend(memberId);
         return ApiResponse.createSuccess(response);
     }
 

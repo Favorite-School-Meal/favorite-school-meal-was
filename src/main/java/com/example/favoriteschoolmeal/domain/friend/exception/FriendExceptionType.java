@@ -24,6 +24,10 @@ public enum FriendExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Friend request not found"
+    ), FRIEND_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Friend not found"
     );
     private final int errorCode;
     private final HttpStatus httpStatus;

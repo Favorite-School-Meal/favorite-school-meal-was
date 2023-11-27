@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
@@ -24,5 +23,12 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     @Query("SELECT f.sender FROM Friend f WHERE f.receiver.id = :memberId AND f.friendRequestStatus = 'ACCEPTED'" +
             "UNION " +
             "SELECT f.receiver FROM Friend f WHERE f.sender.id = :memberId AND f.friendRequestStatus = 'ACCEPTED'")
-    Page<Member> findFriendByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+    Page<Member> findAcceptedFriendByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query("SELECT f FROM Friend f " +
+            "WHERE f.receiver.id = :receiverId AND f.sender.id = :senderId AND f.friendRequestStatus = 'ACCEPTED'" +
+            "UNION " +
+            "SELECT f FROM Friend f " +
+            "WHERE f.sender.id = :receiverId AND f.receiver.id = :senderId AND f.friendRequestStatus = 'ACCEPTED'")
+    Optional<Friend> findAcceptedFriendByMembers(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId);
 }

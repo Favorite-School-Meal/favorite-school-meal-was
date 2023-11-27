@@ -42,4 +42,8 @@ public class Friend extends Base {
     public void accept() {
         this.friendRequestStatus = FriendRequestStatus.ACCEPTED;
     }
+
+    public void reject() {
+        this.friendRequestStatus = FriendRequestStatus.REJECTED;
+    }
 }
