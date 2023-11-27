@@ -29,7 +29,7 @@ public class FileService {
     private final FileRepository fileRepository;
 
     // 이미지를 불러올 때 사용할 경로
-    private final String viewPath = "/api/v1/images/";
+    private static final String viewPath = "/api/v1/images/";
 
     /**
      * 파일을 저장하고 저장된 파일의 id를 반환하는 메서드입니다.
@@ -57,21 +57,6 @@ public class FileService {
         return fileRepository.findById(id);
     }
 
-    /**
-     * 파일 id를 받아 해당 파일의 조회 URL을 반환하는 메서드입니다.
-     * 파일이 존재하지 않거나 fildId가 null이면 null을 반환합니다.
-     *
-     * @param fileId 파일 id
-     * @return 파일 조회 URL
-     */
-    public String getImageUrlOrNullByFileId(Long fileId) {
-        if (fileId == null) {
-            return null;
-        }
-        Optional<FileEntity> file = findFileOptionally(fileId);
-        return file.map(f -> viewPath + f.getSavedName()).orElse(null);
-    }
-
     public Resource loadFileAsResource(String savedName) {
         String savedPath = fileDir + savedName;
         Resource resource;
@@ -87,6 +72,7 @@ public class FileService {
                 .originalName(origName)
                 .savedName(savedName)
                 .savedPath(savedPath)
+                .url(viewPath + savedName)
                 .build();
     }
 

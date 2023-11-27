@@ -18,10 +18,13 @@ public class FileEntity {
 
     private String savedPath;
 
+    private String url;
+
     @Builder
-    public FileEntity(String originalName, String savedName, String savedPath) {
+    public FileEntity(String originalName, String savedName, String savedPath, String url) {
         this.originalName = originalName;
         this.savedName = savedName;
         this.savedPath = savedPath;
+        this.url = url;
     }
 }
