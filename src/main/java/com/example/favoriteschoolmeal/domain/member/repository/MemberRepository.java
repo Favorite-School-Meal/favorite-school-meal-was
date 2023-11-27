@@ -16,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m FROM Member m ORDER BY m.createdAt DESC")
     Page<Member> findAllOrderByCreatedAt(Pageable pageable);
+
+    Optional<Member> findByFullNameAndEmail(String fullname, String email);
 }
