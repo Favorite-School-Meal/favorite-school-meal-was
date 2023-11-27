@@ -41,7 +41,7 @@ public class FriendService {
 
         friendRepository.save(friend);
 
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST로 수정
+        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST
 //        notificationService.createNotification(sender.getId(), receiver.getId(), null, NotificationType.COMMENT_POSTED);
 
     }
@@ -64,7 +64,7 @@ public class FriendService {
 
         friend.accept();
 
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED로 수정
+        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED
         //알림은 sender와 receiver가 반대로 되어야 함
 //        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
 
@@ -76,7 +76,7 @@ public class FriendService {
         Member receiver = getMemberOrThrow(getCurrentMemberId());
         Friend friend = getFriendRequestOrThrow(sender, receiver);
         friend.reject();
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_REJECTED로 수정
+        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_REJECTED
         //알림은 sender와 receiver가 반대로 되어야 함
 //        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
     }
@@ -90,6 +90,7 @@ public class FriendService {
 
     }
 
+    @Transactional(readOnly = true)
     public MemberFriendCountResponse countFriend(Long memberId) {
         Member member = getMemberOrThrow(memberId);
         long friendCount = friendRepository.findAcceptedFriendByMemberId(member.getId(), Pageable.unpaged()).getTotalElements();
@@ -103,6 +104,7 @@ public class FriendService {
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
         friendRepository.delete(friend);
+        //TODO: NOTIFICATION_TYPE.FRIEND_DELETED
     }
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
         return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
