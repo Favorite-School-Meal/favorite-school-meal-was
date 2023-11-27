@@ -5,14 +5,19 @@ import com.example.favoriteschoolmeal.domain.friend.exception.FriendException;
 import com.example.favoriteschoolmeal.domain.friend.exception.FriendExceptionType;
 import com.example.favoriteschoolmeal.domain.friend.repository.FriendRepository;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.FriendRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.NotificationType;
 import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -48,6 +53,37 @@ public class FriendService {
         friendRepository.delete(friend);
     }
 
+    public void acceptFriendRequest(Long memberId) {
+        verifyUserOrAdmin();
+        Member sender = getMemberOrThrow(memberId);
+        Member receiver = getMemberOrThrow(getCurrentMemberId());
+        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        friend.accept();
+        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED로 수정
+        //알림은 sender와 receiver가 반대로 되어야 함
+        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
+
+    }
+
+    public void rejectFriendRequest(Long memberId) {
+        verifyUserOrAdmin();
+        Member sender = getMemberOrThrow(memberId);
+        Member receiver = getMemberOrThrow(getCurrentMemberId());
+        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        friendRepository.delete(friend);
+        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_REJECTED로 수정
+        //알림은 sender와 receiver가 반대로 되어야 함
+        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedMemberListResponse findAllFriends(Long memberId, Pageable pageable) {
+        verifyUserOrAdmin();
+        verifyMemberOwnerOrAdmin(memberId, getCurrentMemberId());
+        Page<Member> friends = friendRepository.findFriendByMemberId(memberId,pageable);
+        return memberService.getPaginatedMemberListResponse(friends);
+
+    }
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
         return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
@@ -78,11 +114,10 @@ public class FriendService {
     }
 
 
-    public void acceptFriendRequest(Long memberId) {
-        verifyUserOrAdmin();
-        Member sender = getMemberOrThrow(memberId);
-        Member receiver = getMemberOrThrow(getCurrentMemberId());
-        Friend friend = getFriendRequestOrThrow(sender, receiver);
-        friend.accept();
+
+    private void verifyMemberOwnerOrAdmin(Long memberOwnerId, Long currentMemberId) {
+        if (!memberOwnerId.equals(currentMemberId)&&!SecurityUtils.isAdmin()) {
+            throw new FriendException(FriendExceptionType.UNAUTHORIZED_ACCESS);
+        }
     }
 }

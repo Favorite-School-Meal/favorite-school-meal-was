@@ -133,5 +133,9 @@ public class MemberService {
         }
     }
 
-
+    public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
+        summarizeMembersIfNotNull(members);
+        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse).toList();
+        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(), members.getTotalElements());
+    }
 }

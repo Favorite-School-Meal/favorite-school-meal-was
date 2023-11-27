@@ -1,8 +1,10 @@
 package com.example.favoriteschoolmeal.domain.friend.controller;
 
 import com.example.favoriteschoolmeal.domain.friend.service.FriendService;
+import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +36,15 @@ public class FriendController {
 
     @PatchMapping("/members/{memberId}/friend-reject")
     public ApiResponse<Void> friendReject(@PathVariable final Long memberId){
+        friendService.rejectFriendRequest(memberId);
         return ApiResponse.createSuccess(null);
     }
 
     @GetMapping("/members/{memberId}/friends")
-    public ApiResponse<Void> friendList(@PathVariable final Long memberId){
-        return ApiResponse.createSuccess(null);
+    public ApiResponse<PaginatedMemberListResponse> friendList(@PathVariable final Long memberId,
+                                                               Pageable pageable){
+        PaginatedMemberListResponse response = friendService.findAllFriends(memberId, pageable);
+        return ApiResponse.createSuccess(response);
     }
 
 }
