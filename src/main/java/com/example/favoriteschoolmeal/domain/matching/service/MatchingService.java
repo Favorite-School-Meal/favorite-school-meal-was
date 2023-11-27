@@ -130,7 +130,6 @@ public class MatchingService {
      */
     @Transactional(readOnly = true)
     public MemberMatchingCountResponse countMatching(final Long memberId) {
-        verifyRequesterOrAdmin(memberId);
         Member member = getMemberOrThrow(memberId);
         List<MatchingMember> matchingMembers = matchingMemberRepository.findAllByMember(member);
         long count = calculateValidMatchingCount(matchingMembers);
@@ -291,18 +290,6 @@ public class MatchingService {
     private void verifyMatchingStatus(final Matching matching, final MatchingStatus status) {
         if (!matching.getMatchingStatus().equals(status)) {
             throw new MatchingException(MatchingExceptionType.INVALID_OPERATION);
-        }
-    }
-
-    /**
-     * 요청한 사용자가 해당 멤버 또는 관리자인지 확인합니다.
-     *
-     * @param memberId 검증할 멤버의 ID
-     */
-    private void verifyRequesterOrAdmin(Long memberId) {
-        Long currentMemberId = getCurrentMemberId();
-        if (!currentMemberId.equals(memberId) && !SecurityUtils.isAdmin()) {
-            throw new MatchingException(MatchingExceptionType.UNAUTHORIZED_ACCESS);
         }
     }
 }
