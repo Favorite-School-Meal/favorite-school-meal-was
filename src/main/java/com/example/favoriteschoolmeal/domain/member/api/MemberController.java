@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -28,12 +29,27 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
+
     //비밀번호 변경은 회원정보 수정에서 분리하여 따로 처리하였습니다.
     @PutMapping("/members/modify-password/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModifyPassword(@PathVariable final Long memberId,
                                                                   @RequestBody final ModifyPasswordRequest request){
         final MemberDetailResponse response = memberService.modifyMemberPassword(request,memberId);
+        return ApiResponse.createSuccess(response);
+    }
+
+
+
+    /**
+     * 프로필 이미지 업로드 API
+     * */
+    @PostMapping("/members/{memberId}/profile-image")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberDetailResponse> memberProfileImageSave(@PathVariable final Long memberId,
+                                                                    MultipartFile file) {
+
+        final MemberDetailResponse response = memberService.saveProfileImage(memberId,file);
         return ApiResponse.createSuccess(response);
     }
 

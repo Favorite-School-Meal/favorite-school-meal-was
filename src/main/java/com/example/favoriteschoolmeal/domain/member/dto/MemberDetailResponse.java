@@ -1,7 +1,10 @@
 package com.example.favoriteschoolmeal.domain.member.dto;
 
+import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+
+import java.util.Optional;
 
 
 public record MemberDetailResponse(
@@ -12,7 +15,9 @@ public record MemberDetailResponse(
         String email,
         Integer age,
         Gender gender,
-        String introduction) {
+        String introduction,
+        String profileImageEndpoint
+) {
 
     public static MemberDetailResponse from(final Member member){
         return new MemberDetailResponse(
@@ -23,8 +28,10 @@ public record MemberDetailResponse(
                 member.getEmail(),
                 member.getAge(),
                 member.getGender(),
-                member.getIntroduction()
-
+                member.getIntroduction(),
+                Optional.ofNullable(member.getProfileImage())
+                        .map(FileEntity::getEndpoint)
+                        .orElse(null)
         );
     }
 }

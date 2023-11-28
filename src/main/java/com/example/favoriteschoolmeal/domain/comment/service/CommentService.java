@@ -38,7 +38,7 @@ public class CommentService {
         final Member member = getMemberOrThrow(getCurrentMemberId());
         final Comment comment = createComment(command, post, member);
         final Comment savedComment = commentRepository.save(comment);
-        notificationService.createNotification(member.getId(), post.getMember().getId(),
+        notificationService.createPostNotification(member.getId(), post.getMember().getId(),
                 post.getId(), NotificationType.COMMENT_POSTED);
         return savedComment;
     }

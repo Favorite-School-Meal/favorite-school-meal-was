@@ -3,8 +3,10 @@ package com.example.favoriteschoolmeal.domain.member.dto;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
+import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public record MemberSummaryResponse(
 
@@ -17,7 +19,9 @@ public record MemberSummaryResponse(
         LocalDateTime unblockDate,
         Integer age,
         Gender gender,
-        String introduction) {
+        String introduction,
+        String profileImageEndpoint
+) {
 
     public static MemberSummaryResponse from(final Member member){
         return new MemberSummaryResponse(
@@ -30,7 +34,10 @@ public record MemberSummaryResponse(
                 member.getUnblockDate(),
                 member.getAge(),
                 member.getGender(),
-                member.getIntroduction()
+                member.getIntroduction(),
+                Optional.ofNullable(member.getProfileImage())
+                        .map(FileEntity::getEndpoint)
+                        .orElse(null)
         );
     }
 }
