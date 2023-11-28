@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.friend.controller;
 
+import com.example.favoriteschoolmeal.domain.friend.controller.dto.FriendStatusResponse;
 import com.example.favoriteschoolmeal.domain.friend.controller.dto.MemberFriendCountResponse;
 import com.example.favoriteschoolmeal.domain.friend.service.FriendService;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
@@ -62,4 +63,9 @@ public class FriendController {
         return ApiResponse.createSuccess(response);
     }
 
+    @GetMapping("/members/{memberId}/friend-status")
+    public ApiResponse<FriendStatusResponse> friendStatus(@PathVariable final Long memberId){
+        MemberFriendCountResponse response = friendService.getFriendStatus(memberId);
+        return ApiResponse.createSuccess(response);
+    }
 }
