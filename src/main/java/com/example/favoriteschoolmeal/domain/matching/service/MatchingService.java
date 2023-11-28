@@ -140,6 +140,12 @@ public class MatchingService {
         return MemberMatchingCountResponse.from(count);
     }
 
+    public String findMatchingMemberStatus(Matching matching, Long senderId) {
+        Member sender = getMemberOrThrow(senderId);
+        MatchingMember matchingMember = getMatchingMemberOrThrow(matching, sender);
+        return matchingMember.getMatchingRequestStatus().toString();
+    }
+
     public Optional<Matching> findMatchingOptionally(final Long matchingId) {
         return matchingRepository.findById(matchingId);
     }

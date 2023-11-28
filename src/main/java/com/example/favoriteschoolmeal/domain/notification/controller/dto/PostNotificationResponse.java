@@ -9,9 +9,11 @@ public record PostNotificationResponse(
         Long senderId,
         Integer notificationType,
         String createdAt,
-        Boolean isRead) implements NotificationResponse {
+        Boolean isRead,
+        String status) implements NotificationResponse {
 
-    public static PostNotificationResponse from(final PostNotification notification) {
+    public static PostNotificationResponse from(final PostNotification notification,
+            final String status) {
         return new PostNotificationResponse(
                 notification.getId(),
                 notification.getPostId(),
@@ -19,7 +21,8 @@ public record PostNotificationResponse(
                 notification.getSenderId(),
                 notification.getNotificationType().getId(),
                 notification.getFormattedCreatedAt(),
-                notification.getIsRead()
+                notification.getIsRead(),
+                status
         );
     }
 }

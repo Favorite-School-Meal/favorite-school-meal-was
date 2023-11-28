@@ -106,6 +106,17 @@ public class FriendService {
         friendRepository.delete(friend);
         //TODO: NOTIFICATION_TYPE.FRIEND_DELETED
     }
+
+    public Friend getFriendOrThrow(Long friendId) {
+        return friendRepository.findById(friendId)
+                .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_NOT_FOUND));
+    }
+
+    public String getFriendRequestStatus(Long friendId) {
+        Friend friend = getFriendOrThrow(friendId);
+        return friend.getFriendRequestStatus().toString();
+    }
+
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
         return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
