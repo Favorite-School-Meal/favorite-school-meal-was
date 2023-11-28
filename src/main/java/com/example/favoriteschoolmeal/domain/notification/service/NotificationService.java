@@ -69,6 +69,7 @@ public class NotificationService {
         FriendNotification notification = FriendNotification.builder()
                 .senderId(senderId)
                 .receiver(receiver)
+                .friendId(friendId)
                 .notificationType(notificationType)
                 .build();
         notificationRepository.save(notification);
