@@ -18,7 +18,8 @@ public class MemberController {
 
 
     //개인정보수정
-    @PutMapping("/members/{memberId}")
+    //introduction, nickname, profile 수정
+    @PutMapping("/members/modify/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,
                                                           @RequestBody final ModifyMemberRequest request) {
@@ -26,6 +27,16 @@ public class MemberController {
         final MemberDetailResponse response = memberService.modifyMember(request, memberId);
         return ApiResponse.createSuccess(response);
     }
+
+    //비밀번호 변경은 회원정보 수정에서 분리하여 따로 처리하였습니다.
+    @PutMapping("/members/modify-password/{memberId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberDetailResponse> memberModifyPassword(@PathVariable final Long memberId,
+                                                                  @RequestBody final ModifyPasswordRequest request){
+        final MemberDetailResponse response = memberService.modifyMemberPassword(request,memberId);
+        return ApiResponse.createSuccess(response);
+    }
+
 
     @GetMapping("/members/{memberId}")
     @ResponseStatus(HttpStatus.OK)

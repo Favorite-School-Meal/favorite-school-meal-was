@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     public Optional<Member> findMemberOptionally(Long memberId) {
@@ -36,7 +38,6 @@ public class MemberService {
 
     public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId){
 
-        verifyUserOrAdmin();
         final Long currentMemberId = getCurrentMemberId();
 
         final Member member = getMemberOrThrow(memberId);
@@ -48,8 +49,22 @@ public class MemberService {
         return MemberDetailResponse.from(savedMember);
     }
 
-    public void modifyMemberPassword(final ModifyPasswordRequest request, final Member member){
+    public MemberDetailResponse modifyMemberPassword(final ModifyPasswordRequest request, final Long memberId){
 
+        final Long currentMemberId = getCurrentMemberId();
+
+        final Member member = getMemberOrThrow(memberId);
+        verifyMemberOwner(memberId, currentMemberId);
+
+        modifyPassword(member, request);
+
+        final Member savedMember = memberRepository.save(member);
+
+        return MemberDetailResponse.from(savedMember);
+    }
+
+    //EmailServive의 호출을 위해 생성
+    public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request){
         modifyPassword(member,request);
     }
 
@@ -102,7 +117,7 @@ public class MemberService {
     }
 
     private void modifyPassword(final Member member, final ModifyPasswordRequest request){
-        member.modifyPassword(request.password());
+        member.modifyPassword(passwordEncoder.encode(request.password()));
     }
 
     private Member getMemberOrThrow(final Long memberId){
@@ -111,7 +126,7 @@ public class MemberService {
     }
 
     private Member getMemberOrThrow(final FindUsernameRequest request){
-        return memberRepository.findByFullnameAndEmail(request.fullname(), request.email())
+        return memberRepository.findByFullNameAndEmail(request.fullname(), request.email())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 

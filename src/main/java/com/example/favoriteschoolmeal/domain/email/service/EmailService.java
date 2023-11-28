@@ -53,7 +53,7 @@ public class EmailService {
         String username = request.username();
 
         ModifyPasswordRequest modifyPasswordRequest = new ModifyPasswordRequest(tempPassword);
-        modifyPasswordToTempPassword(modifyPasswordRequest, member);
+        modifyPasswordToTempPassword(member, modifyPasswordRequest);
 
         return EmailMessage.builder()
                 .toEmail(request.email())
@@ -62,8 +62,8 @@ public class EmailService {
                 .build();
     }
 
-    private void modifyPasswordToTempPassword(final ModifyPasswordRequest request, final Member member){
-        memberService.modifyMemberPassword(request, member);
+    private void modifyPasswordToTempPassword(final Member member, final ModifyPasswordRequest request){
+        memberService.modifyMemberPassword(member, request);
     }
 
     private String createTempPassword(){
