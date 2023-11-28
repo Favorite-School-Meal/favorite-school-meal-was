@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.member.domain;
 
+import com.example.favoriteschoolmeal.domain.member.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.global.common.Base;
@@ -8,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Block;
 
 import java.time.LocalDateTime;
 
@@ -66,7 +68,8 @@ public class Member extends Base {
         this.introduction = introduction;
     }
 
-    public void block(Long blockHours) {
+    public void block(BlockRequest blockRequest) {
+        Long blockHours = blockRequest.blockHours();
         if(this.unblockDate==null || this.unblockDate.isBefore(LocalDateTime.now())){
             this.unblockDate = LocalDateTime.now().plusHours(blockHours);}
         else{
@@ -83,4 +86,5 @@ public class Member extends Base {
     }
 
     public void summarizeIntroduction(String summarizedIntroduction) {this.introduction = summarizedIntroduction;}
+
 }

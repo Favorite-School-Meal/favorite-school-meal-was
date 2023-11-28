@@ -9,7 +9,6 @@ import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
-import com.example.favoriteschoolmeal.domain.report.controller.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
@@ -61,12 +60,11 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
-    public ReportResponse blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
+
+    public ReportResponse resolveReport(Long reportId) {
         verifyRoleAdmin();
         Report report = getReportOrThrow(reportId);
         checkNotResolved(report);
-        Member reportedMember = getReportedMemberOrThrow(report);
-        memberService.blockMember(reportedMember, blockRequest.blockHours());
         report.resolveReport();
         return ReportResponse.from(report);
     }

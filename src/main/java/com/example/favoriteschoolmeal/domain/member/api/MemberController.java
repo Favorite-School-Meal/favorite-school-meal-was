@@ -1,10 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.api;
 
 
-import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -64,5 +61,17 @@ public class MemberController {
 
         final PaginatedMemberListResponse response = memberService.findAllMember(pageable);
         return ApiResponse.createSuccess(response);
+    }
+
+    /**
+     * 관리자가 회원을 정지시키는 메소드
+     */
+    @PatchMapping("/admin/members/{memberId}/block")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> memberBlock(@PathVariable final Long memberId,
+                                                         @RequestBody final BlockRequest blockRequest){
+
+        memberService.blockMember(memberId, blockRequest);
+        return ApiResponse.createSuccess(null);
     }
 }

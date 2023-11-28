@@ -27,12 +27,14 @@ public class MemberService {
         return memberRepository.findById(memberId);
     }
 
-    public void blockMember(Member reportedMember, Long blockHours) {
-        reportedMember.block(blockHours);
+    public void blockMember(Long memberId, BlockRequest blockRequest) {
+        verifyAdmin();
+        Member reportedMember = getMemberOrThrow(memberId);
+        reportedMember.block(blockRequest);
     }
 
 
-    public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId){
+    public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId) {
 
         verifyUserOrAdmin();
         final Long currentMemberId = getCurrentMemberId();
@@ -47,20 +49,20 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberDetailResponse findDetailMember(final Long memberId){
+    public MemberDetailResponse findDetailMember(final Long memberId) {
 
         final Member member = getMemberOrThrow(memberId);
         return MemberDetailResponse.from(member);
     }
 
     @Transactional(readOnly = true)
-    public MemberSimpleResponse findSimpleMember(final Long memberId){
+    public MemberSimpleResponse findSimpleMember(final Long memberId) {
         final Member member = getMemberOrThrow(memberId);
         return MemberSimpleResponse.from(member);
     }
 
     @Transactional(readOnly = true)
-    public MemberDetailResponse findCurrentMember(){
+    public MemberDetailResponse findCurrentMember() {
 
         final Long currentMemberId = getCurrentMemberId();
         final Member member = getMemberOrThrow(currentMemberId);
@@ -69,7 +71,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedMemberListResponse findAllMember(final Pageable pageable){
+    public PaginatedMemberListResponse findAllMember(final Pageable pageable) {
 
         verifyAdmin();
 
@@ -83,42 +85,42 @@ public class MemberService {
                 members.getTotalPages(), members.getTotalElements());
     }
 
-    private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
+    private void modifyIntroduction(final Member member, final ModifyMemberRequest request) {
         member.modifyIntroduction(request.introduction());
     }
 
-    private Member getMemberOrThrow(final Long memberId){
+    private Member getMemberOrThrow(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
 
-    private void verifyUserOrAdmin(){
+    private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private void verifyAdmin(){
+    private void verifyAdmin() {
         SecurityUtils.checkAdminOrThrow(
                 () -> new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private void verifyMemberOwner(final Long memberOwnerId, final Long currentMemberId){
-        if(!memberOwnerId.equals(currentMemberId)){
+    private void verifyMemberOwner(final Long memberOwnerId, final Long currentMemberId) {
+        if (!memberOwnerId.equals(currentMemberId)) {
             throw new MemberException(MemberExceptionType.UNAUTHORIZED_ACCESS);
         }
     }
 
-    private Long getCurrentMemberId(){
+    private Long getCurrentMemberId() {
         return SecurityUtils.getCurrentMemberId(
                 () -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
-    private MemberSummaryResponse convertToSummaryResponse(final Member member){
+    private MemberSummaryResponse convertToSummaryResponse(final Member member) {
         return MemberSummaryResponse.from(member);
     }
 
-    private void summarizeIntroduction(final Member member){
+    private void summarizeIntroduction(final Member member) {
         String summarizedIntroduction = Optional.ofNullable(member.getIntroduction())
                 .filter(introduction -> introduction.length() > 50)
                 .map(introduction -> introduction.substring(0, 50) + "...")
@@ -127,8 +129,8 @@ public class MemberService {
         member.summarizeIntroduction(summarizedIntroduction);
     }
 
-    private void summarizeMembersIfNotNull(Page<Member> members){
-        if(!members.isEmpty()){
+    private void summarizeMembersIfNotNull(Page<Member> members) {
+        if (!members.isEmpty()) {
             members.forEach(this::summarizeIntroduction);
         }
     }
