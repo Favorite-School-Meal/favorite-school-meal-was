@@ -48,6 +48,11 @@ public class MemberService {
         return MemberDetailResponse.from(savedMember);
     }
 
+    public void modifyMemberPassword(final ModifyPasswordRequest request, final Member member){
+
+        modifyPassword(member,request);
+    }
+
     @Transactional(readOnly = true)
     public MemberDetailResponse findDetailMember(final Long memberId){
 
@@ -96,13 +101,17 @@ public class MemberService {
         member.modifyIntroduction(request.introduction());
     }
 
+    private void modifyPassword(final Member member, final ModifyPasswordRequest request){
+        member.modifyPassword(request.password());
+    }
+
     private Member getMemberOrThrow(final Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
     private Member getMemberOrThrow(final FindUsernameRequest request){
-        return memberRepository.findByFullNameAndEmail(request.fullname(), request.email())
+        return memberRepository.findByFullnameAndEmail(request.fullname(), request.email())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 

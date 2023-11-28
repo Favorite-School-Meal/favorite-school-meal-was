@@ -6,6 +6,17 @@ import org.springframework.http.HttpStatus;
 public enum EmailExceptionType implements BaseExceptionType {
 
 
+    MEMBER_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "Member not found"
+    ),
+
+    UNAUTHORIZED_ACCESS(
+            401,
+            HttpStatus.UNAUTHORIZED,
+            "Unauthorized access"
+    ),
 
     EMAIL_SEND_FAILURE(
             500,

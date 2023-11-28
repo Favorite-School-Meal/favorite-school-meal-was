@@ -5,6 +5,12 @@ import com.example.favoriteschoolmeal.domain.email.domain.EmailMessage;
 import com.example.favoriteschoolmeal.domain.email.dto.EmailPostRequest;
 import com.example.favoriteschoolmeal.domain.email.exception.EmailException;
 import com.example.favoriteschoolmeal.domain.email.exception.EmailExceptionType;
+import com.example.favoriteschoolmeal.domain.member.domain.Member;
+
+import com.example.favoriteschoolmeal.domain.member.dto.ModifyPasswordRequest;
+import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
+
+import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
@@ -19,10 +25,10 @@ import static com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl
 public class EmailService {
 
     private JavaMailSender javaMailSender;
+    private MemberRepository memberRepository;
+    private MemberService memberService;
 
-
-    public void sendEmail(EmailMessage emailMessage){
-
+    public void sendEmail(final EmailMessage emailMessage){
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -39,10 +45,15 @@ public class EmailService {
 
     }
 
-    public EmailMessage setMessage(EmailPostRequest request){
+    public EmailMessage setMessage(final EmailPostRequest request){
+
+        Member member = getMemberOrThrow(request);
 
         String tempPassword = createTempPassword();
         String username = request.username();
+
+        ModifyPasswordRequest modifyPasswordRequest = new ModifyPasswordRequest(tempPassword);
+        modifyPasswordToTempPassword(modifyPasswordRequest, member);
 
         return EmailMessage.builder()
                 .toEmail(request.email())
@@ -51,7 +62,18 @@ public class EmailService {
                 .build();
     }
 
-    private  String createTempPassword(){
+    private void modifyPasswordToTempPassword(final ModifyPasswordRequest request, final Member member){
+        memberService.modifyMemberPassword(request, member);
+    }
+
+    private String createTempPassword(){
         return generateRandomString(10);
     }
+
+    private Member getMemberOrThrow(final EmailPostRequest request){
+        return memberRepository.findByUsernameAndEmail(request.username(), request.email())
+                .orElseThrow(() -> new EmailException(EmailExceptionType.MEMBER_NOT_FOUND));
+    }
+
+
 }

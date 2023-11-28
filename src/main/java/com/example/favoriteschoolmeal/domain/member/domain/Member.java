@@ -82,5 +82,9 @@ public class Member extends Base {
         this.introduction = introduction;
     }
 
+    public void modifyPassword(final String password){
+        this.password = password;
+    }
+
     public void summarizeIntroduction(String summarizedIntroduction) {this.introduction = summarizedIntroduction;}
 }
