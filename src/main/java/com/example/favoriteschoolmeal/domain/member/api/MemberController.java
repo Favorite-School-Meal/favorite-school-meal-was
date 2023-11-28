@@ -89,7 +89,7 @@ public class MemberController {
 
 
     //관리자가 member 모두 불러오기
-    @GetMapping("/members/admin")
+    @GetMapping("/admin/members")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PaginatedMemberListResponse> memberList(Pageable pageable){
 
