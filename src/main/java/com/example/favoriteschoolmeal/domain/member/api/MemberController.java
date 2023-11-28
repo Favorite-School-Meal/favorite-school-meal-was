@@ -74,4 +74,15 @@ public class MemberController {
         memberService.blockMember(memberId, blockRequest);
         return ApiResponse.createSuccess(null);
     }
+
+    /**
+     * 관리자가 회원 정지를 해제하는 메소드
+     */
+    @PatchMapping("/admin/members/{memberId}/unblock")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> memberUnblock(@PathVariable final Long memberId){
+
+        memberService.unblockMember(memberId);
+        return ApiResponse.createSuccess(null);
+    }
 }

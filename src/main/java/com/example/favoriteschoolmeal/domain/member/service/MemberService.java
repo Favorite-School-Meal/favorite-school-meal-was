@@ -136,4 +136,9 @@ public class MemberService {
     }
 
 
+    public void unblockMember(Long memberId) {
+        verifyAdmin();
+        Member reportedMember = getMemberOrThrow(memberId);
+        reportedMember.unblock();
+    }
 }

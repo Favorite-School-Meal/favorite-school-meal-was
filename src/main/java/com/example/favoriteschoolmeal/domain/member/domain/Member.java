@@ -87,4 +87,7 @@ public class Member extends Base {
 
     public void summarizeIntroduction(String summarizedIntroduction) {this.introduction = summarizedIntroduction;}
 
+    public void unblock() {
+        this.unblockDate = null;
+    }
 }
