@@ -4,6 +4,8 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.NotificationType;
 import com.example.favoriteschoolmeal.global.common.Base;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,11 +13,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,9 +28,11 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "notification")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends Base {
+public abstract class Notification extends Base {
 
     /**
      * 알림의 고유 식별자입니다. 자동 생성되는 ID 값입니다.
@@ -50,12 +56,6 @@ public class Notification extends Base {
     private Long senderId;
 
     /**
-     * 알림과 관련된 게시물의 ID입니다.
-     */
-    @Column(name = "post_id", nullable = false)
-    private Long postId;
-
-    /**
      * 알림의 유형을 나타냅니다. NotificationType 열거형을 사용하여 알림의 유형을 정의합니다.
      */
     @Enumerated(EnumType.STRING)
@@ -66,26 +66,12 @@ public class Notification extends Base {
      * 알림의 읽음 여부를 나타냅니다. 기본값은 false(읽지 않음)입니다.
      */
     @Column(name = "is_read", nullable = false)
-    private Boolean isRead;
+    private Boolean isRead = false;
 
-    /**
-     * 알림 객체를 생성할 때 사용하는 빌더 메서드입니다.
-     *
-     * @param receiver         알림을 받는 사용자
-     * @param senderId         알림을 보낸 사용자의 ID
-     * @param postId           알림과 관련된 게시물 ID
-     * @param notificationType 알림의 유형
-     * @param isRead           알림의 읽음 여부
-     */
-    @Builder
-    public Notification(Member receiver, Long senderId, Long postId,
-            NotificationType notificationType,
-            Boolean isRead) {
+    protected Notification(Member receiver, Long senderId, NotificationType notificationType) {
         this.receiver = receiver;
         this.senderId = senderId;
-        this.postId = postId;
         this.notificationType = notificationType;
-        this.isRead = isRead;
     }
 
     /**

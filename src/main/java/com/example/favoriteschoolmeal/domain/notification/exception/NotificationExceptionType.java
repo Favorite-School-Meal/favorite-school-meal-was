@@ -21,6 +21,18 @@ public enum NotificationExceptionType implements BaseExceptionType {
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
+    ),
+
+    UNSUPPORTED_NOTIFICATION_TYPE(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Unsupported notification type"
+    ),
+
+    INVALID_NOTIFICATION_TYPE(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Invalid notification type"
     );
 
     private final int errorCode;

@@ -18,10 +18,14 @@ public class FileEntity {
 
     private String savedPath;
 
+    // 이미지를 불러올 때 사용할 경로
+    private String endpoint;
+
     @Builder
-    public FileEntity(String originalName, String savedName, String savedPath) {
+    public FileEntity(String originalName, String savedName, String savedPath, String endpoint) {
         this.originalName = originalName;
         this.savedName = savedName;
         this.savedPath = savedPath;
+        this.endpoint = endpoint;
     }
 }

@@ -22,7 +22,12 @@ public enum MemberExceptionType implements BaseExceptionType {
             403,
             HttpStatus.FORBIDDEN,
             "Member blocked"
-    ),;
+    ),
+    FILE_NOT_FOUND(
+            404,
+            HttpStatus.NOT_FOUND,
+            "File not found"
+    );
 
 
     private final int errorCode;
