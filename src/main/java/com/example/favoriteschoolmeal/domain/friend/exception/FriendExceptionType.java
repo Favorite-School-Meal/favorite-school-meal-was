@@ -28,6 +28,10 @@ public enum FriendExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "Friend not found"
+    ), ALREADY_EXISTS(
+            409,
+            HttpStatus.CONFLICT,
+            "Already exists"
     );
     private final int errorCode;
     private final HttpStatus httpStatus;

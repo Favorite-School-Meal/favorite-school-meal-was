@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.friend.service;
 
+import com.example.favoriteschoolmeal.domain.friend.controller.dto.FriendStatusResponse;
 import com.example.favoriteschoolmeal.domain.friend.controller.dto.MemberFriendCountResponse;
 import com.example.favoriteschoolmeal.domain.friend.domain.Friend;
 import com.example.favoriteschoolmeal.domain.friend.exception.FriendException;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,8 +33,10 @@ public class FriendService {
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
 
-        checkAlreadyFriend(sender, receiver);
-        checkAlreadyRequested(sender, receiver);
+//        checkAlreadyFriend(sender, receiver);
+//        checkAlreadyRequested(sender, receiver);
+
+        checkAlreadyExists(sender, receiver);
 
         Friend friend = Friend.builder()
                 .sender(sender)
@@ -44,6 +49,12 @@ public class FriendService {
         //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST
 //        notificationService.createNotification(sender.getId(), receiver.getId(), null, NotificationType.COMMENT_POSTED);
 
+    }
+
+    private void checkAlreadyExists(Member sender, Member receiver) {
+        if (friendRepository.findByMembers(sender.getId(), receiver.getId()).isPresent()) {
+            throw new FriendException(FriendExceptionType.ALREADY_EXISTS);
+        }
     }
 
     public void cancelFriendRequest(Long memberId) {
@@ -106,6 +117,15 @@ public class FriendService {
         friendRepository.delete(friend);
         //TODO: NOTIFICATION_TYPE.FRIEND_DELETED
     }
+
+    public FriendStatusResponse getFriendStatus(Long memberId) {
+        verifyUserOrAdmin();
+        Member sender = getMemberOrThrow(getCurrentMemberId());
+        Member receiver = getMemberOrThrow(memberId);
+        Optional<Friend> friend = friendRepository.findByMembers(sender.getId(), receiver.getId());
+
+        return FriendStatusResponse.from(friend);
+    }
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
         return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
@@ -142,6 +162,7 @@ public class FriendService {
         return friendRepository.findAcceptedFriendByMembers(sender.getId(), receiver.getId())
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_NOT_FOUND));
     }
+
 
 
 }

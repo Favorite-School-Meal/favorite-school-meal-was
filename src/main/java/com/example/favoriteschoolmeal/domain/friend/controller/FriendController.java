@@ -65,7 +65,7 @@ public class FriendController {
 
     @GetMapping("/members/{memberId}/friend-status")
     public ApiResponse<FriendStatusResponse> friendStatus(@PathVariable final Long memberId){
-        MemberFriendCountResponse response = friendService.getFriendStatus(memberId);
+        FriendStatusResponse response = friendService.getFriendStatus(memberId);
         return ApiResponse.createSuccess(response);
     }
 }

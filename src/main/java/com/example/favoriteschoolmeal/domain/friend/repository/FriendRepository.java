@@ -55,4 +55,19 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
             "SELECT f FROM Friend f " +
             "WHERE f.sender.id = :receiverId AND f.receiver.id = :senderId AND f.friendRequestStatus = 'ACCEPTED'")
     Optional<Friend> findAcceptedFriendByMembers(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId);
+
+
+    /**
+     * 두 회원 중 하나가 sender이고, 다른 하나가 receiver인 경우와 그 반대의 경우를 찾아 해당 친구 엔티티를 반환합니다.
+     *
+     * @param senderId 첫번째 회원 id
+     * @param receiverId 두번째 회원 id
+     * @return 친구 엔티티
+     * */
+    @Query("SELECT f FROM Friend f " +
+            "WHERE f.receiver.id = :receiverId AND f.sender.id = :senderId " +
+            "UNION " +
+            "SELECT f FROM Friend f " +
+            "WHERE f.sender.id = :receiverId AND f.receiver.id = :senderId")
+    Optional<Friend> findByMembers(Long senderId, Long receiverId);
 }
