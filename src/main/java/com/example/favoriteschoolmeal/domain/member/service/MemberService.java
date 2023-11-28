@@ -7,6 +7,8 @@ import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +49,12 @@ public class MemberService {
         final Member member = getMemberOrThrow(memberId);
         verifyMemberOwner(memberId, currentMemberId);
 
+        if(!member.getNickname().equals(request.nickname())){
+            modifyNickname(member, request);
+        }
+
         modifyIntroduction(member, request);
+
         final Member savedMember = memberRepository.save(member);
 
         return MemberDetailResponse.from(savedMember);
@@ -135,6 +142,11 @@ public class MemberService {
         return MemberSimpleResponse.from(member);
     }
 
+    private void modifyNickname(final Member member, final ModifyMemberRequest request){
+        checkNicknameDuplication(request);
+        member.modifyNickname(request.nickname());
+    }
+
     private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
         member.modifyIntroduction(request.introduction());
     }
@@ -153,6 +165,11 @@ public class MemberService {
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
+    private void checkNicknameDuplication(final ModifyMemberRequest request){
+        if (memberRepository.findByNickname(request.nickname()).isPresent()) {
+            throw new MemberException(MemberExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+    }
 
     private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(

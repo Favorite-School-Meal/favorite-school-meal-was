@@ -19,7 +19,7 @@ public class MemberController {
 
 
     //개인정보수정
-    //introduction, nickname, profile 수정
+    //introduction, nickname 수정
     @PutMapping("/members/modify/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,

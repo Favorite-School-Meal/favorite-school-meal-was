@@ -86,6 +86,8 @@ public class Member extends Base {
         return this.unblockDate!=null && this.unblockDate.isAfter(LocalDateTime.now());
     }
 
+    public void modifyNickname(final String nickname) {this.nickname = nickname;}
+
     public void modifyIntroduction(final String introduction){
         this.introduction = introduction;
     }

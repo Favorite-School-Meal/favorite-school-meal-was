@@ -27,7 +27,13 @@ public enum MemberExceptionType implements BaseExceptionType {
             404,
             HttpStatus.NOT_FOUND,
             "File not found"
-    );
+    ),
+
+    DUPLICATE_NICKNAME_EXCEPTION(
+            400,
+            HttpStatus.BAD_REQUEST,
+            "Nickname duplicated"
+    ),;
 
 
     private final int errorCode;
