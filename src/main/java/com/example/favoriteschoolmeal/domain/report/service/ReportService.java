@@ -10,6 +10,7 @@ import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
+import com.example.favoriteschoolmeal.domain.report.controller.dto.MemberReportCountResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
@@ -204,4 +205,9 @@ public class ReportService {
     }
 
 
+    public MemberReportCountResponse countReportByMemberId(Long memberId) {
+        Member member = getMemberOrThrow(memberId);
+        Long count = reportRepository.countByReportedMember(member);
+        return MemberReportCountResponse.from(count);
+    }
 }
