@@ -41,19 +41,24 @@ public enum NotificationType {
     FRIEND_REQUESTED(7),
 
     /**
+     * 친구 요청이 취소되었을 경우의 알림 유형입니다.
+     */
+    FRIEND_REQUEST_CANCELLED(8),
+
+    /**
      * 친구 요청이 수락되었을 경우의 알림 유형입니다.
      */
-    FRIEND_REQUEST_ACCEPTED(8),
+    FRIEND_REQUEST_ACCEPTED(9),
 
     /**
      * 친구 요청이 거부되었을 경우의 알림 유형입니다.
      */
-    FRIEND_REQUEST_REJECTED(9),
+    FRIEND_REQUEST_REJECTED(10),
 
     /**
      * 친구가 제거되었을 경우의 알림 유형입니다.
      */
-    FRIEND_REMOVED(10);
+    FRIEND_REMOVED(11);
 
     private final int id;
 
@@ -88,7 +93,8 @@ public enum NotificationType {
      * @return 친구와 관련된 알림인지 여부
      */
     public boolean isFriendRelated() {
-        return this == FRIEND_REQUESTED || this == FRIEND_REQUEST_ACCEPTED
+        return this == FRIEND_REQUESTED || this == FRIEND_REQUEST_CANCELLED
+                || this == FRIEND_REQUEST_ACCEPTED
                 || this == FRIEND_REQUEST_REJECTED || this == FRIEND_REMOVED;
     }
 }

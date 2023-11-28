@@ -62,7 +62,8 @@ public class MatchingService {
 
         checkIfMatchingIsAvailable(matching, applicant);
         addMatchingMember(matching, applicant);
-        notificationService.createPostNotification(applicant.getId(), post.getMember().getId(), postId,
+        notificationService.createPostNotification(applicant.getId(), post.getMember().getId(),
+                postId,
                 NotificationType.MATCHING_REQUESTED);
     }
 
@@ -74,21 +75,24 @@ public class MatchingService {
         final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, applicant);
         verifyCancellation(matchingMember);
         cancelMatchingMember(matchingMember);
-        notificationService.createPostNotification(applicant.getId(), post.getMember().getId(), postId,
+        notificationService.createPostNotification(applicant.getId(), post.getMember().getId(),
+                postId,
                 NotificationType.MATCHING_REQUEST_CANCELED);
     }
 
     public void acceptMatchingApplication(final Long postId, final Long applicantMemberId) {
         Post post = getPostOrThrow(postId);
         processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.ACCEPTED);
-        notificationService.createPostNotification(post.getMember().getId(), applicantMemberId, postId,
+        notificationService.createPostNotification(post.getMember().getId(), applicantMemberId,
+                postId,
                 NotificationType.MATCHING_REQUEST_ACCEPTED);
     }
 
     public void rejectMatchingApplication(final Long postId, final Long applicantMemberId) {
         Post post = getPostOrThrow(postId);
         processMatchingApplication(post, applicantMemberId, MatchingRequestStatus.REJECTED);
-        notificationService.createPostNotification(post.getMember().getId(), applicantMemberId, postId,
+        notificationService.createPostNotification(post.getMember().getId(), applicantMemberId,
+                postId,
                 NotificationType.MATCHING_REQUEST_REJECTED);
     }
 
