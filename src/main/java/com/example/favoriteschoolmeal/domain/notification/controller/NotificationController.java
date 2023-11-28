@@ -2,7 +2,7 @@ package com.example.favoriteschoolmeal.domain.notification.controller;
 
 import com.example.favoriteschoolmeal.domain.notification.controller.dto.NotificationListResponse;
 import com.example.favoriteschoolmeal.domain.notification.controller.dto.UnreadNotificationStatusResponse;
-import com.example.favoriteschoolmeal.domain.notification.service.NotificationManageService;
+import com.example.favoriteschoolmeal.domain.notification.service.NotificationFacadeService;
 import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.AllArgsConstructor;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/notifications")
 public class NotificationController {
 
+    private final NotificationFacadeService notificationFacadeService;
     private final NotificationService notificationService;
-    private final NotificationManageService notificationManageService;
 
     /**
      * 사용자의 모든 알림 목록을 조회하는 API입니다. HTTP 상태 코드 200(OK)와 함께 조회된 알림 목록을 반환합니다.
@@ -33,7 +33,7 @@ public class NotificationController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<NotificationListResponse> notificationList() {
-        final NotificationListResponse response = notificationManageService.findAllNotification();
+        final NotificationListResponse response = notificationFacadeService.findAllNotification();
         return ApiResponse.createSuccess(response);
     }
 
