@@ -6,6 +6,8 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import java.util.Optional;
 
 public record MemberSimpleResponse(
+
+        Long memberId,
         String nickname,
         String username,
         String profileImageEndpoint) {
@@ -13,6 +15,7 @@ public record MemberSimpleResponse(
     public static MemberSimpleResponse from(final Member member) {
 
         return new MemberSimpleResponse(
+                member.getId(),
                 member.getNickname(),
                 member.getUsername(),
                 Optional.ofNullable(member.getProfileImage())
