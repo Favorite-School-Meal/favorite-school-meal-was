@@ -20,7 +20,7 @@ public class MemberController {
 
     //개인정보수정
     //introduction, nickname 수정
-    @PutMapping("/members/modify/{memberId}")
+    @PutMapping("/members/{memberId}/modify")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,
                                                           @RequestBody final ModifyMemberRequest request) {
@@ -31,7 +31,7 @@ public class MemberController {
 
 
     //비밀번호 변경은 회원정보 수정에서 분리하여 따로 처리하였습니다.
-    @PutMapping("/members/modify-password/{memberId}")
+    @PutMapping("/members/{memberId}/modify-password")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModifyPassword(@PathVariable final Long memberId,
                                                                   @RequestBody final ModifyPasswordRequest request){
@@ -62,7 +62,7 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
-    @GetMapping("/members/simple/{memberId}")
+    @GetMapping("/members/{memberId}/simple")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberSimpleResponse> memberSimples(@PathVariable final Long memberId){
 
@@ -89,7 +89,7 @@ public class MemberController {
 
 
     //관리자가 member 모두 불러오기
-    @GetMapping("/admin/members")
+    @GetMapping("/members/admin")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PaginatedMemberListResponse> memberList(Pageable pageable){
 

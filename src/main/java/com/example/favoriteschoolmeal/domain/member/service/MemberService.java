@@ -142,6 +142,8 @@ public class MemberService {
         return MemberSimpleResponse.from(member);
     }
 
+
+
     private void modifyNickname(final Member member, final ModifyMemberRequest request){
         checkNicknameDuplication(request);
         member.modifyNickname(request.nickname());
