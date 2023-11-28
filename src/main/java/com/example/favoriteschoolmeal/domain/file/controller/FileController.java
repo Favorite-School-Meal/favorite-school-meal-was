@@ -27,9 +27,6 @@ public class FileController {
 
     private final FileService fileService;
 
-    @Value("${file.dir}")
-    private String fileDir;
-
      /**
       * /images/{savedName} 형식으로 요청하면 해당 이미지를 불러옵니다.
       *
@@ -48,17 +45,4 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
                 .body(resource);
     }
-
-    /**
-     * 테스트용 업로드 api
-     * 추후 삭제 예정
-     * 작성자: 염동환
-     */
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(MultipartFile files) {
-        Long savedFileId = fileService.saveFile(files);
-        return ResponseEntity.ok(fileService.getImageUrlOrNullByFileId(savedFileId));
-
-    }
-
 }

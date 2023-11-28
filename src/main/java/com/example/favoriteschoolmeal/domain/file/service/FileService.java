@@ -57,21 +57,6 @@ public class FileService {
         return fileRepository.findById(id);
     }
 
-    /**
-     * 파일 id를 받아 해당 파일의 조회 URL을 반환하는 메서드입니다.
-     * 파일이 존재하지 않거나 fildId가 null이면 null을 반환합니다.
-     *
-     * @param fileId 파일 id
-     * @return 파일 조회 URL
-     */
-    public String getImageUrlOrNullByFileId(Long fileId) {
-        if (fileId == null) {
-            return null;
-        }
-        Optional<FileEntity> file = findFileOptionally(fileId);
-        return file.map(f -> viewPath + f.getSavedName()).orElse(null);
-    }
-
     public Resource loadFileAsResource(String savedName) {
         String savedPath = fileDir + savedName;
         Resource resource;
@@ -82,11 +67,12 @@ public class FileService {
         }
         return resource;
     }
-    private static FileEntity createFileEntity(String origName, String savedName, String savedPath) {
+    private FileEntity createFileEntity(String origName, String savedName, String savedPath) {
         return FileEntity.builder()
                 .originalName(origName)
                 .savedName(savedName)
                 .savedPath(savedPath)
+                .endpoint(viewPath + savedName)
                 .build();
     }
 
@@ -94,7 +80,7 @@ public class FileService {
     /**
      * 실제로 로컬에 파일을 저장하는 메서드입니다.
      * */
-    private static void transferFileToSavedPath(MultipartFile files, String savedPath) {
+    private void transferFileToSavedPath(MultipartFile files, String savedPath) {
         try {
             files.transferTo(new File(savedPath));
         } catch (IOException e) {
@@ -102,7 +88,7 @@ public class FileService {
         }
     }
 
-    private static String getSavedNameOrThrow(String origName) {
+    private String getSavedNameOrThrow(String origName) {
         // 파일 이름으로 쓸 uuid 생성
         String uuid = UUID.randomUUID().toString();
 
@@ -112,7 +98,7 @@ public class FileService {
         return uuid + extension;
     }
 
-    private static String getExtensionOrThrow(String origName) {
+    private String getExtensionOrThrow(String origName) {
         // 확장자 추출(ex : .jpg) 현재 jpg만 허용
         String extension = origName.substring(origName.lastIndexOf("."));
         if (!extension.equalsIgnoreCase(".jpg")) {
@@ -121,7 +107,7 @@ public class FileService {
         return extension;
     }
 
-    private static String getOriginalNameOrThrow(MultipartFile files) {
+    private String getOriginalNameOrThrow(MultipartFile files) {
         // 원래 파일 이름 추출
         String origName = files.getOriginalFilename();
         if (origName == null || origName.isEmpty()) {
