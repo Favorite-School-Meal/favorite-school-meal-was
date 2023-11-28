@@ -80,7 +80,7 @@ public class MemberController {
     }
 
     //아이디 찾기
-    @GetMapping("/members/find/username")
+    @GetMapping("/members/find-username")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberSimpleResponse> memberFindUsername(@RequestBody final FindUsernameRequest request){
         final MemberSimpleResponse response = memberService.findUsername(request);
