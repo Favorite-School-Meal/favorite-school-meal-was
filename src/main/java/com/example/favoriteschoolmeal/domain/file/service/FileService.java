@@ -29,7 +29,7 @@ public class FileService {
     private final FileRepository fileRepository;
 
     // 이미지를 불러올 때 사용할 경로
-    private static final String viewPath = "/api/v1/images/";
+    private final String viewPath = "/api/v1/images/";
 
     /**
      * 파일을 저장하고 저장된 파일의 id를 반환하는 메서드입니다.
@@ -67,7 +67,7 @@ public class FileService {
         }
         return resource;
     }
-    private static FileEntity createFileEntity(String origName, String savedName, String savedPath) {
+    private FileEntity createFileEntity(String origName, String savedName, String savedPath) {
         return FileEntity.builder()
                 .originalName(origName)
                 .savedName(savedName)
@@ -80,7 +80,7 @@ public class FileService {
     /**
      * 실제로 로컬에 파일을 저장하는 메서드입니다.
      * */
-    private static void transferFileToSavedPath(MultipartFile files, String savedPath) {
+    private void transferFileToSavedPath(MultipartFile files, String savedPath) {
         try {
             files.transferTo(new File(savedPath));
         } catch (IOException e) {
@@ -88,7 +88,7 @@ public class FileService {
         }
     }
 
-    private static String getSavedNameOrThrow(String origName) {
+    private String getSavedNameOrThrow(String origName) {
         // 파일 이름으로 쓸 uuid 생성
         String uuid = UUID.randomUUID().toString();
 
@@ -98,7 +98,7 @@ public class FileService {
         return uuid + extension;
     }
 
-    private static String getExtensionOrThrow(String origName) {
+    private String getExtensionOrThrow(String origName) {
         // 확장자 추출(ex : .jpg) 현재 jpg만 허용
         String extension = origName.substring(origName.lastIndexOf("."));
         if (!extension.equalsIgnoreCase(".jpg")) {
@@ -107,7 +107,7 @@ public class FileService {
         return extension;
     }
 
-    private static String getOriginalNameOrThrow(MultipartFile files) {
+    private String getOriginalNameOrThrow(MultipartFile files) {
         // 원래 파일 이름 추출
         String origName = files.getOriginalFilename();
         if (origName == null || origName.isEmpty()) {
