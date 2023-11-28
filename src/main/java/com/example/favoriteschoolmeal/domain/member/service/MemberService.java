@@ -149,9 +149,18 @@ public class MemberService {
             members.forEach(this::summarizeIntroduction);
         }
     }
+
+
+    public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
+        summarizeMembersIfNotNull(members);
+        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse).toList();
+        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(), members.getTotalElements());
+    }
+
     private FileEntity getFileEntityOrThrow(Long fileId) {
         return fileService.findFileOptionally(fileId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.FILE_NOT_FOUND));
     }
+
 
 }
