@@ -1,5 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.service;
 
+import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
+import com.example.favoriteschoolmeal.domain.file.service.FileService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +24,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
+    private final FileService fileService;
 
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
@@ -46,6 +49,20 @@ public class MemberService {
         final Member savedMember = memberRepository.save(member);
 
         return MemberDetailResponse.from(savedMember);
+    }
+
+    public MemberDetailResponse saveProfileImage(Long memberId, MultipartFile file) {
+        verifyUserOrAdmin();
+        final Long currentMemberId = getCurrentMemberId();
+
+        final Member member = getMemberOrThrow(memberId);
+        verifyMemberOwner(memberId, currentMemberId);
+
+        final Long fileId = fileService.saveFile(file);
+        FileEntity fileEntity = getFileEntityOrThrow(fileId);
+        member.changeProfileImage(fileEntity);
+
+        return MemberDetailResponse.from(member);
     }
 
     @Transactional(readOnly = true)
@@ -136,9 +153,22 @@ public class MemberService {
     }
 
 
+
     public void unblockMember(Long memberId) {
         verifyAdmin();
         Member reportedMember = getMemberOrThrow(memberId);
         reportedMember.unblock();
     }
+
+    public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
+        summarizeMembersIfNotNull(members);
+        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse).toList();
+        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(), members.getTotalElements());
+    }
+
+    private FileEntity getFileEntityOrThrow(Long fileId) {
+        return fileService.findFileOptionally(fileId)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.FILE_NOT_FOUND));
+    }
+
 }

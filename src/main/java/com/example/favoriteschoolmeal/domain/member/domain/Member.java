@@ -1,5 +1,6 @@
 package com.example.favoriteschoolmeal.domain.member.domain;
 
+import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.member.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
@@ -9,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Block;
 
 import java.time.LocalDateTime;
 
@@ -54,6 +54,9 @@ public class Member extends Base {
     @Column(name = "introduction", length = 300)
     private String introduction;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private FileEntity profileImage;
     @Builder
     public Member(String username, String nickname, String fullName, String password, String email, Authority authority, LocalDateTime unblockDate, Integer age, Gender gender, String introduction) {
         this.username = username;
@@ -75,6 +78,10 @@ public class Member extends Base {
         else{
             this.unblockDate = this.unblockDate.plusHours(blockHours);
         }
+    }
+
+    public void changeProfileImage(FileEntity fileEntity) {
+        this.profileImage = fileEntity;
     }
 
     public boolean isBanned() {
