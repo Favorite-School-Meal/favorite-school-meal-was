@@ -1,8 +1,7 @@
 package com.example.favoriteschoolmeal.domain.report.controller.dto;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public record ReportListResponse(
         List<ReportResponse> content,

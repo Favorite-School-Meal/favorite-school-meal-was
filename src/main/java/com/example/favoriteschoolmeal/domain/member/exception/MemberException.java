@@ -8,8 +8,12 @@ public class MemberException extends BaseException {
 
     private final MemberExceptionType memberExceptionType;
 
-    public MemberException(final MemberExceptionType memberExceptionType) {this.memberExceptionType = memberExceptionType;}
+    public MemberException(final MemberExceptionType memberExceptionType) {
+        this.memberExceptionType = memberExceptionType;
+    }
 
     @Override
-    public BaseExceptionType exceptionType() {return  memberExceptionType;}
+    public BaseExceptionType exceptionType() {
+        return memberExceptionType;
+    }
 }

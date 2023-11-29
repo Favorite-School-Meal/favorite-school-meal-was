@@ -13,4 +13,5 @@ public record EmailPostRequest(
         @Size(min = 3, max = 20, message = "아이디는 3자리 이상, 20자리 이하여야 합니다.")
         String username
 ) {
+
 }

@@ -22,19 +22,19 @@ public enum FileExceptionType implements BaseExceptionType {
             400,
             HttpStatus.BAD_REQUEST,
             "Unsupported extension"
-    )
-    , EMPTY_FILE_NAME(
+    ), EMPTY_FILE_NAME(
             400,
             HttpStatus.BAD_REQUEST,
             "Empty file name"
-    ),;
+    ),
+    ;
 
     private final int errorCode;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
     FileExceptionType(final int errorCode, final HttpStatus httpStatus,
-                      final String errorMessage) {
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

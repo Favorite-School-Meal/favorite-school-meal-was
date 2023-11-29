@@ -9,4 +9,5 @@ public record OauthSignInRequest(
         @NotBlank
         String state
 ) {
+
 }

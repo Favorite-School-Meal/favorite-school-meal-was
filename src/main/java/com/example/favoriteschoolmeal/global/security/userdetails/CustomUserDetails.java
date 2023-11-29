@@ -1,15 +1,12 @@
 package com.example.favoriteschoolmeal.global.security.userdetails;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-import com.example.favoriteschoolmeal.domain.model.Authority;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 public class CustomUserDetails implements UserDetails {

@@ -12,29 +12,27 @@ import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
-
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenService;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.boot.json.JsonParseException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JsonParseException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -69,13 +67,15 @@ public class KakaoService implements OauthService {
             authService.checkBlockOrThrow(existOauth.get().getMember());
 
             JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(existOauth.get().getMember());
-            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
+            refreshTokenService.createRefreshToken(jwtTokenDto,
+                    existOauth.get().getMember().getUsername());
 
             return jwtTokenDto;
 
         } else {
 
-            if (!oauthRequest.oauthSignUpRequest().fullname().isEmpty() && !oauthRequest.oauthSignUpRequest().personalNumber().isEmpty()) {
+            if (!oauthRequest.oauthSignUpRequest().fullname().isEmpty()
+                    && !oauthRequest.oauthSignUpRequest().personalNumber().isEmpty()) {
 
                 OauthUserInfoDto newOauthUserInfoDto = OauthUserInfoDto.builder()
                         .platformId(oauthUserInfoDto.getPlatformId())
@@ -117,7 +117,8 @@ public class KakaoService implements OauthService {
             //http 응답요청 코드 성공:200
             int responseCode = connection.getResponseCode();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
             String line = "";
             StringBuilder result = new StringBuilder();
 
@@ -125,15 +126,15 @@ public class KakaoService implements OauthService {
                 result.append(line);
             }
 
-
             JsonElement element = JsonParser.parseString(result.toString());
 
-            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject(); //카카오계정 정보
+            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account")
+                    .getAsJsonObject(); //카카오계정 정보
 
             String platformId = element.getAsJsonObject().get("id").getAsString();
-            String nickname = kakaoAccount.getAsJsonObject().get("profile").getAsJsonObject().get("nickname").getAsString();
+            String nickname = kakaoAccount.getAsJsonObject().get("profile").getAsJsonObject()
+                    .get("nickname").getAsString();
             String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
-
 
             return OauthUserInfoDto.builder()
                     .platformId(platformId)
@@ -173,13 +174,13 @@ public class KakaoService implements OauthService {
     @Override
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
 
-        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.KAKAO);
+        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(),
+                OauthPlatform.KAKAO);
 
     }
 
     @Override
     public String getAccessToken(OauthSignInRequest oauthSignInRequest) {
-
 
         String authorizeCode = oauthSignInRequest.authorizeCode();
         String accessToken = "";
@@ -202,7 +203,8 @@ public class KakaoService implements OauthService {
             int responseCode = connection.getResponseCode(); //서버로부터의 응답 코드
 
             //응답을 읽기위한 br
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
 
             String line = "";
             StringBuilder result = new StringBuilder();
@@ -236,7 +238,6 @@ public class KakaoService implements OauthService {
 
         final var birthday = personalNumber.substring(0, personalNumber.length() - 1);
         final var firstNumber = personalNumber.substring(personalNumber.length() - 1);
-
 
         return Member.builder()
                 .username(UUID.randomUUID().toString().substring(0, 16))

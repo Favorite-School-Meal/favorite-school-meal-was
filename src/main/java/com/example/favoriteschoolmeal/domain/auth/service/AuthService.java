@@ -8,7 +8,9 @@ import com.example.favoriteschoolmeal.domain.auth.dto.SignUpRequest;
 public interface AuthService {
 
     JwtTokenDto signUp(SignUpRequest signupRequest);
+
     JwtTokenDto signIn(SignInRequest signInRequest);
+
     void signOut();
 
 }
