@@ -113,7 +113,7 @@ public class FriendService {
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
         friendRepository.delete(friend);
 
-        notificationService.createFriendNotification(sender.getId(), receiver.getId(), null,NotificationType.FRIEND_REMOVED);
+        notificationService.createFriendNotification(sender.getId(), receiver.getId(), null, NotificationType.FRIEND_REMOVED);
     }
 
 
@@ -142,11 +142,6 @@ public class FriendService {
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
     }
 
-    private void checkAlreadyRequested(Member sender, Member receiver) {
-        if (friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING).isPresent()) {
-            throw new FriendException(FriendExceptionType.ALREADY_REQUESTED);
-        }
-    }
 
     private void checkAlreadyFriend(Member sender, Member receiver) {
         if (friendRepository.findAcceptedFriendByMembers(sender.getId(), receiver.getId()).isPresent()) {
