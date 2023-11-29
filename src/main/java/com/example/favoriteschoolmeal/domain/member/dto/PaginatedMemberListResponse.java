@@ -9,7 +9,7 @@ public record PaginatedMemberListResponse(
         long totalElements) {
 
     public static PaginatedMemberListResponse from(final List<MemberSummaryResponse> content,
-                                                   final int currentPage, final int totalPages, final long totalElements){
+            final int currentPage, final int totalPages, final long totalElements) {
         return new PaginatedMemberListResponse(
                 content,
                 currentPage,

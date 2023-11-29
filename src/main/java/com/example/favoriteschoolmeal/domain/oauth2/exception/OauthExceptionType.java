@@ -70,13 +70,12 @@ public enum OauthExceptionType implements BaseExceptionType {
     ;
 
 
-
-
     private final int errorCode;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    OauthExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    OauthExceptionType(final int errorCode, final HttpStatus httpStatus,
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

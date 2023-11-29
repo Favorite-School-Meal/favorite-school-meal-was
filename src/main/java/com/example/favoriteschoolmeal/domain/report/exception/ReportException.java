@@ -10,6 +10,7 @@ public class ReportException extends BaseException {
     public ReportException(final ReportExceptionType reportExceptionType) {
         this.reportExceptionType = reportExceptionType;
     }
+
     @Override
     public BaseExceptionType exceptionType() {
         return reportExceptionType;

@@ -19,8 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 알림 관련 서비스의 퍼사드(Facade) 클래스입니다.
- * 이 클래스는 알림과 관련된 다양한 서비스를 조합하여 복잡한 비즈니스 로직을 단순화합니다.
+ * 알림 관련 서비스의 퍼사드(Facade) 클래스입니다. 이 클래스는 알림과 관련된 다양한 서비스를 조합하여 복잡한 비즈니스 로직을 단순화합니다.
  */
 @Service
 @Transactional
@@ -57,8 +56,7 @@ public class NotificationFacadeService {
     }
 
     /**
-     * 단일 알림을 NotificationResponse 객체로 변환합니다.
-     * 알림 유형에 따라 적절한 상태 정보를 조회합니다.
+     * 단일 알림을 NotificationResponse 객체로 변환합니다. 알림 유형에 따라 적절한 상태 정보를 조회합니다.
      *
      * @param notification 변환할 알림 객체
      * @return 변환된 NotificationResponse 객체
@@ -90,7 +88,7 @@ public class NotificationFacadeService {
      * 알림 객체와 상태 문자열을 기반으로 NotificationResponse 객체를 생성합니다.
      *
      * @param notification 변환할 알림 객체
-     * @param status 알림의 상태 문자열
+     * @param status       알림의 상태 문자열
      * @return 생성된 NotificationResponse 객체
      */
     private NotificationResponse mapToNotificationResponse(Notification notification,

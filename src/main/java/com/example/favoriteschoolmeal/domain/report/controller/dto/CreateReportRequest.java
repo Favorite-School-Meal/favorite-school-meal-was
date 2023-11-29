@@ -16,4 +16,5 @@ public record CreateReportRequest(
         Long commentId,
         Long chatId
 ) {
+
 }

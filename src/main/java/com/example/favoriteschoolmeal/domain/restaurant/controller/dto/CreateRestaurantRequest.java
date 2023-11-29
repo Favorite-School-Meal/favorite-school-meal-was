@@ -21,4 +21,5 @@ public record CreateRestaurantRequest(
 
         String menuImageUrl
 ) {
+
 }

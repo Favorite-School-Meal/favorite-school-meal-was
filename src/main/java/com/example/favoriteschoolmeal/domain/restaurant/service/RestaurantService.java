@@ -3,15 +3,13 @@ package com.example.favoriteschoolmeal.domain.restaurant.service;
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.CreateRestaurantRequest;
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.RestaurantResponse;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
-import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
 import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantException;
+import com.example.favoriteschoolmeal.domain.restaurant.exeption.RestaurantExceptionType;
 import com.example.favoriteschoolmeal.domain.restaurant.repository.RestaurantRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import jakarta.transaction.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,11 +47,13 @@ public class RestaurantService {
         return restaurants.stream().map(RestaurantResponse::of).toList();
     }
 
-    public RestaurantResponse modifyRestaurant(final Long restaurantId, final CreateRestaurantRequest request) {
+    public RestaurantResponse modifyRestaurant(final Long restaurantId,
+            final CreateRestaurantRequest request) {
         verifyRoleAdmin();
         Restaurant restaurant = getRestaurantOrThrow(restaurantId);
         restaurant.update(request.isOnCampus(), request.location(), request.category(),
-                request.name(), request.businessHours(), request.thumbnailUrl(), request.menuImageUrl());
+                request.name(), request.businessHours(), request.thumbnailUrl(),
+                request.menuImageUrl());
         return RestaurantResponse.of(restaurant);
     }
 
@@ -77,6 +77,7 @@ public class RestaurantService {
     }
 
     private void verifyRoleAdmin() {
-        SecurityUtils.checkAdminOrThrow(() -> new RestaurantException(RestaurantExceptionType.UNAUTHORIZED_ACCESS));
+        SecurityUtils.checkAdminOrThrow(
+                () -> new RestaurantException(RestaurantExceptionType.UNAUTHORIZED_ACCESS));
     }
 }

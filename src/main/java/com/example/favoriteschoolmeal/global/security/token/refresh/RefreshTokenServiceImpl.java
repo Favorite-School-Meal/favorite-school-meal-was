@@ -5,12 +5,10 @@ import com.example.favoriteschoolmeal.global.security.exception.JwtException;
 import com.example.favoriteschoolmeal.global.security.exception.JwtExceptionType;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

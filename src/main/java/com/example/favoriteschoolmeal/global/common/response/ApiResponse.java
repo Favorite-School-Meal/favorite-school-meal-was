@@ -22,6 +22,12 @@ public class ApiResponse<T> {
     private T data;
     private String message;
 
+    private ApiResponse(final String status, final T data, final String message) {
+        this.status = status;
+        this.data = data;
+        this.message = message;
+    }
+
     public static <T> ApiResponse<T> createSuccess(final T data) {
         return new ApiResponse<>(SUCCESS_STATUS, data, null);
     }
@@ -50,11 +56,5 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> createError(final T data) {
         return new ApiResponse<>(ERROR_STATUS, data, null);
-    }
-
-    private ApiResponse(final String status, final T data, final String message) {
-        this.status = status;
-        this.data = data;
-        this.message = message;
     }
 }

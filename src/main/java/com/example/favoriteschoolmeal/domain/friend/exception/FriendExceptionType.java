@@ -38,7 +38,7 @@ public enum FriendExceptionType implements BaseExceptionType {
     private final String errorMessage;
 
     FriendExceptionType(final int errorCode, final HttpStatus httpStatus,
-                         final String errorMessage) {
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

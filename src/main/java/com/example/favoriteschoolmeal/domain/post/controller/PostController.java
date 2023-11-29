@@ -5,6 +5,7 @@ import com.example.favoriteschoolmeal.domain.post.controller.dto.PaginatedPostLi
 import com.example.favoriteschoolmeal.domain.post.controller.dto.PostDetailResponse;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ public class PostController {
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PostDetailResponse> postAdd(
-            @RequestBody final CreatePostRequest request) {
+            @Valid @RequestBody final CreatePostRequest request) {
         final PostDetailResponse response = postService.addPost(request, null);
         return ApiResponse.createSuccess(response);
     }
@@ -39,7 +40,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PostDetailResponse> postAddWithRestaurantId(
             @PathVariable Long restaurantId,
-            @RequestBody CreatePostRequest request) {
+            @Valid @RequestBody CreatePostRequest request) {
         final PostDetailResponse response = postService.addPost(request, restaurantId);
         return ApiResponse.createSuccess(response);
     }
@@ -48,7 +49,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PostDetailResponse> postModify(
             @PathVariable final Long postId,
-            @RequestBody final CreatePostRequest request) {
+            @Valid @RequestBody final CreatePostRequest request) {
         final PostDetailResponse response = postService.modifyPost(request, postId);
         return ApiResponse.createSuccess(response);
     }
