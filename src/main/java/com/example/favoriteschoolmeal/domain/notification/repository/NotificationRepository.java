@@ -30,20 +30,4 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      * @return 안 읽은 알림 존재 여부
      */
     boolean existsByReceiverAndIsRead(Member receiver, boolean isRead);
-
-    /**
-     * 주어진 친구 ID와 알림 유형에 해당하는 친구 요청 관련 알림을 삭제합니다.
-     *
-     * @param friendId          삭제할 알림과 관련된 친구의 ID
-     * @param notificationType  삭제할 알림의 유형
-     */
-    void deleteByFriendIdAndNotificationType(Long friendId, NotificationType notificationType);
-
-    /**
-     * 주어진 게시물 ID와 알림 유형에 해당하는 매칭 요청 관련 알림을 삭제합니다.
-     *
-     * @param postId            삭제할 알림과 관련된 게시물의 ID
-     * @param notificationType  삭제할 알림의 유형
-     */
-    void deleteByPostIdAndNotificationType(Long postId, NotificationType notificationType);
 }
