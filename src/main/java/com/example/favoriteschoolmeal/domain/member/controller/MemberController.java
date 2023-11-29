@@ -96,7 +96,7 @@ public class MemberController {
     }
 
     //member삭제
-    @DeleteMapping("/members/{memberId}/delete")
+    @DeleteMapping("/members/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> memberRemove(@PathVariable Long memberId){
         memberService.removeMember(memberId);
