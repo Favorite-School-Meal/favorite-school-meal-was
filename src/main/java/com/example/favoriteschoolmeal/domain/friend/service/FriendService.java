@@ -56,8 +56,13 @@ public class FriendService {
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getFriendRequestOrThrow(sender, receiver);
+
+        //기존의 친구 신청 알림을 삭제
+        notificationService.deleteByFriendIdAndNotificationType(friend.getId(), NotificationType.FRIEND_REQUESTED);
+
         friend.cancel();
 
+        //친구 신청 취소 알림 생성
         notificationService.createFriendNotification(sender.getId(), receiver.getId(),
                 friend.getId(), NotificationType.FRIEND_REQUEST_CANCELLED);
 
@@ -113,9 +118,13 @@ public class FriendService {
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
+
+        //기존의 친구 신청 알림을 삭제
+        notificationService.deleteByFriendIdAndNotificationType(friend.getId(), NotificationType.FRIEND_REQUESTED);
+
         friendRepository.delete(friend);
 
-        //삭제된 친구 엔티티와 관련된 알림 처리는?
+        //친구 삭제 알림 생성
         notificationService.createFriendNotification(sender.getId(), receiver.getId(), null, NotificationType.FRIEND_REMOVED);
     }
 
