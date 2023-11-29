@@ -31,7 +31,7 @@ public class FriendController {
         return ApiResponse.createSuccess(null);
     }
 
-    @PatchMapping("/members/{memberId}/cancel-friend-request")
+    @DeleteMapping("/members/{memberId}/cancel-friend-request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> friendRequestCancel(@PathVariable final Long memberId) {
         friendService.cancelFriendRequest(memberId);
