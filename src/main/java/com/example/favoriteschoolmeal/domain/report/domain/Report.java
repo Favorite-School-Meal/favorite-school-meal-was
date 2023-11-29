@@ -60,7 +60,7 @@ public class Report extends Base {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "content", nullable = false, length = 300)
+    @Column(name = "content", nullable = true, length = 300)
     private String content;
 
     @Column(name = "is_resolved", nullable = false)

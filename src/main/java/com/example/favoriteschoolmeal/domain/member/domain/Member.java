@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.domain;
 
 import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
+import com.example.favoriteschoolmeal.domain.member.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.global.common.Base;
@@ -15,7 +16,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,8 +71,8 @@ public class Member extends Base {
 
     @Builder
     public Member(String username, String nickname, String fullName, String password, String email,
-            Authority authority, LocalDateTime unblockDate, Integer age, Gender gender,
-            String introduction) {
+                  Authority authority, LocalDateTime unblockDate, Integer age, Gender gender,
+                  String introduction) {
         this.username = username;
         this.nickname = nickname;
         this.fullName = fullName;
@@ -82,7 +85,9 @@ public class Member extends Base {
         this.introduction = introduction;
     }
 
-    public void block(Long blockHours) {
+
+    public void block(BlockRequest blockRequest) {
+        Long blockHours = blockRequest.blockHours();
         if (this.unblockDate == null || this.unblockDate.isBefore(LocalDateTime.now())) {
             this.unblockDate = LocalDateTime.now().plusHours(blockHours);
         } else {
@@ -106,11 +111,17 @@ public class Member extends Base {
         this.introduction = introduction;
     }
 
-    public void modifyPassword(final String password) {
-        this.password = password;
-    }
 
     public void summarizeIntroduction(String summarizedIntroduction) {
         this.introduction = summarizedIntroduction;
     }
+
+    public void unblock() {
+        this.unblockDate = null;
+    }
+
+    public void modifyPassword(final String password) {
+        this.password = password;
+    }
+
 }

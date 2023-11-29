@@ -9,8 +9,8 @@ import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.post.service.PostService;
-import com.example.favoriteschoolmeal.domain.report.controller.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
+import com.example.favoriteschoolmeal.domain.report.controller.dto.MemberReportCountResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
@@ -38,11 +38,7 @@ public class ReportService {
     private final MemberService memberService;
     private final ChatService chatService;
 
-    private static void checkNotResolved(Report report) {
-        if (report.getIsResolved()) {
-            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
-        }
-    }
+
 
     public ReportResponse addReport(CreateReportRequest request) {
         verifyRoleUserOrAdmin();
@@ -68,22 +64,22 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
-    public ReportResponse blockMemberAndResolveReport(Long reportId, BlockRequest blockRequest) {
+
+    public ReportResponse resolveReport(Long reportId) {
         verifyRoleAdmin();
         Report report = getReportOrThrow(reportId);
         checkNotResolved(report);
-        Member reportedMember = getReportedMemberOrThrow(report);
-        memberService.blockMember(reportedMember, blockRequest.blockHours());
         report.resolveReport();
         return ReportResponse.from(report);
     }
 
-    private Member getReportedMemberOrThrow(Report report) {
-        if (report.getReportedMember() == null) {
-            throw new ReportException(ReportExceptionType.MEMBER_NOT_FOUND);
-        }
-        return report.getReportedMember();
+
+    public MemberReportCountResponse countReportByMemberId(Long memberId) {
+        Member member = getMemberOrThrow(memberId);
+        Long count = reportRepository.countByReportedMember(member);
+        return MemberReportCountResponse.from(count);
     }
+
 
     private Report createReport(CreateReportRequest request, Member reporter) {
 
@@ -186,12 +182,11 @@ public class ReportService {
     private void verifyRoleUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
                 () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
-//    ("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
     private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType,
-            Post reportedPost, Comment reportedComment, Chat reportedChat, String title,
-            String content) {
+                                 Post reportedPost, Comment reportedComment, Chat reportedChat, String title,
+                                 String content) {
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)
@@ -215,5 +210,9 @@ public class ReportService {
                 .orElseThrow(() -> new ReportException(ReportExceptionType.REPORT_NOT_FOUND));
     }
 
-
+    private static void checkNotResolved(Report report) {
+        if (report.getIsResolved()) {
+            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.controller;
 
 
+import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.dto.FindUsernameRequest;
 import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
 import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
@@ -29,7 +30,7 @@ public class MemberController {
     @PutMapping("/members/{memberId}/modify")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,
-            @Valid @RequestBody final ModifyMemberRequest request) {
+                                                          @Valid @RequestBody final ModifyMemberRequest request) {
 
         final MemberDetailResponse response = memberService.modifyMember(request, memberId);
         return ApiResponse.createSuccess(response);
@@ -40,7 +41,7 @@ public class MemberController {
     @PutMapping("/members/{memberId}/modify-password")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModifyPassword(@PathVariable final Long memberId,
-            @Valid @RequestBody final ModifyPasswordRequest request) {
+                                                                  @Valid @RequestBody final ModifyPasswordRequest request) {
         final MemberDetailResponse response = memberService.modifyMemberPassword(request, memberId);
         return ApiResponse.createSuccess(response);
     }
@@ -109,5 +110,28 @@ public class MemberController {
 
         final PaginatedMemberListResponse response = memberService.findAllMember(pageable);
         return ApiResponse.createSuccess(response);
+    }
+
+    /**
+     * 관리자가 회원을 정지시키는 메소드
+     */
+    @PatchMapping("/admin/members/{memberId}/block")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> memberBlock(@PathVariable final Long memberId,
+                                         @Valid @RequestBody final BlockRequest blockRequest) {
+
+        memberService.blockMember(memberId, blockRequest);
+        return ApiResponse.createSuccess(null);
+    }
+
+    /**
+     * 관리자가 회원 정지를 해제하는 메소드
+     */
+    @PatchMapping("/admin/members/{memberId}/unblock")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> memberUnblock(@PathVariable final Long memberId) {
+
+        memberService.unblockMember(memberId);
+        return ApiResponse.createSuccess(null);
     }
 }
