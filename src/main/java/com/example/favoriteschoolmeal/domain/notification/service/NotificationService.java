@@ -3,10 +3,6 @@ package com.example.favoriteschoolmeal.domain.notification.service;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.NotificationType;
-import com.example.favoriteschoolmeal.domain.notification.controller.dto.FriendNotificationResponse;
-import com.example.favoriteschoolmeal.domain.notification.controller.dto.NotificationListResponse;
-import com.example.favoriteschoolmeal.domain.notification.controller.dto.NotificationResponse;
-import com.example.favoriteschoolmeal.domain.notification.controller.dto.PostNotificationResponse;
 import com.example.favoriteschoolmeal.domain.notification.controller.dto.UnreadNotificationStatusResponse;
 import com.example.favoriteschoolmeal.domain.notification.domain.FriendNotification;
 import com.example.favoriteschoolmeal.domain.notification.domain.Notification;
@@ -17,14 +13,12 @@ import com.example.favoriteschoolmeal.domain.notification.repository.Notificatio
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 알림 관련 서비스를 제공하는 클래스입니다.
- * 이 서비스는 알림 생성, 조회 및 읽음 처리 등의 기능을 담당합니다.
+ * 알림 관련 서비스를 제공하는 클래스입니다. 이 서비스는 알림 생성, 조회 및 읽음 처리 등의 기능을 담당합니다.
  */
 @Service
 @Transactional
@@ -42,9 +36,9 @@ public class NotificationService {
     /**
      * 게시글 관련 알림을 생성합니다.
      *
-     * @param senderId 알림 발신자 ID
-     * @param receiverId 알림 수신자 ID
-     * @param postId 관련 게시글 ID
+     * @param senderId         알림 발신자 ID
+     * @param receiverId       알림 수신자 ID
+     * @param postId           관련 게시글 ID
      * @param notificationType 알림 유형
      */
     public void createPostNotification(final Long senderId, final Long receiverId,
@@ -63,38 +57,35 @@ public class NotificationService {
     /**
      * 친구 관련 알림을 생성합니다.
      *
-     * @param senderId 알림 발신자 ID
-     * @param receiverId 알림 수신자 ID
+     * @param senderId         알림 발신자 ID
+     * @param receiverId       알림 수신자 ID
+     * @param friendId         관련 친구 ID
      * @param notificationType 알림 유형
      */
     public void createFriendNotification(final Long senderId, final Long receiverId,
-            final NotificationType notificationType) {
+            final Long friendId, final NotificationType notificationType) {
         validateNotificationType(notificationType, NotificationType::isFriendRelated);
         Member receiver = getMemberOrThrow(receiverId);
         FriendNotification notification = FriendNotification.builder()
                 .senderId(senderId)
                 .receiver(receiver)
+                .friendId(friendId)
                 .notificationType(notificationType)
                 .build();
         notificationRepository.save(notification);
     }
 
     /**
-     * 사용자의 모든 알림을 조회합니다.
-     * 생성 시간 내림차순으로 정렬하여 반환합니다.
+     * 사용자의 모든 알림을 조회합니다. 생성 시간 내림차순으로 정렬하여 반환합니다.
      *
      * @return NotificationListResponse 사용자의 모든 알림 목록
      */
     @Transactional(readOnly = true)
-    public NotificationListResponse findAllNotification() {
+    public List<Notification> findAllNotification() {
         verifyUserOrAdmin();
         Member receiver = getMemberOrThrow(getCurrentMemberId());
-        List<NotificationResponse> notificationResponseList = notificationRepository
-                .findAllByReceiver(receiver, Sort.by("createdAt").descending())
-                .stream()
-                .map(this::mapToNotificationResponse)
-                .collect(Collectors.toList());
-        return NotificationListResponse.from(notificationResponseList);
+        return notificationRepository
+                .findAllByReceiver(receiver, Sort.by("createdAt").descending());
     }
 
     /**
@@ -114,25 +105,13 @@ public class NotificationService {
      * 특정 알림을 읽음으로 처리합니다.
      *
      * @param notificationId 읽을 알림의 ID
-     * @return NotificationResponse 읽음 처리된 알림의 정보
      */
-    public NotificationResponse readNotification(final Long notificationId) {
+    public void readNotification(final Long notificationId) {
         verifyUserOrAdmin();
         Notification notification = getNotificationOrThrow(notificationId);
         verifyNotificationReceiver(notification, getCurrentMemberId());
         notification.readNotification();
-        Notification savedNotification = notificationRepository.save(notification);
-        return mapToNotificationResponse(savedNotification);
-    }
-
-    private NotificationResponse mapToNotificationResponse(Notification notification) {
-        if (notification instanceof PostNotification) {
-            return PostNotificationResponse.from((PostNotification) notification);
-        }
-        if (notification instanceof FriendNotification) {
-            return FriendNotificationResponse.from((FriendNotification) notification);
-        }
-        throw new NotificationException(NotificationExceptionType.UNSUPPORTED_NOTIFICATION_TYPE);
+        notificationRepository.save(notification);
     }
 
     private void validateNotificationType(NotificationType notificationType,

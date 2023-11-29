@@ -121,6 +121,11 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    public String getPostStatus(Long postId, Long senderId) {
+        Post post = getPostOrThrow(postId);
+        return matchingService.findMatchingMemberStatus(post.getMatching(), senderId);
+    }
+
     public Optional<Post> findPostOptionally(final Long postId) {
         return postRepository.findById(postId);
     }

@@ -17,6 +17,19 @@ spring:
       max-file-size: 1MB
       max-request-size: 10MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
 file:
   dir: ${FILE_DIR}
 
@@ -26,7 +39,7 @@ logging:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  token-expiration-time: 3600000
+  token-expiration-time: 360000000
   issuer: ${JWT_ISSUER}
 
 

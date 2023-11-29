@@ -3,12 +3,12 @@ package com.example.favoriteschoolmeal.domain.member.dto;
 import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Gender;
-
 import java.util.Optional;
 
 
 public record MemberDetailResponse(
 
+        Long memberId,
         String nickname,
         String fullname,
         String email,
@@ -18,9 +18,10 @@ public record MemberDetailResponse(
         String profileImageEndpoint
 ) {
 
-    public static MemberDetailResponse from(final Member member){
+    public static MemberDetailResponse from(final Member member) {
         return new MemberDetailResponse(
 
+                member.getId(),
                 member.getNickname(),
                 member.getFullName(),
                 member.getEmail(),

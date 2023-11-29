@@ -5,13 +5,24 @@ import com.example.favoriteschoolmeal.domain.member.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.global.common.Base;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member")
@@ -57,8 +68,11 @@ public class Member extends Base {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private FileEntity profileImage;
+
     @Builder
-    public Member(String username, String nickname, String fullName, String password, String email, Authority authority, LocalDateTime unblockDate, Integer age, Gender gender, String introduction) {
+    public Member(String username, String nickname, String fullName, String password, String email,
+                  Authority authority, LocalDateTime unblockDate, Integer age, Gender gender,
+                  String introduction) {
         this.username = username;
         this.nickname = nickname;
         this.fullName = fullName;
@@ -71,11 +85,12 @@ public class Member extends Base {
         this.introduction = introduction;
     }
 
+
     public void block(BlockRequest blockRequest) {
         Long blockHours = blockRequest.blockHours();
-        if(this.unblockDate==null || this.unblockDate.isBefore(LocalDateTime.now())){
-            this.unblockDate = LocalDateTime.now().plusHours(blockHours);}
-        else{
+        if (this.unblockDate == null || this.unblockDate.isBefore(LocalDateTime.now())) {
+            this.unblockDate = LocalDateTime.now().plusHours(blockHours);
+        } else {
             this.unblockDate = this.unblockDate.plusHours(blockHours);
         }
     }
@@ -85,16 +100,28 @@ public class Member extends Base {
     }
 
     public boolean isBanned() {
-        return this.unblockDate!=null && this.unblockDate.isAfter(LocalDateTime.now());
+        return this.unblockDate != null && this.unblockDate.isAfter(LocalDateTime.now());
     }
 
-    public void modifyIntroduction(final String introduction){
+    public void modifyNickname(final String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void modifyIntroduction(final String introduction) {
         this.introduction = introduction;
     }
 
-    public void summarizeIntroduction(String summarizedIntroduction) {this.introduction = summarizedIntroduction;}
+
+    public void summarizeIntroduction(String summarizedIntroduction) {
+        this.introduction = summarizedIntroduction;
+    }
 
     public void unblock() {
         this.unblockDate = null;
     }
+
+    public void modifyPassword(final String password) {
+        this.password = password;
+    }
+
 }

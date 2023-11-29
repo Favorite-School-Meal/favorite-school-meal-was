@@ -19,7 +19,8 @@ public enum RestaurantExceptionType implements BaseExceptionType {
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    RestaurantExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    RestaurantExceptionType(final int errorCode, final HttpStatus httpStatus,
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

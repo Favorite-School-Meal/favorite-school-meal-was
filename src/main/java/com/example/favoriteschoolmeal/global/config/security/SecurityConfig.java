@@ -22,15 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SecurityConfig {
 
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtSecurityConfig jwtSecurityConfig;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     private static final String[] publicEndpoints = {
 
             "api/v1/auth/**",
@@ -45,8 +36,15 @@ public class SecurityConfig {
             "/v3/api-docs/**",
 
 
-
     };
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtSecurityConfig jwtSecurityConfig;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -55,18 +53,16 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 사용x
-
+                .sessionManagement(sess -> sess.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS)) //세션 사용x
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicEndpoints).permitAll()
                         .anyRequest().authenticated())
 
-
                 .exceptionHandling(auth -> auth
                         .accessDeniedHandler(jwtAccessDeniedHandler) //권한 문제 발생
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)); //인증 문제 발생)
-
 
         httpSecurity.apply(jwtSecurityConfig);
 

@@ -6,7 +6,17 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.ReportType;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.global.common.Base;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class Report extends Base {
+
     @Id
     @Column(name = "report_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +67,9 @@ public class Report extends Base {
     private Boolean isResolved;
 
     @Builder
-    public Report(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String title, String content, Boolean isResolved) {
+    public Report(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost,
+            Comment reportedComment, Chat reportedChat, String title, String content,
+            Boolean isResolved) {
         this.reporter = reporter;
         this.reportedMember = reportedMember;
         this.reportType = reportType;

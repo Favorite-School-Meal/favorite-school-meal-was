@@ -17,14 +17,14 @@ import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
 import jakarta.transaction.Transactional;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -35,6 +35,19 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenServiceImpl refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+
+    public static String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        return sb.toString();
+    }
 
     /**
      * SignUpDto를 기반으로 회원을 생성하고, 토큰을 발급하는 메서드
@@ -58,7 +71,6 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtTokenDto;
     }
-
 
     /**
      * 로그인을 처리하고, 토큰을 발급하는 메서드
@@ -111,7 +123,6 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-
     /**
      * SignUpDto를 Member로 변환하는 메서드
      *
@@ -149,8 +160,9 @@ public class AuthServiceImpl implements AuthService {
 
         LocalDate birthday = LocalDate.parse(birthdayString, DateTimeFormatter.ofPattern("yyMMdd"));
 
-        if (firstNumber.equals("1") || firstNumber.equals("2"))
+        if (firstNumber.equals("1") || firstNumber.equals("2")) {
             birthday = birthday.minusYears(100);
+        }
 
         LocalDate currentDate = LocalDate.now();
 

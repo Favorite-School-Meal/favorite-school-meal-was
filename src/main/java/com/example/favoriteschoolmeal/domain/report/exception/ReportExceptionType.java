@@ -49,7 +49,8 @@ public enum ReportExceptionType implements BaseExceptionType {
     private final String errorMessage;
     private final HttpStatus httpStatus;
 
-    ReportExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    ReportExceptionType(final int errorCode, final HttpStatus httpStatus,
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

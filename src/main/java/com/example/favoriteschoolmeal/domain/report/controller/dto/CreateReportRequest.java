@@ -9,11 +9,12 @@ public record CreateReportRequest(
         Long reportedMemberId,
 
         String content,
-        @NotBlank
+        @NotNull
         ReportType reportType,
 
         Long postId,
         Long commentId,
         Long chatId
 ) {
+
 }

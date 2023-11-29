@@ -31,11 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Slf4j
 public class ReportService {
+
     private final ReportRepository reportRepository;
     private final PostService postService;
     private final CommentService commentService;
     private final MemberService memberService;
     private final ChatService chatService;
+
+
 
     public ReportResponse addReport(CreateReportRequest request) {
         verifyRoleUserOrAdmin();
@@ -70,18 +73,13 @@ public class ReportService {
         return ReportResponse.from(report);
     }
 
-    private static void checkNotResolved(Report report) {
-        if (report.getIsResolved()) {
-            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
-        }
+
+    public MemberReportCountResponse countReportByMemberId(Long memberId) {
+        Member member = getMemberOrThrow(memberId);
+        Long count = reportRepository.countByReportedMember(member);
+        return MemberReportCountResponse.from(count);
     }
 
-    private Member getReportedMemberOrThrow(Report report) {
-        if (report.getReportedMember() == null) {
-            throw new ReportException(ReportExceptionType.MEMBER_NOT_FOUND);
-        }
-        return report.getReportedMember();
-    }
 
     private Report createReport(CreateReportRequest request, Member reporter) {
 
@@ -149,22 +147,26 @@ public class ReportService {
     private Report buildChatReport(CreateReportRequest request, Member reporter) {
         Chat chat = getChatOrThrow(request.chatId());
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, chat, getTitle(chat), request.content());
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, chat,
+                getTitle(chat), request.content());
     }
 
     private Report buildCommentReport(CreateReportRequest request, Member reporter) {
         Comment comment = getCommentOrThrow(request.commentId());
-        return ReportBuilder(reporter, comment.getMember(), request.reportType(), null, comment, null, getTitle(comment), request.content());
+        return ReportBuilder(reporter, comment.getMember(), request.reportType(), null, comment,
+                null, getTitle(comment), request.content());
     }
 
     private Report buildProfileReport(CreateReportRequest request, Member reporter) {
         Member reportedMember = getMemberOrThrow(request.reportedMemberId());
-        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null, getTitle(reportedMember), request.content());
+        return ReportBuilder(reporter, reportedMember, request.reportType(), null, null, null,
+                getTitle(reportedMember), request.content());
     }
 
     private Report buildPostReport(CreateReportRequest request, Member reporter) {
         Post post = getPostOrThrow(request.postId());
-        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null, getTitle(post), request.content());
+        return ReportBuilder(reporter, post.getMember(), request.reportType(), post, null, null,
+                getTitle(post), request.content());
     }
 
     private Post getPostOrThrow(Long postId) {
@@ -173,15 +175,18 @@ public class ReportService {
     }
 
     private Long getCurrentMemberId() {
-        return SecurityUtils.getCurrentMemberId(() -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
+        return SecurityUtils.getCurrentMemberId(
+                () -> new ReportException(ReportExceptionType.MEMBER_NOT_FOUND));
     }
 
     private void verifyRoleUserOrAdmin() {
-        SecurityUtils.checkUserOrAdminOrThrow(() -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
-//    ("ROLE_USER", () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+        SecurityUtils.checkUserOrAdminOrThrow(
+                () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
-    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType, Post reportedPost, Comment reportedComment, Chat reportedChat, String title, String content) {
+    private Report ReportBuilder(Member reporter, Member reportedMember, ReportType reportType,
+                                 Post reportedPost, Comment reportedComment, Chat reportedChat, String title,
+                                 String content) {
         return Report.builder()
                 .reporter(reporter)
                 .reportedMember(reportedMember)
@@ -196,7 +201,8 @@ public class ReportService {
     }
 
     private void verifyRoleAdmin() {
-        SecurityUtils.checkAdminOrThrow(() -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
+        SecurityUtils.checkAdminOrThrow(
+                () -> new ReportException(ReportExceptionType.UNAUTHORIZED_ACCESS));
     }
 
     private Report getReportOrThrow(Long reportId) {
@@ -204,10 +210,9 @@ public class ReportService {
                 .orElseThrow(() -> new ReportException(ReportExceptionType.REPORT_NOT_FOUND));
     }
 
-
-    public MemberReportCountResponse countReportByMemberId(Long memberId) {
-        Member member = getMemberOrThrow(memberId);
-        Long count = reportRepository.countByReportedMember(member);
-        return MemberReportCountResponse.from(count);
+    private static void checkNotResolved(Report report) {
+        if (report.getIsResolved()) {
+            throw new ReportException(ReportExceptionType.ALREADY_RESOLVED);
+        }
     }
 }

@@ -1,10 +1,9 @@
 package com.example.favoriteschoolmeal.domain.member.dto;
 
+import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
-import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ public record MemberSummaryResponse(
         String profileImageEndpoint
 ) {
 
-    public static MemberSummaryResponse from(final Member member){
+    public static MemberSummaryResponse from(final Member member) {
         return new MemberSummaryResponse(
                 member.getId(),
                 member.getUsername(),
