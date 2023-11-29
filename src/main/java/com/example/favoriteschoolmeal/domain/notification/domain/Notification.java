@@ -17,7 +17,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -46,7 +45,7 @@ public abstract class Notification extends Base {
      * 알림을 받는 사용자를 나타냅니다. Member 엔티티와의 다대일(N:1) 관계를 맺고 있습니다.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "receiver_id", nullable = false)
     private Member receiver;
 
     /**

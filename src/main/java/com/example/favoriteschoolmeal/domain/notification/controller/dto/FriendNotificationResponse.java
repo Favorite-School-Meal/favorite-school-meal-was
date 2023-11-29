@@ -8,16 +8,19 @@ public record FriendNotificationResponse(
         Long senderId,
         Integer notificationType,
         String createdAt,
-        Boolean isRead) implements NotificationResponse {
+        Boolean isRead,
+        String status) implements NotificationResponse {
 
-    public static FriendNotificationResponse from(final FriendNotification notification) {
+    public static FriendNotificationResponse from(final FriendNotification notification,
+            final String status) {
         return new FriendNotificationResponse(
                 notification.getId(),
                 notification.getReceiver().getId(),
                 notification.getSenderId(),
                 notification.getNotificationType().getId(),
                 notification.getFormattedCreatedAt(),
-                notification.getIsRead()
+                notification.getIsRead(),
+                status
         );
     }
 }
