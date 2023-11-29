@@ -76,7 +76,7 @@ public class MatchingService {
         final Matching matching = getMatchingFromPost(post);
         final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, applicant);
         verifyCancellation(matchingMember);
-        cancelMatchingMember(matchingMember);
+        updateMatchingMemberStatus(matchingMember, MatchingRequestStatus.CANCELED);
         notificationService.createPostNotification(applicant.getId(), post.getMember().getId(),
                 postId,
                 NotificationType.MATCHING_REQUEST_CANCELED);
@@ -214,10 +214,6 @@ public class MatchingService {
                 .matchingRequestStatus(MatchingRequestStatus.PENDING)
                 .build();
         matchingMemberRepository.save(matchingMember);
-    }
-
-    private void cancelMatchingMember(final MatchingMember matchingMember) {
-        matchingMemberRepository.delete(matchingMember);
     }
 
     private void updateMatchingMemberStatus(final MatchingMember matchingMember,
