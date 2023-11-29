@@ -8,7 +8,7 @@ public enum OauthPlatform {
     private String platform;
     private int code;
 
-    OauthPlatform(String platform, int code){
+    OauthPlatform(String platform, int code) {
         this.platform = platform;
         this.code = code;
     }

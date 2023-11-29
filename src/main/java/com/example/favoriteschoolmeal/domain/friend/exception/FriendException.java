@@ -4,14 +4,14 @@ import com.example.favoriteschoolmeal.global.exception.BaseException;
 
 public class FriendException extends BaseException {
 
-        private final FriendExceptionType friendExceptionType;
+    private final FriendExceptionType friendExceptionType;
 
-        public FriendException(final FriendExceptionType friendExceptionType) {
-            this.friendExceptionType = friendExceptionType;
-        }
+    public FriendException(final FriendExceptionType friendExceptionType) {
+        this.friendExceptionType = friendExceptionType;
+    }
 
-        @Override
-        public FriendExceptionType exceptionType() {
-            return friendExceptionType;
-        }
+    @Override
+    public FriendExceptionType exceptionType() {
+        return friendExceptionType;
+    }
 }

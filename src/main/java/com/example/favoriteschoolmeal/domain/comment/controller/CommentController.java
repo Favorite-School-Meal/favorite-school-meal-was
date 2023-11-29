@@ -6,6 +6,7 @@ import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.comment.service.CommentService;
 import com.example.favoriteschoolmeal.domain.comment.service.dto.CreateCommentCommand;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +33,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CommentResponse> commentAdd(
             @PathVariable final Long postId,
-            @RequestBody final CreateCommentRequest request) {
+            @Valid @RequestBody final CreateCommentRequest request) {
         final Comment comment = commentService.addComment(
                 CreateCommentCommand.of(request, postId));
         return ApiResponse.createSuccess(CommentResponse.from(comment));
@@ -43,7 +44,7 @@ public class CommentController {
     public ApiResponse<CommentResponse> commentModify(
             @PathVariable final Long postId,
             @PathVariable final Long commentId,
-            @RequestBody final CreateCommentRequest request) {
+            @Valid @RequestBody final CreateCommentRequest request) {
         final Comment comment = commentService.modifyComment(
                 commentId, CreateCommentCommand.of(request, postId));
         return ApiResponse.createSuccess(CommentResponse.from(comment));

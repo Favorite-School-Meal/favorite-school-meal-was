@@ -33,14 +33,16 @@ public enum MemberExceptionType implements BaseExceptionType {
             400,
             HttpStatus.BAD_REQUEST,
             "Nickname duplicated"
-    ),;
+    ),
+    ;
 
 
     private final int errorCode;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    MemberExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    MemberExceptionType(final int errorCode, final HttpStatus httpStatus,
+            final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

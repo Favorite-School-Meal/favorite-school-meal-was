@@ -14,4 +14,5 @@ public record FindUsernameRequest(
         @Email(message = "email 형식이여야 합니다.")
         String email
 ) {
+
 }

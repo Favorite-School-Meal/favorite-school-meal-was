@@ -4,10 +4,17 @@ import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.CreateRes
 import com.example.favoriteschoolmeal.domain.restaurant.controller.dto.RestaurantResponse;
 import com.example.favoriteschoolmeal.domain.restaurant.service.RestaurantService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
@@ -17,13 +24,15 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
-    public ApiResponse<RestaurantResponse> restaurantAdd(@RequestBody CreateRestaurantRequest request) {
+    public ApiResponse<RestaurantResponse> restaurantAdd(
+            @Valid @RequestBody CreateRestaurantRequest request) {
         RestaurantResponse response = restaurantService.addRestaurant(request);
         return ApiResponse.createSuccess(response);
     }
 
     @GetMapping("/{restaurantId}")
-    public ApiResponse<RestaurantResponse> restaurantDetails(@PathVariable("restaurantId") Long restaurantId) {
+    public ApiResponse<RestaurantResponse> restaurantDetails(
+            @PathVariable("restaurantId") Long restaurantId) {
         RestaurantResponse response = restaurantService.findRestaurant(restaurantId);
         return ApiResponse.createSuccess(response);
     }
@@ -35,8 +44,9 @@ public class RestaurantController {
     }
 
     @PutMapping("/{restaurantId}")
-    public ApiResponse<RestaurantResponse> restaurantModify(@PathVariable("restaurantId") Long restaurantId,
-                                                            @RequestBody CreateRestaurantRequest request) {
+    public ApiResponse<RestaurantResponse> restaurantModify(
+            @PathVariable("restaurantId") Long restaurantId,
+            @Valid @RequestBody CreateRestaurantRequest request) {
         RestaurantResponse response = restaurantService.modifyRestaurant(restaurantId, request);
         return ApiResponse.createSuccess(response);
     }

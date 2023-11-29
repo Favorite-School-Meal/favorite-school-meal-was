@@ -1,15 +1,15 @@
 package com.example.favoriteschoolmeal.domain.email.service;
 
 
+import static com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl.generateRandomString;
+
 import com.example.favoriteschoolmeal.domain.email.domain.EmailMessage;
 import com.example.favoriteschoolmeal.domain.email.dto.EmailPostRequest;
 import com.example.favoriteschoolmeal.domain.email.exception.EmailException;
 import com.example.favoriteschoolmeal.domain.email.exception.EmailExceptionType;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyPasswordRequest;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
-
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -17,8 +17,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import static com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl.generateRandomString;
 
 @Service
 @AllArgsConstructor
@@ -28,11 +26,11 @@ public class EmailService {
     private MemberRepository memberRepository;
     private MemberService memberService;
 
-    public void sendEmail(final EmailMessage emailMessage){
+    public void sendEmail(final EmailMessage emailMessage) {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
-        try{
+        try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             helper.setTo(emailMessage.getToEmail());
             helper.setSubject(emailMessage.getSubject());
@@ -45,7 +43,7 @@ public class EmailService {
 
     }
 
-    public EmailMessage setMessage(final EmailPostRequest request){
+    public EmailMessage setMessage(final EmailPostRequest request) {
 
         Member member = getMemberOrThrow(request);
 
@@ -62,15 +60,16 @@ public class EmailService {
                 .build();
     }
 
-    private void modifyPasswordToTempPassword(final Member member, final ModifyPasswordRequest request){
+    private void modifyPasswordToTempPassword(final Member member,
+            final ModifyPasswordRequest request) {
         memberService.modifyMemberPassword(member, request);
     }
 
-    private String createTempPassword(){
+    private String createTempPassword() {
         return generateRandomString(10);
     }
 
-    private Member getMemberOrThrow(final EmailPostRequest request){
+    private Member getMemberOrThrow(final EmailPostRequest request) {
         return memberRepository.findByUsernameAndEmail(request.username(), request.email())
                 .orElseThrow(() -> new EmailException(EmailExceptionType.MEMBER_NOT_FOUND));
     }

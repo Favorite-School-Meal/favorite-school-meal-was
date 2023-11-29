@@ -5,22 +5,27 @@ import com.example.favoriteschoolmeal.global.security.exception.JwtExceptionType
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshToken;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenRepository;
 import com.example.favoriteschoolmeal.global.security.userdetails.UserDetailsServiceImpl;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -91,7 +96,8 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+                userDetails.getAuthorities());
     }
 
     /**
@@ -139,7 +145,6 @@ public class JwtTokenProvider {
 
         if (existingToken.isPresent()) {
             String existRefreshToken = existingToken.get().getRefreshToken();
-
 
             if (!refreshToken.equals(existRefreshToken)) {
                 throw new JwtException(JwtExceptionType.INVALID_REFRESHTOKEN_EXCEPTION);

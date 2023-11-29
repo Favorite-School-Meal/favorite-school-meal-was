@@ -1,7 +1,6 @@
 package com.example.favoriteschoolmeal.domain.auth.dto;
 
 
-import com.example.favoriteschoolmeal.domain.model.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
