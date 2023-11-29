@@ -68,8 +68,6 @@ public class FriendService {
         //기존의 친구 신청 알림을 삭제
         notificationService.deleteByFriendIdAndNotificationType(friend.getId(), NotificationType.FRIEND_REQUESTED);
 
-        friend.cancel();
-
         //친구 신청 취소 알림 생성
         notificationService.createFriendNotification(sender.getId(), receiver.getId(),
                 friend.getId(), NotificationType.FRIEND_REQUEST_CANCELLED);
@@ -127,6 +125,7 @@ public class FriendService {
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
 
+        System.out.println(friend.getId());
         //기존의 친구 신청 알림을 삭제
         notificationService.deleteByFriendIdAndNotificationType(friend.getId(), NotificationType.FRIEND_REQUESTED);
 
