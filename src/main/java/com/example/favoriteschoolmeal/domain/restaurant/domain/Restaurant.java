@@ -2,7 +2,13 @@ package com.example.favoriteschoolmeal.domain.restaurant.domain;
 
 import com.example.favoriteschoolmeal.domain.model.Location;
 import com.example.favoriteschoolmeal.global.common.Base;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +47,8 @@ public class Restaurant extends Base {
     private String menuImageUrl;
 
     @Builder
-    public Restaurant(Boolean isOnCampus, Location location, String category, String name, String businessHours, String thumbnailUrl, String menuImageUrl) {
+    public Restaurant(Boolean isOnCampus, Location location, String category, String name,
+            String businessHours, String thumbnailUrl, String menuImageUrl) {
         this.isOnCampus = isOnCampus;
         this.location = location;
         this.category = category;
@@ -51,7 +58,8 @@ public class Restaurant extends Base {
         this.menuImageUrl = menuImageUrl;
     }
 
-    public void update(Boolean isOnCampus, Location location, String category, String name, String businessHours, String thumbnailUrl, String menuImageUrl) {
+    public void update(Boolean isOnCampus, Location location, String category, String name,
+            String businessHours, String thumbnailUrl, String menuImageUrl) {
         this.isOnCampus = isOnCampus;
         this.location = location;
         this.category = category;

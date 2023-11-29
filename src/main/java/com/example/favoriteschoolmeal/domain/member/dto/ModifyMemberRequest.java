@@ -13,4 +13,5 @@ public record ModifyMemberRequest(
         @Size(max = 300)
         String introduction
 ) {
+
 }

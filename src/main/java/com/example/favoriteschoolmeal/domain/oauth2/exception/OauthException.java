@@ -7,9 +7,13 @@ public class OauthException extends BaseException {
 
     private final OauthExceptionType oauthExceptionType;
 
-    public OauthException(final OauthExceptionType oauthExceptionType) {this.oauthExceptionType = oauthExceptionType;}
+    public OauthException(final OauthExceptionType oauthExceptionType) {
+        this.oauthExceptionType = oauthExceptionType;
+    }
 
     @Override
-    public BaseExceptionType exceptionType() {return  oauthExceptionType;}
+    public BaseExceptionType exceptionType() {
+        return oauthExceptionType;
+    }
 
 }

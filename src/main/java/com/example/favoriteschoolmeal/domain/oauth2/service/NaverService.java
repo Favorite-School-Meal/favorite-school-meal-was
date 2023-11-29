@@ -11,7 +11,6 @@ import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
 import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
-
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
@@ -19,15 +18,6 @@ import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshToken
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.json.JsonParseException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,6 +31,14 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JsonParseException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -65,6 +63,15 @@ public class NaverService implements Oauth2Service {
     @Value(("${oauth.naver.client-secret}"))
     private String clientSecret;
 
+    public static Integer convertBirthdayToAge(String birthdayString) {
+
+        String birthdayDate = birthdayString.replace("-", "");
+
+        LocalDate birthday = LocalDate.parse(birthdayDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate currentDate = LocalDate.now();
+
+        return Period.between(birthday, currentDate).getYears();
+    }
 
     @Override
     public JwtTokenDto sign(OauthRequest oauthRequest) {
@@ -79,7 +86,8 @@ public class NaverService implements Oauth2Service {
             authService.checkBlockOrThrow(existOauth.get().getMember());
 
             JwtTokenDto jwtTokenDto = authService.createJwtTokenDto(existOauth.get().getMember());
-            refreshTokenService.createRefreshToken(jwtTokenDto, existOauth.get().getMember().getUsername());
+            refreshTokenService.createRefreshToken(jwtTokenDto,
+                    existOauth.get().getMember().getUsername());
 
             return jwtTokenDto;
 
@@ -116,14 +124,14 @@ public class NaverService implements Oauth2Service {
             //http 응답요청 코드 성공:200
             int responseCode = connection.getResponseCode();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
             String line = "";
             StringBuilder result = new StringBuilder();
 
             while ((line = br.readLine()) != null) {
                 result.append(line);
             }
-
 
             JsonElement element = JsonParser.parseString(result.toString());
 
@@ -134,7 +142,8 @@ public class NaverService implements Oauth2Service {
             String nickname = naverAccount.getAsJsonObject().get("nickname").getAsString();
             String email = naverAccount.getAsJsonObject().get("email").getAsString();
             String gender = naverAccount.getAsJsonObject().get("gender").getAsString();
-            String birthday = naverAccount.getAsJsonObject().get("birthyear").getAsString() + naverAccount.getAsJsonObject().get("birthday").getAsString();
+            String birthday = naverAccount.getAsJsonObject().get("birthyear").getAsString()
+                    + naverAccount.getAsJsonObject().get("birthday").getAsString();
             String age = naverAccount.getAsJsonObject().get("age").getAsString();
 
             return OauthUserInfoDto.builder()
@@ -179,7 +188,8 @@ public class NaverService implements Oauth2Service {
 
     public Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto) {
 
-        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(), OauthPlatform.NAVER);
+        return oauthRepository.findByPlatformIdAndOauthPlatform(oauthUserInfoDto.getPlatformId(),
+                OauthPlatform.NAVER);
     }
 
     @Override
@@ -213,7 +223,8 @@ public class NaverService implements Oauth2Service {
 
             int responseCode = connection.getResponseCode();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
 
             String line = "";
             StringBuilder result = new StringBuilder();
@@ -225,7 +236,6 @@ public class NaverService implements Oauth2Service {
             //응답을 문자열로 변환하고, JSON으로 파싱하여 액세스 토큰과 리프레시 토큰을 추출
             JsonElement jsonElement = JsonParser.parseString(result.toString());
             accessToken = jsonElement.getAsJsonObject().get("access_token").getAsString();
-
 
             br.close();
 
@@ -259,16 +269,6 @@ public class NaverService implements Oauth2Service {
                 .gender(gender)
                 .introduction(null)
                 .build();
-    }
-
-    public static Integer convertBirthdayToAge(String birthdayString) {
-
-        String birthdayDate = birthdayString.replace("-", "");
-
-        LocalDate birthday = LocalDate.parse(birthdayDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-        LocalDate currentDate = LocalDate.now();
-
-        return Period.between(birthday, currentDate).getYears();
     }
 
 

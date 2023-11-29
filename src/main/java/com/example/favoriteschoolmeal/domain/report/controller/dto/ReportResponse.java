@@ -4,7 +4,6 @@ import com.example.favoriteschoolmeal.domain.chat.domain.Chat;
 import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
 import com.example.favoriteschoolmeal.domain.report.domain.Report;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,6 +31,7 @@ public record ReportResponse(
         //TODO: 신고자 프로필 이미지 url 제공
         //TODO: 피신고자 프로필 이미지 url 제공
 ) {
+
     public static ReportResponse from(Report report) {
         return new ReportResponse(
                 report.getId(),

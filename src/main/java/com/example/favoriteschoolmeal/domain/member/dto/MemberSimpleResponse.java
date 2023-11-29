@@ -2,7 +2,6 @@ package com.example.favoriteschoolmeal.domain.member.dto;
 
 import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-
 import java.util.Optional;
 
 public record MemberSimpleResponse(

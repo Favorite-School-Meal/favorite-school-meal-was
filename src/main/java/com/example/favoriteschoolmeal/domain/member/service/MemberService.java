@@ -3,14 +3,22 @@ package com.example.favoriteschoolmeal.domain.member.service;
 import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.file.service.FileService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-import com.example.favoriteschoolmeal.domain.member.dto.*;
+import com.example.favoriteschoolmeal.domain.member.dto.FindUsernameRequest;
+import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.MemberSummaryResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
+import com.example.favoriteschoolmeal.domain.member.dto.ModifyPasswordRequest;
+import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
-import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
-import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+
 import com.example.favoriteschoolmeal.domain.oauth2.service.OauthService;
+
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,9 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,14 +49,15 @@ public class MemberService {
     }
 
 
-    public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId) {
+    public MemberDetailResponse modifyMember(final ModifyMemberRequest request,
+            final Long memberId) {
 
         final Long currentMemberId = getCurrentMemberId();
 
         final Member member = getMemberOrThrow(memberId);
         verifyMemberOwner(memberId, currentMemberId);
 
-        if(!member.getNickname().equals(request.nickname())){
+        if (!member.getNickname().equals(request.nickname())) {
             modifyNickname(member, request);
         }
 
@@ -77,14 +83,13 @@ public class MemberService {
     }
 
 
-    public MemberDetailResponse modifyMemberPassword(final ModifyPasswordRequest request, final Long memberId){
-
+    public MemberDetailResponse modifyMemberPassword(final ModifyPasswordRequest request,
+            final Long memberId) {
 
         final Long currentMemberId = getCurrentMemberId();
 
         final Member member = getMemberOrThrow(memberId);
         verifyMemberOwner(memberId, currentMemberId);
-
 
         modifyPassword(member, request);
 
@@ -94,9 +99,9 @@ public class MemberService {
     }
 
 
+
     public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request){
         modifyPassword(member,request);
-
     }
 
     public void removeMember(final Long memberId){
@@ -149,38 +154,37 @@ public class MemberService {
 
 
     @Transactional(readOnly = true)
-    public MemberSimpleResponse findUsername(final FindUsernameRequest request){
+    public MemberSimpleResponse findUsername(final FindUsernameRequest request) {
 
         final Member member = getMemberOrThrow(request);
         return MemberSimpleResponse.from(member);
     }
 
 
-
-    private void modifyNickname(final Member member, final ModifyMemberRequest request){
+    private void modifyNickname(final Member member, final ModifyMemberRequest request) {
         checkNicknameDuplication(request);
         member.modifyNickname(request.nickname());
     }
 
-    private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
+    private void modifyIntroduction(final Member member, final ModifyMemberRequest request) {
         member.modifyIntroduction(request.introduction());
     }
 
-    private void modifyPassword(final Member member, final ModifyPasswordRequest request){
+    private void modifyPassword(final Member member, final ModifyPasswordRequest request) {
         member.modifyPassword(passwordEncoder.encode(request.password()));
     }
 
-    private Member getMemberOrThrow(final Long memberId){
+    private Member getMemberOrThrow(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
-    private Member getMemberOrThrow(final FindUsernameRequest request){
+    private Member getMemberOrThrow(final FindUsernameRequest request) {
         return memberRepository.findByFullNameAndEmail(request.fullname(), request.email())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
-    private void checkNicknameDuplication(final ModifyMemberRequest request){
+    private void checkNicknameDuplication(final ModifyMemberRequest request) {
         if (memberRepository.findByNickname(request.nickname()).isPresent()) {
             throw new MemberException(MemberExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
         }
@@ -229,8 +233,10 @@ public class MemberService {
 
     public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
         summarizeMembersIfNotNull(members);
-        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse).toList();
-        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(), members.getTotalElements());
+        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse)
+                .toList();
+        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(),
+                members.getTotalElements());
     }
 
     private FileEntity getFileEntityOrThrow(Long fileId) {

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Embeddable
 @Getter
 public class Location {
+
     private Double longitude;
     private Double latitude;
 }

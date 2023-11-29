@@ -8,8 +8,12 @@ public class EmailException extends BaseException {
 
     private final EmailExceptionType emailExceptionType;
 
-    public EmailException(final EmailExceptionType emailExceptionType) {this.emailExceptionType = emailExceptionType;}
+    public EmailException(final EmailExceptionType emailExceptionType) {
+        this.emailExceptionType = emailExceptionType;
+    }
 
     @Override
-    public BaseExceptionType exceptionType() {return  emailExceptionType;}
+    public BaseExceptionType exceptionType() {
+        return emailExceptionType;
+    }
 }

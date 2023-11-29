@@ -13,6 +13,7 @@ public record RestaurantResponse(
         String thumbnail_url,
         String menuImage_url
 ) {
+
     public static RestaurantResponse of(final Restaurant restaurant) {
         return new RestaurantResponse(
                 restaurant.getId(),

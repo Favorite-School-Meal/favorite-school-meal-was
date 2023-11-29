@@ -4,6 +4,11 @@ import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.file.exeption.FileException;
 import com.example.favoriteschoolmeal.domain.file.exeption.FileExceptionType;
 import com.example.favoriteschoolmeal.domain.file.repository.FileRepository;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -12,24 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class FileService {
 
-    @Value("${file.dir}")
-    private String fileDir;
-
     private final FileRepository fileRepository;
-
     // 이미지를 불러올 때 사용할 경로
     private final String viewPath = "/api/v1/images/";
+    @Value("${file.dir}")
+    private String fileDir;
 
     /**
      * 파일을 저장하고 저장된 파일의 id를 반환하는 메서드입니다.
@@ -69,9 +66,11 @@ public class FileService {
     }
 
 
+
     public void removeFileEntityByMember(final Long fileId) {
         findFileOptionally(fileId).ifPresent(fileRepository::delete);
     }
+
 
     private FileEntity createFileEntity(String origName, String savedName, String savedPath) {
         return FileEntity.builder()
@@ -85,7 +84,7 @@ public class FileService {
 
     /**
      * 실제로 로컬에 파일을 저장하는 메서드입니다.
-     * */
+     */
     private void transferFileToSavedPath(MultipartFile files, String savedPath) {
         try {
             files.transferTo(new File(savedPath));

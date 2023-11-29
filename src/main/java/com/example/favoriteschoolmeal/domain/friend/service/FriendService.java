@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class FriendService {
+
     private final FriendRepository friendRepository;
     private final MemberService memberService;
     private final NotificationService notificationService;
@@ -93,7 +94,8 @@ public class FriendService {
     @Transactional(readOnly = true)
     public MemberFriendCountResponse countFriend(Long memberId) {
         Member member = getMemberOrThrow(memberId);
-        long friendCount = friendRepository.findAcceptedFriendByMemberId(member.getId(), Pageable.unpaged()).getTotalElements();
+        long friendCount = friendRepository.findAcceptedFriendByMemberId(member.getId(),
+                Pageable.unpaged()).getTotalElements();
         return MemberFriendCountResponse.from(friendCount);
 
     }
@@ -118,18 +120,22 @@ public class FriendService {
     }
 
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
-        return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
-                .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
+        return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(),
+                        receiver.getId(), FriendRequestStatus.PENDING)
+                .orElseThrow(
+                        () -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));
     }
 
     private void checkAlreadyRequested(Member sender, Member receiver) {
-        if (friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING).isPresent()) {
+        if (friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(),
+                receiver.getId(), FriendRequestStatus.PENDING).isPresent()) {
             throw new FriendException(FriendExceptionType.ALREADY_REQUESTED);
         }
     }
 
     private void checkAlreadyFriend(Member sender, Member receiver) {
-        if (friendRepository.findAcceptedFriendByMembers(sender.getId(), receiver.getId()).isPresent()) {
+        if (friendRepository.findAcceptedFriendByMembers(sender.getId(), receiver.getId())
+                .isPresent()) {
             throw new FriendException(FriendExceptionType.ALREADY_FRIEND);
         }
     }
