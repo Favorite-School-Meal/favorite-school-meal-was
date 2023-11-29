@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 이 클래스는 알림과 관련된 다양한 서비스를 조합하여 복잡한 비즈니스 로직을 단순화합니다.
  */
 @Service
+@Transactional
 @AllArgsConstructor
 public class NotificationFacadeService {
 
