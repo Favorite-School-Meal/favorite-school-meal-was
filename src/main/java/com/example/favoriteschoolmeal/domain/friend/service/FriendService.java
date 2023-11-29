@@ -56,10 +56,10 @@ public class FriendService {
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getFriendRequestOrThrow(sender, receiver);
-        friendRepository.delete(friend);
+        friend.cancel();
 
         notificationService.createFriendNotification(sender.getId(), receiver.getId(),
-                null, NotificationType.FRIEND_REQUEST_CANCELLED);
+                friend.getId(), NotificationType.FRIEND_REQUEST_CANCELLED);
 
     }
 
@@ -115,6 +115,7 @@ public class FriendService {
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
         friendRepository.delete(friend);
 
+        //삭제된 친구 엔티티와 관련된 알림 처리는?
         notificationService.createFriendNotification(sender.getId(), receiver.getId(), null, NotificationType.FRIEND_REMOVED);
     }
 

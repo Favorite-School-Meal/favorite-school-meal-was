@@ -56,4 +56,8 @@ public class Friend extends Base {
     public void reject() {
         this.friendRequestStatus = FriendRequestStatus.REJECTED;
     }
+
+    public void cancel() {
+        this.friendRequestStatus = FriendRequestStatus.CANCELLED;
+    }
 }
