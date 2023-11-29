@@ -43,7 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NaverService implements OauthService {
+public class NaverService implements Oauth2Service {
 
     private final OauthRepository oauthRepository;
     private final AuthServiceImpl authService;

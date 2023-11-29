@@ -23,7 +23,7 @@ public class OauthConvertService {
 
     }
 
-    public OauthService platformToService(OauthPlatform platform) {
+    public Oauth2Service platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
             return naverService;
         } else if (platform.equals(OauthPlatform.KAKAO)) {
@@ -32,4 +32,5 @@ public class OauthConvertService {
             throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
         }
     }
+
 }

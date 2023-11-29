@@ -65,6 +65,13 @@ public class FileService {
         return resource;
     }
 
+
+
+    public void removeFileEntityByMember(final Long fileId) {
+        findFileOptionally(fileId).ifPresent(fileRepository::delete);
+    }
+
+
     private FileEntity createFileEntity(String origName, String savedName, String savedPath) {
         return FileEntity.builder()
                 .originalName(origName)
@@ -113,5 +120,7 @@ public class FileService {
         }
         return origName;
     }
+
+
 
 }
