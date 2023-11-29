@@ -1,7 +1,10 @@
 package com.example.favoriteschoolmeal.domain.notification.repository;
 
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
+import com.example.favoriteschoolmeal.domain.model.NotificationType;
+import com.example.favoriteschoolmeal.domain.notification.domain.FriendNotification;
 import com.example.favoriteschoolmeal.domain.notification.domain.Notification;
+import com.example.favoriteschoolmeal.domain.notification.domain.PostNotification;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

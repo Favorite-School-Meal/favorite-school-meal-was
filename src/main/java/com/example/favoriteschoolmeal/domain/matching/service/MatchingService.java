@@ -76,6 +76,8 @@ public class MatchingService {
         final Matching matching = getMatchingFromPost(post);
         final MatchingMember matchingMember = getMatchingMemberOrThrow(matching, applicant);
         verifyCancellation(matchingMember);
+        notificationService.deleteByPostIdAndSenderIdAndNotificationType(postId, applicant.getId(),
+                NotificationType.MATCHING_REQUESTED);
         cancelMatchingMember(matchingMember);
         notificationService.createPostNotification(applicant.getId(), post.getMember().getId(),
                 postId,

@@ -7,6 +7,8 @@ import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.service.MatchingService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
+import com.example.favoriteschoolmeal.domain.model.NotificationType;
+import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.domain.post.controller.dto.CreatePostRequest;
 import com.example.favoriteschoolmeal.domain.post.controller.dto.PaginatedPostListResponse;
 import com.example.favoriteschoolmeal.domain.post.controller.dto.PostDetailResponse;
@@ -39,6 +41,7 @@ public class PostService {
     private final MatchingService matchingService;
     private final RestaurantService restaurantService;
     private final CommentService commentService;
+    private final NotificationService notificationService;
 
     public PostDetailResponse addPost(final CreatePostRequest request, final Long restaurantId) {
         verifyUserOrAdmin();
@@ -117,6 +120,8 @@ public class PostService {
         verifyUserOrAdmin();
         final Post post = getPostOrThrow(postId);
         verifyPostOwnerOrAdmin(post.getMember().getId(), getCurrentMemberId());
+        notificationService.deleteByPostIdAndNotificationType(postId,
+                NotificationType.MATCHING_REQUESTED);
         removeRelatedEntities(post);
         postRepository.delete(post);
     }

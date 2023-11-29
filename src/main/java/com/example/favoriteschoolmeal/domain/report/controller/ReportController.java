@@ -1,7 +1,7 @@
 package com.example.favoriteschoolmeal.domain.report.controller;
 
-import com.example.favoriteschoolmeal.domain.report.controller.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.CreateReportRequest;
+import com.example.favoriteschoolmeal.domain.report.controller.dto.MemberReportCountResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportListResponse;
 import com.example.favoriteschoolmeal.domain.report.controller.dto.ReportResponse;
 import com.example.favoriteschoolmeal.domain.report.service.ReportService;
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/v1/reports")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
 
-    @PostMapping
+    @PostMapping("/reports")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReportResponse> reportAdd(
             @Valid @RequestBody final CreateReportRequest request) {
@@ -35,25 +35,31 @@ public class ReportController {
         return ApiResponse.createSuccess(response);
     }
 
-    @GetMapping
+    @GetMapping("/admin/reports")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReportListResponse> reportListByIsResolvedFalse(Pageable pageable) {
         ReportListResponse response = reportService.findAllReportByIsResolvedFalse(pageable);
         return ApiResponse.createSuccess(response);
     }
 
-    @GetMapping("/{reportId}")
+    @GetMapping("/admin/reports/{reportId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReportResponse> reportDetails(@PathVariable Long reportId) {
         ReportResponse response = reportService.findReport(reportId);
         return ApiResponse.createSuccess(response);
     }
 
-    @PatchMapping("/{reportId}/block")
+    @PatchMapping("/admin/reports/{reportId}/complete")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ReportResponse> blockMemberWithReport(@PathVariable Long reportId,
-            @Valid @RequestBody BlockRequest blockRequest) {
-        ReportResponse response = reportService.blockMemberAndResolveReport(reportId, blockRequest);
+    public ApiResponse<ReportResponse> reportComplete(@PathVariable Long reportId) {
+        ReportResponse response = reportService.resolveReport(reportId);
+        return ApiResponse.createSuccess(response);
+    }
+
+    @GetMapping("/members/{memberId}/report-count")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberReportCountResponse> reportCount(@PathVariable Long memberId) {
+        MemberReportCountResponse response = reportService.countReportByMemberId(memberId);
         return ApiResponse.createSuccess(response);
     }
 

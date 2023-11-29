@@ -9,10 +9,13 @@ import com.example.favoriteschoolmeal.domain.notification.domain.Notification;
 import com.example.favoriteschoolmeal.domain.notification.domain.PostNotification;
 import com.example.favoriteschoolmeal.domain.notification.exception.NotificationException;
 import com.example.favoriteschoolmeal.domain.notification.exception.NotificationExceptionType;
+import com.example.favoriteschoolmeal.domain.notification.repository.FriendNotificationRepository;
 import com.example.favoriteschoolmeal.domain.notification.repository.NotificationRepository;
+import com.example.favoriteschoolmeal.domain.notification.repository.PostNotificationRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@AllArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final PostNotificationRepository postNotificationRepository;
+    private final FriendNotificationRepository friendNotificationRepository;
     private final MemberService memberService;
-
-    public NotificationService(final NotificationRepository notificationRepository,
-            final MemberService memberService) {
-        this.notificationRepository = notificationRepository;
-        this.memberService = memberService;
-    }
 
     /**
      * 게시글 관련 알림을 생성합니다.
@@ -112,6 +112,43 @@ public class NotificationService {
         verifyNotificationReceiver(notification, getCurrentMemberId());
         notification.readNotification();
         notificationRepository.save(notification);
+    }
+
+    /**
+     * 주어진 친구 ID에 해당하는 친구 요청 관련 알림을 삭제합니다. 이 메서드는 사용자가 친구 요청을 처리한 후 관련 알림을 청소하는 데 사용됩니다.
+     *
+     * @param friendId 삭제할 알림과 관련된 친구의 ID
+     */
+    public void deleteByFriendIdAndNotificationType(Long friendId,
+            NotificationType notificationType) {
+        friendNotificationRepository.deleteByFriendIdAndNotificationType(
+                friendId, notificationType
+        );
+    }
+
+    /**
+     * 주어진 게시물 ID에 해당하는 매칭 요청 관련 알림을 삭제합니다. 이 메서드는 게시물이 삭제될 때 관련된 매칭 요청 알림을 청소하는 데 사용됩니다.
+     *
+     * @param postId 삭제할 알림과 관련된 게시물의 ID
+     */
+    public void deleteByPostIdAndNotificationType(Long postId, NotificationType notificationType) {
+        postNotificationRepository.deleteByPostIdAndNotificationType(
+                postId, notificationType
+        );
+    }
+
+    /**
+     * 주어진 게시물 ID, 수신자 ID, 알림 유형에 해당하는 매칭 요청 관련 알림을 삭제합니다. 이 메서드는 매칭 요청을 취소할 때 관련된 매칭 요청 알림을 청소하는 데
+     * 사용됩니다.
+     *
+     * @param postId           삭제할 알림과 관련된 게시물의 ID
+     * @param senderId         삭제할 알림의 발신자 ID
+     * @param notificationType 삭제할 알림의 유형
+     */
+    public void deleteByPostIdAndSenderIdAndNotificationType(Long postId, Long senderId,
+            NotificationType notificationType) {
+        postNotificationRepository.deleteByPostIdAndSenderIdAndNotificationType(postId, senderId,
+                notificationType);
     }
 
     private void validateNotificationType(NotificationType notificationType,

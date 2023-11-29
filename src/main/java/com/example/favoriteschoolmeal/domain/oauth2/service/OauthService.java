@@ -1,29 +1,33 @@
 package com.example.favoriteschoolmeal.domain.oauth2.service;
 
-import com.example.favoriteschoolmeal.domain.auth.dto.JwtTokenDto;
+
+
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.oauth2.domain.Oauth;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthRequest;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthSignInRequest;
-import com.example.favoriteschoolmeal.domain.oauth2.dto.OauthUserInfoDto;
+
+import com.example.favoriteschoolmeal.domain.oauth2.repository.OauthRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+
 import java.util.Optional;
 
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class OauthService {
 
-public interface OauthService {
+
+    private final OauthRepository oauthRepository;
+
+    public Optional<Oauth> findOauthOptionally(final Member member) {
+        return oauthRepository.findByMember(member);
+    }
 
 
-    JwtTokenDto sign(OauthRequest oauthRequest);
-
-    OauthUserInfoDto getUserInfo(String accessToken);
-
-    void create(OauthUserInfoDto oauthUserInfoDto, Member member);
-
-    void delete(Member member);
-
-    Optional<Oauth> isExists(OauthUserInfoDto oauthUserInfoDto);
-
-    String getAccessToken(OauthSignInRequest oauthSignInRequest);
-
-    Member convertToMember(OauthUserInfoDto oauthUserInfoDto);
+    public void removeOauthByMember(final Member member){
+        findOauthOptionally(member).ifPresent(oauthRepository::delete);
+    }
 
 }

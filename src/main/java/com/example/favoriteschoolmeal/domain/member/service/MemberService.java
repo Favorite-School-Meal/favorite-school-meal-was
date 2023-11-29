@@ -3,16 +3,13 @@ package com.example.favoriteschoolmeal.domain.member.service;
 import com.example.favoriteschoolmeal.domain.file.domain.FileEntity;
 import com.example.favoriteschoolmeal.domain.file.service.FileService;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
-import com.example.favoriteschoolmeal.domain.member.dto.FindUsernameRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberSummaryResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.ModifyPasswordRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
+
+import com.example.favoriteschoolmeal.domain.oauth2.service.OauthService;
+
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +31,17 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileService fileService;
+    private final OauthService oauthService;
 
 
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
     }
 
-    public void blockMember(Member reportedMember, Long blockHours) {
-        reportedMember.block(blockHours);
+    public void blockMember(Long memberId, BlockRequest blockRequest) {
+        verifyAdmin();
+        Member reportedMember = getMemberOrThrow(memberId);
+        reportedMember.block(blockRequest);
     }
 
 
@@ -94,10 +94,21 @@ public class MemberService {
         return MemberDetailResponse.from(savedMember);
     }
 
-    //EmailServive의 호출을 위해 생성
-    public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request) {
-        modifyPassword(member, request);
 
+
+    public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request){
+        modifyPassword(member,request);
+    }
+
+    public void removeMember(final Long memberId){
+
+        verifyUserOrAdmin();
+        final Member member = getMemberOrThrow(memberId);
+        final Long currentMemberId = getCurrentMemberId();
+
+        verifyMemberOwner(memberId, currentMemberId);
+        removeRelatedEntities(member);
+        memberRepository.delete(member);
     }
 
     @Transactional(readOnly = true)
@@ -145,7 +156,19 @@ public class MemberService {
         return MemberSimpleResponse.from(member);
     }
 
+    public void unblockMember(Long memberId) {
+        verifyAdmin();
+        Member reportedMember = getMemberOrThrow(memberId);
+        reportedMember.unblock();
+    }
 
+    public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
+        summarizeMembersIfNotNull(members);
+        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse)
+                .toList();
+        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(),
+                members.getTotalElements());
+    }
     private void modifyNickname(final Member member, final ModifyMemberRequest request) {
         checkNicknameDuplication(request);
         member.modifyNickname(request.nickname());
@@ -215,19 +238,25 @@ public class MemberService {
         }
     }
 
-
-    public PaginatedMemberListResponse getPaginatedMemberListResponse(Page<Member> members) {
-        summarizeMembersIfNotNull(members);
-        List<MemberSummaryResponse> list = members.stream().map(this::convertToSummaryResponse)
-                .toList();
-        return PaginatedMemberListResponse.from(list, members.getNumber(), members.getTotalPages(),
-                members.getTotalElements());
-    }
-
     private FileEntity getFileEntityOrThrow(Long fileId) {
         return fileService.findFileOptionally(fileId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.FILE_NOT_FOUND));
     }
 
+
+    private void removeRelatedEntities(final Member member){
+        removeProfileImage(member.getProfileImage());
+        removeOauth(member);
+    }
+
+    private void removeProfileImage(final FileEntity profileImage){
+        if(profileImage != null){
+            fileService.removeFileEntityByMember(profileImage.getId());
+        }
+    }
+
+    private void removeOauth(final Member member){
+        oauthService.removeOauthByMember(member);
+    }
 
 }
