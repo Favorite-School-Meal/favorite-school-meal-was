@@ -24,7 +24,7 @@ public class FileService {
 
     private final FileRepository fileRepository;
     // 이미지를 불러올 때 사용할 경로
-    private final String viewPath = "/api/v1/images/";
+    private final String viewPath = "/images/";
     @Value("${file.dir}")
     private String fileDir;
 
