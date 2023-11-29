@@ -10,6 +10,7 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.domain.model.FriendRequestStatus;
+import com.example.favoriteschoolmeal.domain.model.NotificationType;
 import com.example.favoriteschoolmeal.domain.notification.service.NotificationService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +34,6 @@ public class FriendService {
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
 
-//        checkAlreadyFriend(sender, receiver);
-//        checkAlreadyRequested(sender, receiver);
-
         checkAlreadyExists(sender, receiver);
 
         Friend friend = Friend.builder()
@@ -44,18 +42,13 @@ public class FriendService {
                 .friendRequestStatus(FriendRequestStatus.PENDING)
                 .build();
 
-        friendRepository.save(friend);
+        Friend savedFriend = friendRepository.save(friend);
 
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST
-//        notificationService.createNotification(sender.getId(), receiver.getId(), null, NotificationType.COMMENT_POSTED);
+        notificationService.createFriendNotification(
+                sender.getId(), receiver.getId(), savedFriend.getId(), NotificationType.FRIEND_REQUESTED);
 
     }
 
-    private void checkAlreadyExists(Member sender, Member receiver) {
-        if (friendRepository.findByMembers(sender.getId(), receiver.getId()).isPresent()) {
-            throw new FriendException(FriendExceptionType.ALREADY_EXISTS);
-        }
-    }
 
     public void cancelFriendRequest(Long memberId) {
         verifyUserOrAdmin();
@@ -63,33 +56,37 @@ public class FriendService {
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getFriendRequestOrThrow(sender, receiver);
         friendRepository.delete(friend);
+
+        notificationService.createFriendNotification(sender.getId(), receiver.getId(),
+                null, NotificationType.FRIEND_REQUEST_CANCELLED);
+
     }
 
     public void acceptFriendRequest(Long memberId) {
         verifyUserOrAdmin();
-        Member sender = getMemberOrThrow(memberId);
-        Member receiver = getMemberOrThrow(getCurrentMemberId());
-        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        Member friendRequestSender = getMemberOrThrow(memberId);
+        Member friendRequestReceiver = getMemberOrThrow(getCurrentMemberId());
+        Friend friend = getFriendRequestOrThrow(friendRequestSender, friendRequestReceiver);
 
-        checkAlreadyFriend(sender, receiver);
+        checkAlreadyFriend(friendRequestSender, friendRequestReceiver);
 
         friend.accept();
 
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED
-        //알림은 sender와 receiver가 반대로 되어야 함
-//        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
-
+        //알림은 친구 신청을 받은 회원이 친구 신청을 보낸 회원에게 보냄
+        notificationService.createFriendNotification(friendRequestReceiver.getId(), friendRequestSender.getId(),
+                friend.getId(), NotificationType.FRIEND_REQUEST_ACCEPTED);
     }
 
     public void rejectFriendRequest(Long memberId) {
         verifyUserOrAdmin();
-        Member sender = getMemberOrThrow(memberId);
-        Member receiver = getMemberOrThrow(getCurrentMemberId());
-        Friend friend = getFriendRequestOrThrow(sender, receiver);
+        Member friendRequestSender = getMemberOrThrow(memberId);
+        Member friendRequestReceiver = getMemberOrThrow(getCurrentMemberId());
+        Friend friend = getFriendRequestOrThrow(friendRequestSender, friendRequestReceiver);
         friend.reject();
-        //TODO: NOTIFICATION_TYPE.FRIEND_REQUEST_REJECTED
-        //알림은 sender와 receiver가 반대로 되어야 함
-//        notificationService.createNotification(receiver.getId(), sender.getId(), null, NotificationType.COMMENT_POSTED);
+
+        //알림은 친구 신청을 받은 회원이 친구 신청을 보낸 회원에게 보냄
+        notificationService.createFriendNotification(friendRequestReceiver.getId(), friendRequestSender.getId(),
+                friend.getId(), NotificationType.FRIEND_REQUEST_REJECTED);
     }
 
     @Transactional(readOnly = true)
@@ -115,7 +112,8 @@ public class FriendService {
         Member receiver = getMemberOrThrow(memberId);
         Friend friend = getAcceptedFriendByMembersOrThrow(sender, receiver);
         friendRepository.delete(friend);
-        //TODO: NOTIFICATION_TYPE.FRIEND_DELETED
+
+        notificationService.createFriendNotification(sender.getId(), receiver.getId(), null,NotificationType.FRIEND_REMOVED);
     }
 
 
@@ -176,6 +174,10 @@ public class FriendService {
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_NOT_FOUND));
     }
 
-
+    private void checkAlreadyExists(Member sender, Member receiver) {
+        if (friendRepository.findByMembers(sender.getId(), receiver.getId()).isPresent()) {
+            throw new FriendException(FriendExceptionType.ALREADY_EXISTS);
+        }
+    }
 
 }
