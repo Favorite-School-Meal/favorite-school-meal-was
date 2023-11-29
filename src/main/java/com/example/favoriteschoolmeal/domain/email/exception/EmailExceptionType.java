@@ -1,9 +1,10 @@
-package com.example.favoriteschoolmeal.domain.member.exception;
+package com.example.favoriteschoolmeal.domain.email.exception;
 
 import com.example.favoriteschoolmeal.global.exception.BaseExceptionType;
 import org.springframework.http.HttpStatus;
 
-public enum MemberExceptionType implements BaseExceptionType {
+public enum EmailExceptionType implements BaseExceptionType {
+
 
     MEMBER_NOT_FOUND(
             404,
@@ -11,36 +12,24 @@ public enum MemberExceptionType implements BaseExceptionType {
             "Member not found"
     ),
 
-
     UNAUTHORIZED_ACCESS(
             401,
             HttpStatus.UNAUTHORIZED,
             "Unauthorized access"
     ),
 
-    MEMBER_BLOCKED(
-            403,
-            HttpStatus.FORBIDDEN,
-            "Member blocked"
-    ),
-    FILE_NOT_FOUND(
-            404,
-            HttpStatus.NOT_FOUND,
-            "File not found"
-    ),
-
-    DUPLICATE_NICKNAME_EXCEPTION(
-            400,
-            HttpStatus.BAD_REQUEST,
-            "Nickname duplicated"
-    ),;
+    EMAIL_SEND_FAILURE(
+            500,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Failed to send email"
+    );
 
 
     private final int errorCode;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 
-    MemberExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
+    EmailExceptionType(final int errorCode, final HttpStatus httpStatus, final String errorMessage) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;

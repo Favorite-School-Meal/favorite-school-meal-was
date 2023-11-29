@@ -1,10 +1,7 @@
 package com.example.favoriteschoolmeal.domain.member.api;
 
 
-import com.example.favoriteschoolmeal.domain.member.dto.MemberDetailResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
-import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
-import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
+import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,8 @@ public class MemberController {
 
 
     //개인정보수정
-    @PutMapping("/members/{memberId}")
+    //introduction, nickname 수정
+    @PutMapping("/members/{memberId}/modify")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberModify(@PathVariable final Long memberId,
                                                           @RequestBody final ModifyMemberRequest request) {
@@ -30,6 +28,18 @@ public class MemberController {
         final MemberDetailResponse response = memberService.modifyMember(request, memberId);
         return ApiResponse.createSuccess(response);
     }
+
+
+    //비밀번호 변경은 회원정보 수정에서 분리하여 따로 처리하였습니다.
+    @PutMapping("/members/{memberId}/modify-password")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberDetailResponse> memberModifyPassword(@PathVariable final Long memberId,
+                                                                  @RequestBody final ModifyPasswordRequest request){
+        final MemberDetailResponse response = memberService.modifyMemberPassword(request,memberId);
+        return ApiResponse.createSuccess(response);
+    }
+
+
 
     /**
      * 프로필 이미지 업로드 API
@@ -43,6 +53,7 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
+
     @GetMapping("/members/{memberId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberDetailResponse> memberDetails(@PathVariable final Long memberId){
@@ -51,7 +62,7 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
-    @GetMapping("/members/simple/{memberId}")
+    @GetMapping("/members/{memberId}/simple")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MemberSimpleResponse> memberSimples(@PathVariable final Long memberId){
 
@@ -68,6 +79,13 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
+    //아이디 찾기
+    @GetMapping("/members/find-username")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<MemberSimpleResponse> memberFindUsername(@RequestBody final FindUsernameRequest request){
+        final MemberSimpleResponse response = memberService.findUsername(request);
+        return ApiResponse.createSuccess(response);
+    }
 
 
     //관리자가 member 모두 불러오기

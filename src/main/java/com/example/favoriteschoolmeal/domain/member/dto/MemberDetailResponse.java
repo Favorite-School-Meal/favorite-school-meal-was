@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public record MemberDetailResponse(
 
+        Long memberId,
         String nickname,
         String fullname,
         String email,
@@ -21,6 +22,7 @@ public record MemberDetailResponse(
     public static MemberDetailResponse from(final Member member){
         return new MemberDetailResponse(
 
+                member.getId(),
                 member.getNickname(),
                 member.getFullName(),
                 member.getEmail(),

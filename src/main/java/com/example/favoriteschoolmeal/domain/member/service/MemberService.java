@@ -7,10 +7,14 @@ import com.example.favoriteschoolmeal.domain.member.dto.*;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberException;
 import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionType;
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
+import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,13 +22,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     private final FileService fileService;
+
 
     public Optional<Member> findMemberOptionally(Long memberId) {
         return memberRepository.findById(memberId);
@@ -37,13 +44,17 @@ public class MemberService {
 
     public MemberDetailResponse modifyMember(final ModifyMemberRequest request, final Long memberId) {
 
-        verifyUserOrAdmin();
         final Long currentMemberId = getCurrentMemberId();
 
         final Member member = getMemberOrThrow(memberId);
         verifyMemberOwner(memberId, currentMemberId);
 
+        if(!member.getNickname().equals(request.nickname())){
+            modifyNickname(member, request);
+        }
+
         modifyIntroduction(member, request);
+
         final Member savedMember = memberRepository.save(member);
 
         return MemberDetailResponse.from(savedMember);
@@ -61,6 +72,29 @@ public class MemberService {
         member.changeProfileImage(fileEntity);
 
         return MemberDetailResponse.from(member);
+    }
+
+
+    public MemberDetailResponse modifyMemberPassword(final ModifyPasswordRequest request, final Long memberId){
+
+
+        final Long currentMemberId = getCurrentMemberId();
+
+        final Member member = getMemberOrThrow(memberId);
+        verifyMemberOwner(memberId, currentMemberId);
+
+
+        modifyPassword(member, request);
+
+        final Member savedMember = memberRepository.save(member);
+
+        return MemberDetailResponse.from(savedMember);
+    }
+
+    //EmailServive의 호출을 위해 생성
+    public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request){
+        modifyPassword(member,request);
+
     }
 
     @Transactional(readOnly = true)
@@ -100,15 +134,44 @@ public class MemberService {
                 members.getTotalPages(), members.getTotalElements());
     }
 
-    private void modifyIntroduction(final Member member, final ModifyMemberRequest request) {
+
+    @Transactional(readOnly = true)
+    public MemberSimpleResponse findUsername(final FindUsernameRequest request){
+
+        final Member member = getMemberOrThrow(request);
+        return MemberSimpleResponse.from(member);
+    }
+
+
+
+    private void modifyNickname(final Member member, final ModifyMemberRequest request){
+        checkNicknameDuplication(request);
+        member.modifyNickname(request.nickname());
+    }
+
+    private void modifyIntroduction(final Member member, final ModifyMemberRequest request){
         member.modifyIntroduction(request.introduction());
     }
 
-    private Member getMemberOrThrow(final Long memberId) {
+    private void modifyPassword(final Member member, final ModifyPasswordRequest request){
+        member.modifyPassword(passwordEncoder.encode(request.password()));
+    }
+
+    private Member getMemberOrThrow(final Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
+    private Member getMemberOrThrow(final FindUsernameRequest request){
+        return memberRepository.findByFullNameAndEmail(request.fullname(), request.email())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_NOT_FOUND));
+    }
+
+    private void checkNicknameDuplication(final ModifyMemberRequest request){
+        if (memberRepository.findByNickname(request.nickname()).isPresent()) {
+            throw new MemberException(MemberExceptionType.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+    }
 
     private void verifyUserOrAdmin() {
         SecurityUtils.checkUserOrAdminOrThrow(
