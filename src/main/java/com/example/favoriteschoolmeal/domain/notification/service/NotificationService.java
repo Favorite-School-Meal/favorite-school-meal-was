@@ -114,6 +114,30 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    /**
+     * 주어진 친구 ID에 해당하는 친구 요청 관련 알림을 삭제합니다.
+     * 이 메소드는 사용자가 친구 요청을 처리한 후 관련 알림을 청소하는 데 사용됩니다.
+     *
+     * @param friendId 삭제할 알림과 관련된 친구의 ID
+     */
+    public void deleteFriendRequestNotifications(Long friendId) {
+        notificationRepository.deleteByFriendIdAndNotificationType(
+                friendId, NotificationType.FRIEND_REQUESTED
+        );
+    }
+
+    /**
+     * 주어진 게시물 ID에 해당하는 매칭 요청 관련 알림을 삭제합니다.
+     * 이 메소드는 사용자가 매칭 요청을 처리한 후 관련 알림을 청소하는 데 사용됩니다.
+     *
+     * @param postId 삭제할 알림과 관련된 게시물의 ID
+     */
+    public void deleteMatchingRequestNotifications(Long postId) {
+        notificationRepository.deleteByPostIdAndNotificationType(
+                postId, NotificationType.MATCHING_REQUESTED
+        );
+    }
+
     private void validateNotificationType(NotificationType notificationType,
             Predicate<NotificationType> validationPredicate) {
         if (!validationPredicate.test(notificationType)) {
