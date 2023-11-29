@@ -118,7 +118,9 @@ public class FriendService {
         //TODO: NOTIFICATION_TYPE.FRIEND_DELETED
     }
 
-    public FriendStatusResponse getFriendStatus(Long memberId) {
+
+    @Transactional(readOnly = true)
+    public FriendStatusResponse getFriendStatusByMemberId(Long memberId) {
         verifyUserOrAdmin();
         Member sender = getMemberOrThrow(getCurrentMemberId());
         Member receiver = getMemberOrThrow(memberId);
@@ -126,6 +128,17 @@ public class FriendService {
 
         return FriendStatusResponse.from(friend);
     }
+
+    public Friend getFriendOrThrow(Long friendId) {
+        return friendRepository.findById(friendId)
+                .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_NOT_FOUND));
+    }
+
+    public String getFriendRequestStatus(Long friendId) {
+        Friend friend = getFriendOrThrow(friendId);
+        return friend.getFriendRequestStatus().toString();
+    }
+
     private Friend getFriendRequestOrThrow(Member sender, Member receiver) {
         return friendRepository.findFriendRequestBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), FriendRequestStatus.PENDING)
                 .orElseThrow(() -> new FriendException(FriendExceptionType.FRIEND_REQUEST_NOT_FOUND));

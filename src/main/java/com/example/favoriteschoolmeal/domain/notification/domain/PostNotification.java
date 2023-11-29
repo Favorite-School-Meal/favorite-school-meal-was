@@ -19,7 +19,7 @@ public class PostNotification extends Notification {
     /**
      * 알림과 관련된 게시물의 ID입니다.
      */
-    @Column(name = "post_id", nullable = false)
+    @Column(name = "post_id")
     private Long postId;
 
     @Builder

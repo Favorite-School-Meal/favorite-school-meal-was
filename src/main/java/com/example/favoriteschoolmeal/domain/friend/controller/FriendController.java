@@ -63,9 +63,12 @@ public class FriendController {
         return ApiResponse.createSuccess(response);
     }
 
+    /**
+     * memberId에 해당하는 회원과 현재 로그인한 사용자의 친구 상태를 조회한다.
+     * */
     @GetMapping("/members/{memberId}/friend-status")
     public ApiResponse<FriendStatusResponse> friendStatus(@PathVariable final Long memberId){
-        FriendStatusResponse response = friendService.getFriendStatus(memberId);
+        FriendStatusResponse response = friendService.getFriendStatusByMemberId(memberId);
         return ApiResponse.createSuccess(response);
     }
 }
