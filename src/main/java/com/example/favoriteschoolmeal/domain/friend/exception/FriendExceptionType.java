@@ -32,6 +32,10 @@ public enum FriendExceptionType implements BaseExceptionType {
             409,
             HttpStatus.CONFLICT,
             "Already exists"
+    ), CANNOT_REQUEST_TO_MYSELF(
+            409,
+            HttpStatus.CONFLICT,
+            "Cannot request to myself"
     );
     private final int errorCode;
     private final HttpStatus httpStatus;

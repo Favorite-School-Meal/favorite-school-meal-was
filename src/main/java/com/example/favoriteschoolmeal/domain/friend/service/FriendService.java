@@ -37,6 +37,8 @@ public class FriendService {
 
         checkAlreadyExists(sender, receiver);
 
+        checkSelfRequest(sender, receiver);
+
         Friend friend = Friend.builder()
                 .sender(sender)
                 .receiver(receiver)
@@ -48,6 +50,12 @@ public class FriendService {
         notificationService.createFriendNotification(
                 sender.getId(), receiver.getId(), savedFriend.getId(), NotificationType.FRIEND_REQUESTED);
 
+    }
+
+    private static void checkSelfRequest(Member sender, Member receiver) {
+        if(sender.getId().equals(receiver.getId())){
+            throw new FriendException(FriendExceptionType.CANNOT_REQUEST_TO_MYSELF);
+        }
     }
 
 
