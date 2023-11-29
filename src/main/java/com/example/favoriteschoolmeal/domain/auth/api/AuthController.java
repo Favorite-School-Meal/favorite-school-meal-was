@@ -7,6 +7,7 @@ import com.example.favoriteschoolmeal.domain.auth.service.AuthServiceImpl;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import com.example.favoriteschoolmeal.global.security.jwt.JwtTokenProvider;
 import com.example.favoriteschoolmeal.global.security.token.refresh.RefreshTokenServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

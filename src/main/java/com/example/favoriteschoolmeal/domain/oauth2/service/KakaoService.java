@@ -39,7 +39,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoService implements OauthService {
+public class KakaoService implements Oauth2Service {
 
     private final OauthRepository oauthRepository;
     private final AuthServiceImpl authService;

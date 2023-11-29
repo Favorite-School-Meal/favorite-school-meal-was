@@ -9,6 +9,7 @@ import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionTyp
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthException;
 import com.example.favoriteschoolmeal.domain.oauth2.exception.OauthExceptionType;
+import com.example.favoriteschoolmeal.domain.oauth2.service.OauthService;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileService fileService;
+    private final OauthService oauthService;
 
 
     public Optional<Member> findMemberOptionally(Long memberId) {
@@ -91,10 +93,21 @@ public class MemberService {
         return MemberDetailResponse.from(savedMember);
     }
 
-    //EmailServive의 호출을 위해 생성
+
     public void modifyMemberPassword(final Member member, final ModifyPasswordRequest request){
         modifyPassword(member,request);
 
+    }
+
+    public void removeMember(final Long memberId){
+
+        verifyUserOrAdmin();
+        final Member member = getMemberOrThrow(memberId);
+        final Long currentMemberId = getCurrentMemberId();
+
+        verifyMemberOwner(memberId, currentMemberId);
+        removeRelatedEntities(member);
+        memberRepository.delete(member);
     }
 
     @Transactional(readOnly = true)
@@ -223,6 +236,22 @@ public class MemberService {
     private FileEntity getFileEntityOrThrow(Long fileId) {
         return fileService.findFileOptionally(fileId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.FILE_NOT_FOUND));
+    }
+
+
+    private void removeRelatedEntities(final Member member){
+        removeProfileImage(member.getProfileImage());
+        removeOauth(member);
+    }
+
+    private void removeProfileImage(final FileEntity profileImage){
+        if(profileImage != null){
+            fileService.removeFileEntityByMember(profileImage.getId());
+        }
+    }
+
+    private void removeOauth(final Member member){
+        oauthService.removeOauthByMember(member);
     }
 
 

@@ -87,6 +87,13 @@ public class MemberController {
         return ApiResponse.createSuccess(response);
     }
 
+    //member삭제
+    @DeleteMapping("/members/{memberId}/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> memberRemove(@PathVariable Long memberId){
+        memberService.removeMember(memberId);
+        return ApiResponse.createSuccess(null);
+    }
 
     //관리자가 member 모두 불러오기
     @GetMapping("/admin/members")

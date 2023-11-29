@@ -21,19 +21,18 @@ public class OauthConvertService {
     private final KakaoService kakaoService;
     private final NaverService naverService;
 
-
-
     public JwtTokenDto sign(OauthRequest oauthRequest, OauthPlatform platform) {
 
         return platformToService(platform).sign(oauthRequest);
 
     }
 
-    public OauthService platformToService(OauthPlatform platform) {
+    public Oauth2Service platformToService(OauthPlatform platform) {
         if (platform.equals(OauthPlatform.NAVER)) {
             return naverService;
         } else if (platform.equals(OauthPlatform.KAKAO)) {
             return kakaoService;
         } else throw new OauthException(OauthExceptionType.PLATFORM_BAD_REQUEST);
     }
+
 }
