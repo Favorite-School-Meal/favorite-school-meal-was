@@ -7,9 +7,9 @@ import jakarta.validation.constraints.NotNull;
 public record CreateReportRequest(
         @NotNull
         Long reportedMemberId,
-        @NotBlank
+
         String content,
-        @NotBlank
+        @NotNull
         ReportType reportType,
 
         Long postId,
