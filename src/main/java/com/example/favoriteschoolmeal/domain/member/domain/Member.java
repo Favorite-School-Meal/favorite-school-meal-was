@@ -31,7 +31,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends Base {
 
-    private final String DEFAULT_PROFILE_IMAGE_ENDPOINT = "/images/default_profile_image.png";
+    // 기본 프로필 이미지 엔드포인트
+    private final transient String DEFAULT_PROFILE_IMAGE_ENDPOINT = "/images/default_profile_image.png";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
