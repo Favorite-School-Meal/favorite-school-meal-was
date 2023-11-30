@@ -3,6 +3,7 @@ package com.example.favoriteschoolmeal.domain.friend.domain;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.FriendRequestStatus;
 import com.example.favoriteschoolmeal.global.common.Base;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,11 +31,11 @@ public class Friend extends Base {
     @Column(name = "friend_id", updatable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "sender_id")
     private Member sender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 

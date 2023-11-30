@@ -4,6 +4,7 @@ import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.restaurant.domain.Restaurant;
 import com.example.favoriteschoolmeal.global.common.Base;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,7 +31,7 @@ public class Post extends Base {
     @Column(name = "post_id", updatable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_id")
     private Member member;
 

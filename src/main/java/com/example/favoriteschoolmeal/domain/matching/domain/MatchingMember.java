@@ -4,6 +4,7 @@ import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.MatchingRequestStatus;
 import com.example.favoriteschoolmeal.domain.model.RoleType;
 import com.example.favoriteschoolmeal.global.common.Base;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +33,7 @@ public class MatchingMember extends Base {
     @Column(name = "matching_member_id", updatable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_id")
     private Member member;
 
