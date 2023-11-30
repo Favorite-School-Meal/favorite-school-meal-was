@@ -17,8 +17,6 @@ public record MemberSimpleResponse(
                 member.getId(),
                 member.getNickname(),
                 member.getUsername(),
-                Optional.ofNullable(member.getProfileImage())
-                        .map(FileEntity::getEndpoint)
-                        .orElse(null));
+                member.getProfileImageEndpoint());
     }
 }

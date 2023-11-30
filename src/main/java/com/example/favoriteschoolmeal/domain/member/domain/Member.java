@@ -18,6 +18,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,6 +30,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends Base {
+
+    // 기본 프로필 이미지 엔드포인트
+    private final transient String DEFAULT_PROFILE_IMAGE_ENDPOINT = "/images/default_profile_image.png";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -122,6 +126,11 @@ public class Member extends Base {
 
     public void modifyPassword(final String password) {
         this.password = password;
+    }
+
+    public String getProfileImageEndpoint() {
+        Optional<FileEntity> profileImage = Optional.ofNullable(this.profileImage);
+        return profileImage.map(FileEntity::getEndpoint).orElse(DEFAULT_PROFILE_IMAGE_ENDPOINT);
     }
 
 }

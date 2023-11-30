@@ -30,9 +30,7 @@ public record MemberDetailResponse(
                 member.getAge(),
                 member.getGender(),
                 member.getIntroduction(),
-                Optional.ofNullable(member.getProfileImage())
-                        .map(FileEntity::getEndpoint)
-                        .orElse(null)
+                member.getProfileImageEndpoint()
         );
     }
 }

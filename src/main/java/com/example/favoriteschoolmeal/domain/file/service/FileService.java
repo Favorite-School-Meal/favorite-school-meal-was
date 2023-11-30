@@ -7,6 +7,8 @@ import com.example.favoriteschoolmeal.domain.file.repository.FileRepository;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileService {
 
     private final FileRepository fileRepository;
+
     // 이미지를 불러올 때 사용할 경로
     private final String viewPath = "/images/";
+
+    //허용되는 확장자 목록
+    private final List<String> ALLOWED_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png");
+
     @Value("${file.dir}")
     private String fileDir;
 
@@ -104,9 +111,9 @@ public class FileService {
     }
 
     private String getExtensionOrThrow(String origName) {
-        // 확장자 추출(ex : .jpg) 현재 jpg만 허용
         String extension = origName.substring(origName.lastIndexOf("."));
-        if (!extension.equalsIgnoreCase(".jpg")) {
+
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
             throw new FileException(FileExceptionType.UNSUPPORTED_EXTENSION);
         }
         return extension;
