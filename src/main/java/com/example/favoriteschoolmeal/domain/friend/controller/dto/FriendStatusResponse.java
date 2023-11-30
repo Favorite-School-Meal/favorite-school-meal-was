@@ -11,7 +11,7 @@ public record FriendStatusResponse(
     public static FriendStatusResponse from(final Optional<Friend> friend) {
         return new FriendStatusResponse(
                 friend.map(Friend::getFriendRequestStatus)
-                        .map(FriendRequestStatus::name)
+                        .map(FriendRequestStatus::toString)
                         .orElse(null));
     }
 }
