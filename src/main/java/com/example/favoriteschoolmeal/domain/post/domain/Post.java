@@ -39,7 +39,7 @@ public class Post extends Base {
     @JoinColumn(name = "matching_id")
     private Matching matching;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
