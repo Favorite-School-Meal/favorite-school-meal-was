@@ -29,7 +29,6 @@ public class MemberDeleteService {
     private final FriendRepository friendRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final MatchingRepository matchingRepository;
     private final MatchingMemberRepository matchingMemberRepository;
     private final NotificationRepository notificationRepository;
     private final ReportRepository reportRepository;
