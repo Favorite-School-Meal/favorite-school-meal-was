@@ -57,6 +57,4 @@ public interface MatchingMemberRepository extends JpaRepository<MatchingMember, 
     List<MatchingMember> findAllByMember(Member member);
 
     void deleteByMemberId(Long memberId);
-
-    void deleteByPostId(Long id);
 }
