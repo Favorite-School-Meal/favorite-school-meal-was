@@ -2,6 +2,7 @@ package com.example.favoriteschoolmeal.domain.member.service;
 
 import com.example.favoriteschoolmeal.domain.comment.domain.Comment;
 import com.example.favoriteschoolmeal.domain.comment.repository.CommentRepository;
+import com.example.favoriteschoolmeal.domain.friend.domain.Friend;
 import com.example.favoriteschoolmeal.domain.friend.repository.FriendRepository;
 import com.example.favoriteschoolmeal.domain.matching.domain.MatchingMember;
 import com.example.favoriteschoolmeal.domain.matching.repository.MatchingMemberRepository;
@@ -45,21 +46,36 @@ public class MemberDeleteService {
         //멤버와 관련된 comment 삭제
         deleteComment(memberId);
 
-        //멤버와 관련된 post 삭제
-        deletePost(memberId);
-
         //멤버와 관련된 matchingMember 삭제
         deleteMatchingMember(memberId);
+
+        //멤버와 관련된 matching삭제
+        deleteMatching(memberId);
+
+        //멤버와 관련된 post 삭제
+        deletePost(memberId);
 
         //멤버와 관련된 friend 삭제
         deleteFriend(memberId);
 
-        //
-
-//        reportRepository.deleteAllByMemberId(memberId);
-
         //마지막에 멤버 삭제
         memberRepository.deleteById(memberId);
+    }
+
+    private void deleteFriend(Long memberId) {
+        //멤버가 보낸 모든 friend 조회
+        List<Friend> sentFriends = friendRepository.findAllBySenderId(memberId);
+
+        //멤버가 받은 모든 friend 조회
+        List<Friend> receivedFriends = friendRepository.findAllByReceiverId(memberId);
+
+        //friend 삭제
+        friendRepository.deleteAll(sentFriends);
+        friendRepository.deleteAll(receivedFriends);
+    }
+
+    private void deleteMatching(Long memberId) {
+
     }
 
     private void deleteNotification(Long memberId) {
@@ -82,11 +98,6 @@ public class MemberDeleteService {
         //멤버가 참여한 모든 matching 조회
         List<MatchingMember> matchingMembers = matchingMemberRepository.findAllByMemberId(memberId);
 
-        //각 matchingMember에 대해 notification 삭제(매칭 참여 알림)
-        matchingMembers.forEach(matchingMember -> {
-            notificationRepository.deleteAllByMatchingMemberId(matchingMember.getId());
-        });
-
         //matchingMember 삭제
         matchingMemberRepository.deleteAllByMemberId(memberId);
     }
@@ -95,15 +106,14 @@ public class MemberDeleteService {
         //멤버가 작성한 모든 comment 조회
         List<Comment> comments = commentRepository.findAllByMemberId(memberId);
 
-        //각 comment에 대해 notification 삭제(댓글 작성 알림)
-        comments.forEach(comment -> {
-            notificationRepository.deleteAllBy~~(comment.getId());
-        });
 
         //각 comment에 대해 관련된 report 삭제(댓글 신고)
         comments.forEach(comment -> {
             reportRepository.deleteAllByCommentId(comment.getId());
         });
+
+        //comment 삭제
+        commentRepository.deleteAllByMemberId(memberId);
 
 
     }
@@ -115,17 +125,15 @@ public class MemberDeleteService {
         //멤버가 작성한 모든 post 조회
         List<Post> posts = postRepository.findAllByMemberId(memberId);
 
-        //각 post에 관련된 알림 제거
-        deleteNotificationByPosts(posts);
 
-        //각 post에 관련된 comment 제거
-        deleteCommentByPosts(posts);
-
-        //각 post에 관련된 matchingMember 제거
-        deleteMatchingMemberByPosts(posts);
-
-        //각 post에 관련된 report 제거
-        deleteReportByPosts(posts);
+//        //각 post에 관련된 comment 제거
+//        deleteCommentByPosts(posts);
+//
+//        //각 post에 관련된 matchingMember 제거
+//        deleteMatchingMemberByPosts(posts);
+//
+//        //각 post에 관련된 report 제거
+//        deleteReportByPosts(posts);
 
         //post 삭제
         postRepository.deleteAllByMemberId(memberId);
@@ -160,10 +168,5 @@ public class MemberDeleteService {
         commentRepository.deleteAll(comments);
     }
 
-    private void deleteNotificationByPosts(List<Post> posts) {
-        //각 post에 대해 notification 삭제(내 포스트에 관련된 알림 삭제)
-        posts.forEach(post -> {
-            notificationRepository.deleteAllByPostId(post.getId());
-        });
     }
 }

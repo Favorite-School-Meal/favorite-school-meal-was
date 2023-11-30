@@ -3,6 +3,8 @@ package com.example.favoriteschoolmeal.domain.friend.repository;
 import com.example.favoriteschoolmeal.domain.friend.domain.Friend;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.FriendRequestStatus;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,4 +75,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
             "AND f.friendRequestStatus != 'REJECTED' AND f.friendRequestStatus != 'CANCELLED'")
     Optional<Friend> findByMembers(Long senderId, Long receiverId);
 
+    List<Friend> findAllBySenderId(Long memberId);
+
+    List<Friend> findAllByReceiverId(Long memberId);
 }
