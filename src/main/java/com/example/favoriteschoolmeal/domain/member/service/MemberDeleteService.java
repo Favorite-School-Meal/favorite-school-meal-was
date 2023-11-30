@@ -9,8 +9,6 @@ import com.example.favoriteschoolmeal.domain.member.exception.MemberExceptionTyp
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.notification.repository.NotificationRepository;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
-import com.example.favoriteschoolmeal.domain.post.exception.PostException;
-import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.domain.report.repository.ReportRepository;
 import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
@@ -39,7 +37,7 @@ public class MemberDeleteService {
     /**
      * 현재 로그인한 멤버의 정보를 기반으로 멤버 삭제를 수행합니다.
      */
-    public void deleteMember() {
+    public void deleteMemberRelatedEntities() {
 
         // 현재 로그인한 멤버의 ID를 가져옵니다.
         Long memberId = getCurrentMemberId();

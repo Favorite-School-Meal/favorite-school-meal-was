@@ -100,15 +100,11 @@ public class MemberService {
         modifyPassword(member,request);
     }
 
-    public void removeMember(final Long memberId){
-
+    public void deleteMemberAssociatedData(){
+        final Long memberId = getCurrentMemberId();
         verifyUserOrAdmin();
         final Member member = getMemberOrThrow(memberId);
-        final Long currentMemberId = getCurrentMemberId();
-
-        verifyMemberOwner(memberId, currentMemberId);
         removeRelatedEntities(member);
-        memberRepository.delete(member);
     }
 
     @Transactional(readOnly = true)
@@ -258,5 +254,4 @@ public class MemberService {
     private void removeOauth(final Member member){
         oauthService.removeOauthByMember(member);
     }
-
 }

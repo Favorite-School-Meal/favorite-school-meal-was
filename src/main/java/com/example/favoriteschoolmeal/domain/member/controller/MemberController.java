@@ -101,7 +101,8 @@ public class MemberController {
     @DeleteMapping("/members")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<Void> memberRemove(){
-        memberDeleteService.deleteMember();
+        memberService.deleteMemberAssociatedData();
+        memberDeleteService.deleteMemberRelatedEntities();
         return ApiResponse.createSuccess(null);
     }
 
