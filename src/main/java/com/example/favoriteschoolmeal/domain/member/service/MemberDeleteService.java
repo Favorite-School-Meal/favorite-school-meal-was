@@ -54,11 +54,11 @@ public class MemberDeleteService {
         // MatchingMember 객체의 memberId가 memberId인 모든 MatchingMember를 삭제합니다.
         deleteMatchingMember(memberId);
 
-        // Report 객체의 reporterId 또는 reportedMemberId 필드가 memberId인 모든 Report를 삭제합니다.
-        deleteReport(memberId);
-
         // Post 객체의 memberId가 memberId인 모든 Post를 삭제합니다.
         deletePost(memberId);
+
+        // Report 객체의 reporterId 또는 reportedMemberId 필드가 memberId인 모든 Report를 삭제합니다.
+        deleteReport(memberId);
 
         // Member 객체의 memberId가 memberId인 Member를 삭제합니다.
         memberRepository.deleteById(memberId);
