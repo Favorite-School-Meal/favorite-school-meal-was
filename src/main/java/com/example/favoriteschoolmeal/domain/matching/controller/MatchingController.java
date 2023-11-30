@@ -1,6 +1,8 @@
 package com.example.favoriteschoolmeal.domain.matching.controller;
 
+import com.example.favoriteschoolmeal.domain.matching.controller.dto.MatchingResponse;
 import com.example.favoriteschoolmeal.domain.matching.controller.dto.MemberMatchingCountResponse;
+import com.example.favoriteschoolmeal.domain.matching.domain.Matching;
 import com.example.favoriteschoolmeal.domain.matching.service.MatchingService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -25,10 +27,10 @@ public class MatchingController {
 
     @PostMapping("/posts/{postId}/apply-matching")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Void> matchingApply(
+    public ApiResponse<MatchingResponse> matchingApply(
             @PathVariable final Long postId) {
-        matchingService.applyMatching(postId);
-        return ApiResponse.createSuccess(null);
+        MatchingResponse resposne = matchingService.applyMatching(postId);
+        return ApiResponse.createSuccess(resposne);
     }
 
     @DeleteMapping("/posts/{postId}/cancel-application")

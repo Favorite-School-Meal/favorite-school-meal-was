@@ -56,7 +56,7 @@ public class MatchingService {
         matchingRepository.save(matching);
     }
 
-    public void applyMatching(final Long postId) {
+    public MatchingResponse applyMatching(final Long postId) {
         verifyUserOrAdmin();
         final Member applicant = getMemberOrThrow(getCurrentMemberId());
         final Post post = getPostOrThrow(postId);
@@ -67,6 +67,8 @@ public class MatchingService {
         notificationService.createPostNotification(applicant.getId(), post.getMember().getId(),
                 postId,
                 NotificationType.MATCHING_REQUESTED);
+
+        return createMatchingResponse(matching);
     }
 
     public void cancelMatchingApplication(final Long postId) {
