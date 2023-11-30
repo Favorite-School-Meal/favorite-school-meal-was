@@ -75,7 +75,5 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
             "AND f.friendRequestStatus != 'REJECTED' AND f.friendRequestStatus != 'CANCELLED'")
     Optional<Friend> findByMembers(Long senderId, Long receiverId);
 
-    List<Friend> findAllBySenderId(Long memberId);
-
-    List<Friend> findAllByReceiverId(Long memberId);
+    void deleteBySenderIdOrReceiverId(Long senderId, Long receiverId);
 }

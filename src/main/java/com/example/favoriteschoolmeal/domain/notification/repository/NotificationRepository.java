@@ -30,4 +30,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      * @return 안 읽은 알림 존재 여부
      */
     boolean existsByReceiverAndIsRead(Member receiver, boolean isRead);
+
+    void deleteBySenderIdOrReceiverId(Long senderId, Long receiverId);
 }

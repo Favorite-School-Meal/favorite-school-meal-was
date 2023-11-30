@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("memberId") Long memberId);
 
     List<Post> findAllByMemberId(Long memberId);
+
+    void deleteByMemberId(Long memberId);
 }
