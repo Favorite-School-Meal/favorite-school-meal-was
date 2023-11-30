@@ -6,8 +6,11 @@ import com.example.favoriteschoolmeal.domain.matching.repository.MatchingMemberR
 import com.example.favoriteschoolmeal.domain.member.repository.MemberRepository;
 import com.example.favoriteschoolmeal.domain.notification.repository.NotificationRepository;
 import com.example.favoriteschoolmeal.domain.post.domain.Post;
+import com.example.favoriteschoolmeal.domain.post.exception.PostException;
+import com.example.favoriteschoolmeal.domain.post.exception.PostExceptionType;
 import com.example.favoriteschoolmeal.domain.post.repository.PostRepository;
 import com.example.favoriteschoolmeal.domain.report.repository.ReportRepository;
+import com.example.favoriteschoolmeal.global.security.util.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +32,9 @@ public class MemberDeleteService {
     private final NotificationRepository notificationRepository;
     private final ReportRepository reportRepository;
 
-    public void deleteMember(Long memberId) {
+    public void deleteMember() {
+
+        Long memberId = getCurrentMemberId();
 
         // friend 객체의 receiverId 또는 senderId 필드가 memberId인 friend 모두 삭제
         deleteFriend(memberId);
@@ -109,5 +114,10 @@ public class MemberDeleteService {
     // memberId로 해당 회원이 작성한 게시물 조회
     private List<Post> findPostsByMemberId(Long memberId) {
         return postRepository.findAllByMemberId(memberId);
+    }
+
+    private Long getCurrentMemberId() {
+        return SecurityUtils.getCurrentMemberId(
+                () -> new PostException(PostExceptionType.MEMBER_NOT_FOUND));
     }
 }
