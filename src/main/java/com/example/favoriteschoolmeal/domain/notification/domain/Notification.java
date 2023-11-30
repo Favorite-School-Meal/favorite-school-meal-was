@@ -45,7 +45,7 @@ public abstract class Notification extends Base {
     /**
      * 알림을 받는 사용자를 나타냅니다. Member 엔티티와의 다대일(N:1) 관계를 맺고 있습니다.
      */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", nullable = false)
     private Member receiver;
 

@@ -44,18 +44,18 @@ public class MemberDeleteService {
         // Notification 객체의 receiverId 또는 senderId가 memberId인 모든 Notification을 삭제합니다.
         deleteNotification(memberId);
 
-        // Friend 객체의 receiverId 또는 senderId 필드가 memberId인 모든 Friend를 삭제합니다.
-        deleteFriend(memberId);
-
-        // Report 객체의 reporterId 또는 reportedMemberId 필드가 memberId인 모든 Report를 삭제합니다.
-        deleteReport(memberId);
-
         // Comment 객체의 memberId가 memberId인 댓글을 삭제합니다. (사용자가 작성한 댓글 삭제)
         // 또한, Post 객체의 postId가 Comment 객체의 postId인 댓글도 삭제합니다. (사용자의 게시글에 달린 댓글 삭제)
         deleteComment(memberId);
 
+        // Friend 객체의 receiverId 또는 senderId 필드가 memberId인 모든 Friend를 삭제합니다.
+        deleteFriend(memberId);
+
         // MatchingMember 객체의 memberId가 memberId인 모든 MatchingMember를 삭제합니다.
         deleteMatchingMember(memberId);
+
+        // Report 객체의 reporterId 또는 reportedMemberId 필드가 memberId인 모든 Report를 삭제합니다.
+        deleteReport(memberId);
 
         // Post 객체의 memberId가 memberId인 모든 Post를 삭제합니다.
         deletePost(memberId);
