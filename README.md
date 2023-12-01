@@ -35,10 +35,7 @@ Eclipse 또는 IntelliJ 등 자신이 사용하는 도구를 사용해서 진행
 - 다음 사진과 같이 상단의 토글 버튼을 누른 후 "Edit Configurations..."를 클릭합니다.
   ![image](https://github.com/Favorite-School-Meal/favorite-school-meal-was/assets/96174711/c0fc3fd7-1dba-41a9-ad4c-34a589b38130)
 
-- "Environment variables"에 다음과 같이 입력합니다.
-```
-DB_PASSWORD=chldodmlgkrtlr;DB_URL=jdbc:mysql://49.50.173.247:3306/fsm?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=true;DB_USER=FSM;FILE_DIR=/root/app/files/;JWT_ISSUER=favoriteSchoolMeal.com;JWT_SECRET_KEY=sksckfkflgmffjrkffoahenshvdmsrhtdmfdnfjfjqhfEoskssoanfrufdmfEkfkdhsmfdmsrhoscksgdmfRKdysoakadlwjsgowlfRkdysoflsmsgkdissnscjfja;KAKAO_API_URL=https://kapi.kakao.com;KAKAO_AUTH_URL=https://kauth.kakao.com;KAKAO_CLIENT_ID=95f91aebaf3512beb7de682e5bf7c291;MAIL_PASSWORD=bbww jnpc ivxq eudi;MAIL_USERNAME=hyugnjun3579@yu.ac.kr;NAVER_API_URL=https://openapi.naver.com;NAVER_AUTH_URL=https://nid.naver.com;NAVER_CLIENT_ID=xQ6XMGVRxbFRU3GgqKaW;NAVER_CLIENT_SECRET=jEBGQNJqQL
-```
+- LMS에서 다운로드 받은 `environment_variables.txt` 파일을 복사하여 `Environment variables`에 입력합니다.
 
 ## 5. 프로젝트 실행하기
 FavoriteSchoolMealApplication.java 파일을 열고 Run 버튼을 눌러 실행합니다.
