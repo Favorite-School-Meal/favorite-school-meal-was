@@ -5,6 +5,7 @@ import com.example.favoriteschoolmeal.domain.member.dto.BlockRequest;
 import com.example.favoriteschoolmeal.domain.model.Authority;
 import com.example.favoriteschoolmeal.domain.model.Gender;
 import com.example.favoriteschoolmeal.global.common.Base;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -69,7 +70,7 @@ public class Member extends Base {
     @Column(name = "introduction", length = 300)
     private String introduction;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private FileEntity profileImage;
 

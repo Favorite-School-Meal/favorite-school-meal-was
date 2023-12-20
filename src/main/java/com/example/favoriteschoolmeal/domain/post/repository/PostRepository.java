@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -21,4 +23,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.matching m WHERE p.member.id = :memberId ORDER BY m.matchingStatus DESC, p.createdAt DESC")
     Page<Post> findAllByMemberIdOrderByStatusAndTime(Pageable pageable,
             @Param("memberId") Long memberId);
+
+    List<Post> findAllByMemberId(Long memberId);
+
+    void deleteByMemberId(Long memberId);
 }

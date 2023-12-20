@@ -3,6 +3,7 @@ package com.example.favoriteschoolmeal.domain.notification.domain;
 import com.example.favoriteschoolmeal.domain.member.domain.Member;
 import com.example.favoriteschoolmeal.domain.model.NotificationType;
 import com.example.favoriteschoolmeal.global.common.Base;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;

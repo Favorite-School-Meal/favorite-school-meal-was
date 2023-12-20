@@ -21,4 +21,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @return 해당 게시물의 댓글 수
      */
     int countByPost(Post post);
+
+    void deleteByMemberId(Long memberId);
+
+    void deleteByPostId(Long id);
 }

@@ -8,6 +8,7 @@ import com.example.favoriteschoolmeal.domain.member.dto.MemberSimpleResponse;
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyMemberRequest;
 import com.example.favoriteschoolmeal.domain.member.dto.ModifyPasswordRequest;
 import com.example.favoriteschoolmeal.domain.member.dto.PaginatedMemberListResponse;
+import com.example.favoriteschoolmeal.domain.member.service.MemberDeleteService;
 import com.example.favoriteschoolmeal.domain.member.service.MemberService;
 import com.example.favoriteschoolmeal.global.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberDeleteService memberDeleteService;
 
 
     //개인정보수정
@@ -96,10 +98,11 @@ public class MemberController {
     }
 
     //member삭제
-    @DeleteMapping("/members/{memberId}")
+    @DeleteMapping("/members")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Void> memberRemove(@PathVariable Long memberId){
-        memberService.removeMember(memberId);
+    public ApiResponse<Void> memberRemove(){
+        memberService.deleteMemberAssociatedData();
+        memberDeleteService.deleteMemberRelatedEntities();
         return ApiResponse.createSuccess(null);
     }
 

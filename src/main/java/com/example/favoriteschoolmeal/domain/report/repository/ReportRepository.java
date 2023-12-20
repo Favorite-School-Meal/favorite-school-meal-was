@@ -15,4 +15,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findAllByIsResolvedFalse(Pageable pageable);
 
     Long countByReportedMember(Member member);
+
+    void deleteByReporterIdOrReportedMemberId(Long reporterId, Long reportedMemberId);
 }
